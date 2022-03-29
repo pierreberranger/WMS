@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">2</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">91ca9f21-003f-41e4-b78e-0085fdb92487</dc:identifier>
+        <dc:title>Fluent Python, 2nd Edition</dc:title>
+        <dc:creator opf:file-as="Luciano Ramalho" opf:role="aut">Luciano Ramalho</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.39.1) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2021-12-24T23:00:00+00:00</dc:date>
+        <dc:description>&lt;span&gt;&lt;div&gt;&lt;p&gt;Python’s simplicity lets you become productive quickly, but often this means you aren’t using everything it has to offer. With the updated edition of this hands-on guide, you’ll learn how to write effective, modern Python 3 code by leveraging its best ideas.&lt;/p&gt;&lt;p&gt;Don’t waste time bending Python to fit patterns you learned in other languages. Discover and apply idiomatic Python 3 features beyond your past experience. Author Luciano Ramalho guides you through Python’s core language features and libraries and teaches you how to make your code shorter, faster, and more readable.&lt;/p&gt;&lt;p&gt;Featuring major updates throughout the book, Fluent Python, second edition, covers:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;Special methods:&lt;/b&gt; The key to the consistent behavior of Python objects&lt;/li&gt;&lt;li&gt;&lt;b&gt;Data structures:&lt;/b&gt; Sequences, dicts, sets, Unicode, and data classes&lt;/li&gt;&lt;li&gt;&lt;b&gt;Functions as objects:&lt;/b&gt; First-class functions, related design patterns, and type hints in function declarations&lt;/li&gt;&lt;li&gt;&lt;b&gt;Object-oriented idioms:&lt;/b&gt; Composition, inheritance, mixins, interfaces, operator overloading, static typing and protocols&lt;/li&gt;&lt;li&gt;&lt;b&gt;Control flow:&lt;/b&gt; Context managers, generators, coroutines, async/await, and thread/process pools&lt;/li&gt;&lt;li&gt;&lt;b&gt;Metaprogramming:&lt;/b&gt; Properties, attribute descriptors, class decorators, and new class metaprogramming hooks that are simpler than metaclasses&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/span&gt;</dc:description>
+        <dc:publisher>O'Reilly Media, Inc.</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9781492056355</dc:identifier>
+        <dc:language>eng</dc:language>
+        <meta name="calibre:author_link_map" content="{&quot;Luciano Ramalho&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-03-29T18:29:57.262372+00:00"/>
+        <meta name="calibre:title_sort" content="Fluent Python, 2nd Edition"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Cover" href="Fluent Python, 2nd Edition - Luciano Ramalho.jpg"/>
+    </guide>
+</package>
