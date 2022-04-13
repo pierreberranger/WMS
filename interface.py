@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 if args.add :
     package_informations = args.add.split(",")
-    if len(package_informations) != 5:
+    if len(package_informations) != 5: #MAGNIFIQUE un superbe cas d'usage pour le pattern matching de python 3.10 :) 
         print("You didn't give the right arguments look at the documentation with -h")
     lengh = package_informations[0]
     width = package_informations[1]
@@ -34,7 +34,7 @@ if args.add :
 
 elif args.delete :
     identity = args.delete
-    answer = input("Are you sure to delete the data ? [y/n]")
+    answer = input("Are you sure to delete the data ? [y/N]")
     if answer == "y" :
         #delete_package(identity)
         ...
