@@ -52,6 +52,7 @@ while (in_out) :
     
     elif action == "trip" :
         id_trip = int(input("Which trip do you want to look ? "))
+        #add a method to see the packages of the trip
         print("trip")
     
     elif action == "status" :
