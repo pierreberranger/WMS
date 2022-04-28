@@ -61,6 +61,7 @@ while (in_out) :
         print("status")
     
     elif action == "quit" :
+        #save the data in a text file
         in_out = False
     
     else :
