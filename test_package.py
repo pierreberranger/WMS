@@ -1,4 +1,3 @@
-from tkinter import Pack
 import unittest
 from package import *
 from itertools import count

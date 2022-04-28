@@ -2,17 +2,17 @@ from collections import namedtuple
 from itertools import count
 
 Dimensions = namedtuple("Dimensions", "width length height")
-Trip = set[int]
+Trip = set
 
 class Package:
 
     __max_id : count = count()
-    __shipment : dict[int] = dict()
+    __shipment : dict = dict()
 
     def __init__(self, dimensions, status, package_type):
-        self.dimensions : tuple = dimensions
-        self.status : str = status
-        self.package_type : str = package_type
+        self.__dimensions : tuple = dimensions
+        self.__status : str = status
+        self.__package_type : str = package_type
 
     @classmethod
     def set_shipment(cls, id_iterator:count=count(), shipment:dict=dict()):
@@ -40,17 +40,17 @@ class Package:
             raise KeyError("The shipment does not contain the id")
 
     def __eq__(self, other):
-        return self.dimensions == other.dimensions and self.status == other.status \
-                and self.package_type == other.package_type
+        return self.__dimensions == other.__dimensions and self.__status == other.__status \
+                and self.__package_type == other.__package_type
     
     def set_status(self, new_status: str) -> None:
-        self.status = new_status
+        self.__status = new_status
 
     def set_dimensions(self, new_dimensions: Dimensions) -> None:
-        self.dimensions = new_dimensions
+        self.__dimensions = new_dimensions
 
     def set_package_type(self, new_package_type: str) -> None:
-        self.package_type = new_package_type
+        self.__package_type = new_package_type
 
 # Définitions des fonctions relatives aux voyages (Trip)
 
