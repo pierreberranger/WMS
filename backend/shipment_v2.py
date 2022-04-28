@@ -24,9 +24,4 @@ class Shipment(set):
                                         caracteristics_to_filter, True), 
                                 self))
         
-        """return functools.filter(lambda package:
-                            package.id in id
-                            and package.dimensions in dimensions
-                            and package.status in status
-                            and package.package_type in package_type,
-                            self)"""
+    
