@@ -1,12 +1,14 @@
 from collections import namedtuple
 
 Dimensions = namedtuple("Dimensions", "width length height")
+
 def get_max_id(file="MAX_ID.txt"):
         with open(file, mode='r') as file_content:
             return int(file_content.readlines()[0]) 
 def set_max_id(max_id, file="MAX_ID.txt"):
     with open(file, mode='w') as file_content:
             file_content.write(f"{max_id}")
+
 class Package():
 
     def __init__(self, dimensions, status, package_type) -> None:
