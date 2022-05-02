@@ -1,6 +1,9 @@
+from importlib.resources import Package
 import os
 
 # créer la variable globale
+# PACKAGE_DATABASE = txt_to_shipment()
+
 in_out = True
 print("Welcome ! \n")
 print("This plateform allows you to manage your packages within many actions")
@@ -16,13 +19,17 @@ while (in_out) :
         length = float(input("length : "))
         width = float(input("width : "))
         height = float(input("height : "))
+        #dimensions = Dimensions(length, width, height)
         status = input("status : ")
         package_type = input("package_type : ")
+        
         print(f"You entered the package : {length}, {width}, {height}, {status}, {package_type}")
         sure = input("Do you want to add the package ? [y/n] ")
+        
         if sure == "y" :
+            #new_package = Package(dimensions, status, package_type)
+            #PACKAGE_DATABASE.add(new_package)
             ...
-            #add_package(lengh, width, height, status, package_type, dic?)
         else :
             os.system('clear')
         
