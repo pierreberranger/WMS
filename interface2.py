@@ -5,7 +5,7 @@ from datetime import date
 """ Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
 
 # créer la variable globale
-# PACKAGE_DATABASE = txt_to_shipment()
+# PACKAGE_DATABASE = csv_to_shipment()
 
 in_out = True
 print("Welcome ! \n")
@@ -79,7 +79,7 @@ while (in_out) :
                     width = float(input("width : "))
                     height = float(input("height : "))
                     #dimensions = Dimensions(length, width, height)
-                    status = input("status : ")
+                    status = "on hold for inshipment"
                     package_type = input("package_type : ")
                     id_inshipment = None
                     id_outshipment = None
@@ -95,8 +95,8 @@ while (in_out) :
             sender = input("Who is the sender of the shipment ? ")
             dispatch_date = date.fromisoformat(input("Dispatch date (YYYY-MM-DD)"))
             expected_delivery_date = date.fromisoformat(input("Expected delivery date (YYYY-MM-DD)"))
-            status = "Pending"
-            #new_inshipment = Inshipment(inshipment_packages, sender, dispatch_date, expected_delivery_date, status, delivery_date) 
+            status = "on hold"
+            #new_inshipment = Inshipment(inshipment_packages, sender,status, dispatch_date, expected_delivery_date, status, delivery_date=None) 
             #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
             #id_shipment = new_inshipment.id
             # for packages in inshipment_packages :
@@ -104,7 +104,7 @@ while (in_out) :
             if answer == "u" :
                 print("Your inshipment is arrived.")
                 id_inshipment = input("What inshipment do you want to look ?")
-                #inshipment = set_of_shipments.get(id_inshipment)
+                #inshipment = set_of_shipments[id_inshipment]
                 recieved_date = date.fromisoformat(input("What is the date ? YYYY-MM-DD "))
                 #inshipment.status = "warehouse"
                 #inshipment.recieved_date = recieved_date
@@ -115,6 +115,68 @@ while (in_out) :
                 print("This option is not known...")
                 os.system('clear') # not sure
     
+    elif action == "outshipment" :
+        print("Do you to declare a new outshipment (answer : d) or do you want to update an outshipment (answer : u) ?")
+        answer = input()
+        if answer == "d" :
+            print("Write the packages below")
+            print("If you have a set of the same packages, please declare")
+            products_number = input("How many products do you want to declare in the shipment ?")
+            #outshipment_packages = Set_of_packages()
+            for i in range(products_number) :
+                quantity = input("The number")
+                for j in range(quantity) :
+                    # Features
+                    id_package = imput("What is the id of the package ?")
+                    print(f"You entered the package : {id_package}")
+                    sure = input("Do you want to add the package to the outshipment ? [y/n] ")
+                    if sure == "y" :
+                        #new_package = PACKAGE_DATABASE[id_package]
+                        #new_package.status = "on hold for outshipment"
+                        #outshipment_packages.add(new_package)
+
+                        ...
+                    else :
+                        os.system('clear') # what does it do ?
+            receiver = input("Who is the receiver of the shipment ? ")
+            excepted_dispatch_date = date.fromisoformat(input("Dispatch date (YYYY-MM-DD)"))
+            dispatch_date = None
+            expected_delivery_date = date.fromisoformat(input("Expected delivery date (YYYY-MM-DD)"))
+            delivery_date = None
+            status = "on hold"
+            #new_outshipment = Outshipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) 
+            #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
+            #id_shipment = new_outshipment.id
+            # for packages in outshipment_packages :
+            #   packages.id_outshipment = id_shipment
+
+            if answer == "u" :
+                answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
+                if answer2 =="e":
+                    print("Your outshipment is on its way.")
+                    id_outshipment = input("What outshipment do you want to look ?")
+                    #outshipment = set_of_shipments[id_outshipment]
+                    dispatch_date = date.fromisoformat(input("What is the dispatch date ? YYYY-MM-DD "))
+                    #outshipment.status = "sent"
+                    #outshipment.recieved_date = dispatch_date
+                    #for package in outshipment.packages :
+                    #   package.status = "sent"
+
+                elif answer2 =="a":
+                    print("Your outshipment is arrived to the receiver.")
+                    id_outshipment = input("What outshipment do you want to look ?")
+                    #outshipment = set_of_shipments[id_outshipment]
+                    arrival_date = date.fromisoformat(input("What is the arrival date ? YYYY-MM-DD "))
+                    #outshipment.status = "delivered"
+                    #outshipment.recieved_date = dispatch_date
+                    #for package in outshipment.packages :
+                    #   package.status = "delivered"
+
+            else :
+                print("This option is not known...")
+                os.system('clear') # not sure
+    
+
     elif action == "quit" :
         #save the data in a text file
         in_out = False
@@ -132,3 +194,8 @@ while (in_out) :
         # we have to define the status we can give to a package
         print("status") 
 """
+
+
+#shipment_to_csv("")
+#set_of_packages_to_csv("")
+# implémenter ces deux fonctions pour garder en méoire
