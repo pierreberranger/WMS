@@ -24,10 +24,10 @@ class TestShipment(unittest.TestCase):
 
     def test_remove(self):
         package_to_remove = self.database[self.first_id]
-        self.database.remove_package(self.first_id)
+        self.database.remove(self.first_id)
         self.assertFalse(package_to_remove in self.database )
         with self.assertRaises(KeyError) as err:
-            self.database.remove_package(get_max_id()+1)
+            self.database.remove(get_max_id()+1)
         self.assertEqual(err.exception.args[0], "This id does not exist")
 
     def test_package_filter(self):

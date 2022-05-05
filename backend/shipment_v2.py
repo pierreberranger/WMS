@@ -10,18 +10,22 @@ class Shipment(set):
                 return package
         raise KeyError("This id does not exist")
 
-    def remove_package(self, id: int) -> None:
+    def remove(self, id: int) -> None:
         for package in self.copy():
             if package.id == id:
-                self.remove(package)
+                self.super().remove(package)
                 return None
         raise KeyError("This id does not exist")
-
-    def package_filter(self, caracteristics_to_filter: dict): # Ici les listes ne seront jamais modifiées
+    # rather use a set comprehension than the followig method:
+    """def package_filter(self, caracteristics_to_filter: dict): # Ici les listes ne seront jamais modifiées
         return Shipment(filter(lambda package: 
                                     functools.reduce(lambda bol, key:
                                         bol and package.__dict__[key] in caracteristics_to_filter[key], 
                                         caracteristics_to_filter, True), 
-                                self))
+                                self))"""
+    
+
+
+
         
     
