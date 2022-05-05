@@ -1,10 +1,10 @@
-from backend import Package, Shipment, Trip
-from package import Dimensions
+from backend import Package, Dimensions, SetOfPackages
 
-PACKAGE_DATABASE = Shipment() # À stocker dans un fichier externe
+def main():
+    package_database = SetOfPackages() # À stocker dans un fichier externe
 
-package = Package(Dimensions(100, 55, 25), "delivered", "classic")
-PACKAGE_DATABASE.add(package)
+    package = Package(Dimensions(100, 55, 25), "delivered", "classic")
+    package_database.add(package)
 
-print(PACKAGE_DATABASE)
-# if __name__ == '__main__':
+if __name__ == '__main__':
+    main()
