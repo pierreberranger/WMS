@@ -1,4 +1,4 @@
-from package_v2 import *
+from package import Package, Dimensions, ids
 import unittest
 
 
@@ -6,12 +6,10 @@ class TestPackages(unittest.TestCase):
 
     def test_attribute_id(self):
         dimensions, status, package_type = Dimensions(1, 2, 3), "shipped", "classic"
-        
-    
-        max_id = get_max_id()
+        future_max_id = next(ids) + 1
         new_package = Package(dimensions, status, package_type)
-        self.assertEqual(max_id + 1, new_package.id)
-        self.assertEqual(max_id+1, get_max_id())
+        self.assertEqual(future_max_id, new_package.id)
+        self.assertEqual(future_max_id, next(ids)-1)
 
     def test_eq(self):
         dimensions, status, package_type = Dimensions(1, 2, 3), "shipped", "classic"

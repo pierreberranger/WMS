@@ -1,13 +1,9 @@
 from collections import namedtuple
+from file_id_generator import FileIDGenerator
 
 Dimensions = namedtuple("Dimensions", "width length height")
 
-def get_max_id(file="MAX_ID.txt"):
-        with open(file, mode='r') as file_content:
-            return int(file_content.readlines()[0]) 
-def set_max_id(max_id, file="MAX_ID.txt"):
-    with open(file, mode='w') as file_content:
-            file_content.write(f"{max_id}")
+ids = FileIDGenerator("MAX_ID.txt")
 
 class Package():
 
@@ -15,23 +11,20 @@ class Package():
         self.status = status
         self.dimensions = dimensions
         self.package_type = package_type
-        self.id = Package.new_id()
-    
-    
-
-    @classmethod
-    def new_id(cls, file: str="MAX_ID.txt"):
-        next_id = get_max_id(file=file) +1
-        set_max_id(next_id, file=file)
-        return next_id
+        self.id = next(ids)
 
     def __eq__(self, other):
-        return self.id == other.id
+        if isinstance(other, Package):
+            return self.id == other.id
+        elif isinstance(other, int):
+            return self.id == other
+        else:
+            raise ValueError("A Package can only be compared to a Package or an int") 
 
     def __hash__(self):
         return self.id
     
-    def is_same_package(self, other):
+    def is_same_package(self, other) -> bool:
         return self.dimensions == other.dimensions and self.status == other.status \
                 and self.package_type == other.package_type and self.id == other.id
 
