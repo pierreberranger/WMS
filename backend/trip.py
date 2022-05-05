@@ -1,7 +1,5 @@
 from collections import namedtuple
-from pickletools import int4
-from typing import NamedTuple
-from shipment_v2 import Shipment
+from shipment import Shipment
 from collections import namedtuple
 
 StopoverInfo = namedtuple("StopoverInfo", "time location")
