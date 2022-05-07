@@ -127,7 +127,7 @@ while (in_out) :
                 quantity = input("The number")
                 for j in range(quantity) :
                     # Features
-                    id_package = imput("What is the id of the package ?")
+                    id_package = input("What is the id of the package ?")
                     print(f"You entered the package : {id_package}")
                     sure = input("Do you want to add the package to the outshipment ? [y/n] ")
                     if sure == "y" :
