@@ -1,4 +1,3 @@
 id, width, length, height, status, package_type 
-297, 1, 2, 4, shipped, classic 
-298, 1, 2, 3, delivered, classic 
-299, 1, 2, 3, shipped, big-bag 
+308, 1.0, 1.0, 1.0,  1,  1  
+309, 2.0, 2.0, 2.0, 2, 2 

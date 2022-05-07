@@ -33,8 +33,9 @@ while (in_out) :
         sure = input("Do you want to add the package ? [y/n] ")
         
         if sure == "y" :
-            new_package = Package(name, dimensions, status, package_type) #
+            new_package = Package(dimensions, status, package_type) #
             package_database.add(new_package) #
+            set_of_packages_to_txt(package_database)
             ...
         else :
             os.system('clear')
@@ -46,6 +47,7 @@ while (in_out) :
         if answer == "y" :
             ...
             package_database.remove(identity) #
+            set_of_packages_to_txt(package_database)
         else :
             os.system('clear')
 
@@ -58,6 +60,7 @@ while (in_out) :
             ...
             package = package_database[identity] #
             package.status = newstatus #
+            set_of_packages_to_txt(package_database)
         else :
             os.system('clear')
     
@@ -181,6 +184,7 @@ while (in_out) :
 
     elif action == "quit" :
         #save the data in a text file
+        set_of_packages_to_txt(package_database)
         in_out = False
     
     else :

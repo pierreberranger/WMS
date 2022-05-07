@@ -5,10 +5,7 @@ def set_of_packages_to_txt(PACKAGE_DATABASE: SetOfPackages, file="DATA_BASE.csv"
     with open (file, 'w', newline='') as csvfile :
         csvfile.write("id, width, length, height, status, package_type \n")
         for package in PACKAGE_DATABASE :
-            dimensions = package.dimensions
-            width = dimensions.width
-            length = dimensions.length
-            height = dimensions.height
+            width, length, height = package.dimensions
             csvfile.write(f"{package.id}, {width}, {length}, {height}, {package.status}, {package.package_type} \n")
 
 def txt_to_set_of_packages(file="DATA_BASE.csv") -> SetOfPackages :
