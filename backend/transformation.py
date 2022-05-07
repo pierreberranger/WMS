@@ -1,8 +1,7 @@
-from shipment_v2 import Shipment
-from package_v2 import *
+from backend import SetOfPackages, Dimensions, Package, Shipment
 from csv import reader
 
-def shipment_to_txt(PACKAGE_DATABASE: Shipment(), file="DATA_BASE.csv") -> None :
+def set_of_packages_to_txt(PACKAGE_DATABASE: SetOfPackages, file="DATA_BASE.csv") -> None :
     with open (file, 'w', newline='') as csvfile :
         csvfile.write("id, width, length, height, status, package_type \n")
         for package in PACKAGE_DATABASE :
@@ -12,8 +11,8 @@ def shipment_to_txt(PACKAGE_DATABASE: Shipment(), file="DATA_BASE.csv") -> None 
             height = dimensions.height
             csvfile.write(f"{package.id}, {width}, {length}, {height}, {package.status}, {package.package_type} \n")
 
-def txt_to_shipment(file="DATA_BASE.csv") -> Shipment :
-    PACKAGE_DATABASE = Shipment()
+def txt_to_set_of_packages(file="DATA_BASE.csv") -> SetOfPackages :
+    package_database = SetOfPackages()
     with open (file, newline='') as csvfile :
         lines_reader = reader(csvfile)
         head = next(lines_reader)
@@ -25,11 +24,10 @@ def txt_to_shipment(file="DATA_BASE.csv") -> Shipment :
             status = package_reader[4]
             package_type = package_reader[5]
             dimensions = Dimensions(width, length, height)
-            new_package = Package(dimensions, status, package_type)
+            new_package = Package(dimensions, status, package_type, id=id)
             new_package.id = id
-            set_max_id(get_max_id()-1)
-            PACKAGE_DATABASE.add(new_package)
-    return PACKAGE_DATABASE
+            package_database.add(new_package)
+    return package_database
 
 """ PACKAGE_DATABASE = Shipment() # À stocker dans un fichier externe
 

@@ -1,4 +1,4 @@
-from package import Package, Dimensions, ids
+from .package import Package, Dimensions, ids
 import unittest
 
 

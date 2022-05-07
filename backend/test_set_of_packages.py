@@ -1,5 +1,5 @@
-from shipment import SetOfPackages
-from package import Package, Dimensions, ids
+from .shipment import SetOfPackages
+from .package import Package, Dimensions, ids
 import unittest
 
 class TestSetOfPackages(unittest.TestCase):

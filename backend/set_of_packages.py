@@ -1,4 +1,4 @@
-from package import Package
+from .package import Package
 from typing import Union
 
 class SetOfPackages(set):

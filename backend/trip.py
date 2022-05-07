@@ -1,5 +1,5 @@
 from collections import namedtuple
-from shipment import Shipment
+from .shipment import Shipment
 from collections import namedtuple
 
 StopoverInfo = namedtuple("StopoverInfo", "time location")

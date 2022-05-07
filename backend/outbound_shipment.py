@@ -1,4 +1,4 @@
-from shipment import Shipment, SetOfPackages
+from .shipment import Shipment, SetOfPackages
 from datetime import datetime
 
 class OutBoundShipment(Shipment):

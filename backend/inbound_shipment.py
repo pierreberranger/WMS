@@ -1,5 +1,5 @@
 from datetime import datetime
-from shipment import Shipment, SetOfPackages
+from .shipment import Shipment, SetOfPackages
 
 class InBoundShipment(Shipment):
 

@@ -1,4 +1,4 @@
-from set_of_packages import SetOfPackages
+from .set_of_packages import SetOfPackages
 
 class Shipment():
 
