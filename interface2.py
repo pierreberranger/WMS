@@ -1,5 +1,5 @@
 from backend import SetOfPackages, Package, Dimensions, InBoundShipment, Shipment, OutBoundShipment, set_of_packages_to_txt, txt_to_set_of_packages
-import numpy as np
+""" import numpy as np """
 import os
 from datetime import date
 
