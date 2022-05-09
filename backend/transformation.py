@@ -1,6 +1,8 @@
 from backend import SetOfPackages, Dimensions, Package, Shipment
 from csv import reader
 
+# code to be adapted, it is not the last version
+
 def set_of_packages_to_txt(PACKAGE_DATABASE: SetOfPackages, file="DATA_BASE.csv") -> None :
     with open (file, 'w', newline='') as csvfile :
         csvfile.write("id, width, length, height, status, package_type \n")
