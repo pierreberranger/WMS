@@ -25,3 +25,14 @@ class TestHarbourDuesCalculationMethods(unittest.TestCase):
 		date_2 = datetime.date(day=27,month=2,year=2022)
 		self.assertEqual(dn.days_in_port(date_1,date_1),1)
 		self.assertEqual(dn.days_in_port(date_1,date_2),3)
+
+	def test_layup_days(self):
+		date_1 = datetime.date(day=1,month=1,year=2022)
+		date_2 = datetime.date(day=2,month=1,year=2022)
+		date_3 = datetime.date(day=5,month=1,year=2022)
+		date_4 = datetime.date(day=1,month=3,year=2022)
+
+		self.assertEqual(dn.layup_days(date_1,date_2),0)
+		self.assertEqual(dn.layup_days(date_1,date_3),2)
+		self.assertEqual(dn.layup_days(date_1,date_4),61)
+		self.assertRaises(ValueError,dn.layup_days,[date_2,date_1])
