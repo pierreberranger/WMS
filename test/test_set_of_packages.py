@@ -1,6 +1,6 @@
-from .set_of_packages import SetOfPackages
-from .package import Package, Dimensions, packages_ids
 import unittest
+
+from models import SetOfPackages, Package, Dimensions, packages_ids
 
 class TestSetOfPackages(unittest.TestCase):
     
