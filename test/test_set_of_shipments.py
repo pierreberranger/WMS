@@ -1,11 +1,7 @@
-from .set_of_packages import SetOfPackages
-from .inbound_shipment import InBoundShipment
-from .outbound_shipment import OutBoundShipment
-from .set_of_shipments import SetOfShipments, shipments_ids
-from .package import Package, Dimensions, packages_ids
-from datetime import datetime
-
 import unittest
+import datetime
+
+from models import SetOfPackages, InBoundShipment, OutBoundShipment, SetOfShipments, shipments_ids, Package, Dimensions, packages_ids
 
 class TestSetOfShipments(unittest.TestCase):
     
@@ -19,10 +15,10 @@ class TestSetOfShipments(unittest.TestCase):
                         Package(dimensions=Dimensions(3,4,5), status="delivered", package_type="classic"),
                         Package(dimensions=Dimensions(3,4,5), status="shipped", package_type="big-bag"),
         ])
-        self.shipment1 = InBoundShipment(arrival_date=datetime(2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")
-        self.shipment2 = OutBoundShipment(departure_date=datetime(2022, 5, 12, 16, 34), status="left", set_of_packages=self.database2, sender="EntrepotNostos1", adressee="Jo")
+        self.shipment1 = InBoundShipment(id=next(shipments_ids),arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")
+        self.shipment2 = OutBoundShipment(id=next(shipments_ids),departure_date=datetime.datetime(2022, 5, 12, 16, 34), expected_arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="left", set_of_packages=self.database2, sender="EntrepotNostos1", adressee="Jo")
         self.first_shipment_id = next(shipments_ids) - 3
-        self.set_of_shipments = SetOfShipments(self.shipment1, self.shipment2)
+        self.set_of_shipments = SetOfShipments([self.shipment1, self.shipment2])
 
     def test_get_item(self):
         shipment_id1 = self.shipment1.id
