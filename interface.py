@@ -1,5 +1,5 @@
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, Shipment, OutBoundShipment
-from inputoutput import set_of_packages_to_txt, txt_to_set_of_packages
+from inputoutput import set_of_packages_to_txt, txt_to_set_of_packages, display_packages
 """ import numpy as np """
 import os
 from datetime import datetime
@@ -65,8 +65,8 @@ def interactive():
                     os.system('clear')
         
         elif action == "view" :
-            print("view of the data base")
-        
+            display_packages(package_database)
+
         elif action == "inBoundShipment" :
             print("Do you to declare a new inshipment (answer : d) or do you want to update an inshipment (answer : u) ?")
             answer = input()
