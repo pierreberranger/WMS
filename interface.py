@@ -7,7 +7,7 @@ from datetime import datetime
 """ Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
 
 # créer la variable globale
-package_database = txt_to_set_of_packages("wms/DATA_BASE.csv") # attention : préciser le fichier dans lequel la datebase est gardée en memoire
+package_database = txt_to_set_of_packages() # attention : préciser le fichier dans lequel la datebase est gardée en memoire
 # shipment_database = txt_to_set_of_shipments()
 # set_of_shipments = set() , a suppirmer car du coup on ne peut pas récupérer les shipment par les id ?
 
@@ -182,7 +182,7 @@ def interactive():
 
         elif action == "quit" :
             #save the data in a text file
-            set_of_packages_to_txt(package_database,"wms/DATA_BASE.csv")
+            set_of_packages_to_txt(package_database)
             in_out = False
         
         else :
