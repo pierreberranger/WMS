@@ -161,6 +161,11 @@ def fill_pdf(content, base_fname, out_fname):
 def days_in_port(date_in,date_out):
     return (date_out - date_in).days + 1
 
+def layup_days(in_date, out_date):
+    if in_date > out_date:
+        raise ValueError
+    return max((out_date - in_date).days - 2,0)
+
 def southern_liner():
     print("Déclaration sur les Navires (DN)")
     print("================================")
@@ -175,5 +180,5 @@ def southern_liner():
     tonnage = input("Tonnage transporté (en tonnes)")
     berth = input("Quai/Poste d'accueil").upper()
 
-    
-southern_liner()
+if __name__ == '__main__':
+    southern_liner()

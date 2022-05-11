@@ -34,5 +34,5 @@ class TestHarbourDuesCalculationMethods(unittest.TestCase):
 
 		self.assertEqual(dn.layup_days(date_1,date_2),0)
 		self.assertEqual(dn.layup_days(date_1,date_3),2)
-		self.assertEqual(dn.layup_days(date_1,date_4),61)
-		self.assertRaises(ValueError,dn.layup_days,[date_2,date_1])
+		self.assertEqual(dn.layup_days(date_1,date_4),57)
+		self.assertRaises(ValueError,dn.layup_days,date_2,date_1)
