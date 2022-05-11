@@ -3,17 +3,18 @@ from .file_id_generator import FileIDGenerator
 
 Dimensions = namedtuple("Dimensions", "width length height")
 
-ids = FileIDGenerator("MAX_ID.txt")
+packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 
 class Package():
 
-    def __init__(self, dimensions, status, package_type, shipment_id=None, id=None) -> None:
+    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str="", shipment_id=None, id=None) -> None:
         self.status = status
         self.dimensions = dimensions
         self.package_type = package_type
         self.shipment_id = shipment_id
+        self.description = description
         if id == None:
-            self.id = next(ids)
+            self.id = next(packages_ids)
         else:
             self.id = id
 

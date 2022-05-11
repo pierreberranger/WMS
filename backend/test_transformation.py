@@ -1,12 +1,12 @@
-from shipment_v2 import Shipment
-from package_v2 import *
+from .shipment import Shipment
+from .package import Package, packages_ids, Dimensions
 import unittest
-from transformation import shipment_to_txt, txt_to_shipment
+from .transformation import shipment_to_txt, txt_to_shipment
 
 class TestTransformation (unittest.TestCase) :
       
     def setUp(self):
-        self.first_id = get_max_id() + 1
+        self.first_id = next(packages_ids)
         self.database = Shipment( [Package( dimensions=Dimensions(1,2,4), status="shipped", package_type="classic"),
                         Package(dimensions=Dimensions(1,2,3), status="delivered", package_type="classic"),
                         Package(dimensions=Dimensions(1,2,3), status="shipped", package_type="big-bag"),

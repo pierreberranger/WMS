@@ -9,7 +9,7 @@ class SetOfPackages(set):
                 return package
         raise KeyError("This id does not exist")
 
-    def remove(self, other: Union[int, float]) -> None:
+    def remove(self, other: Union[int, Package]) -> None:
         if isinstance(other, Package):
             super().remove(other)
         elif isinstance(other, int):

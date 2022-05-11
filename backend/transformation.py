@@ -1,4 +1,4 @@
-from backend import SetOfPackages, Dimensions, Package, Shipment
+from backend import SetOfPackages, Dimensions, Package
 from csv import reader
 
 # code to be adapted, it is not the last version

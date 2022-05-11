@@ -1,7 +1,7 @@
 
 
 class FileIDGenerator:
-    def __init__(self, filename: str="MAX_ID.txt"):
+    def __init__(self, filename: str):
         self.filename = filename
         # initialisation de vos trucs avec les fichiers
 
