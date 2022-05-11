@@ -1,8 +1,12 @@
+from datetime import datetime
+import os
+
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, Shipment, OutBoundShipment
 from inputoutput import set_of_packages_to_txt, txt_to_set_of_packages, display_packages
+
+import click
+
 """ import numpy as np """
-import os
-from datetime import datetime
 
 """ Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
 
@@ -10,6 +14,12 @@ from datetime import datetime
 package_database = txt_to_set_of_packages() # attention : préciser le fichier dans lequel la datebase est gardée en memoire
 # shipment_database = txt_to_set_of_shipments()
 # set_of_shipments = set() , a suppirmer car du coup on ne peut pas récupérer les shipment par les id ?
+
+statuses = click.Choice(Package.statuses, case_sensitive=False)
+types = click.Choice(Package.types, case_sensitive=False)
+
+def package_id_prompt():
+    return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in package_database))), show_choices=False))
 
 def interactive():
     in_out = True
@@ -24,21 +34,21 @@ def interactive():
         action = input("On what element do you want to focus on ? ")
 
         if action ==  "package":
-            action2 = input("More precisely : add package [add], delete package [del], or change package status [sta] ")
+            action2 = click.prompt("More precisely : add package, delete package, or change package status", default='add', type=click.Choice(("add","del","sta")))
             if action2 == "add" :
                 # Feature
-                name = input("Description of the package : ")
-                length = float(input("length : "))
-                width = float(input("width : "))
-                height = float(input("height : "))
+                name = click.prompt("Description of the package")
+                length = click.prompt("Length",type=float)
+                width = click.prompt("Width",type=float)
+                height = click.prompt("Height",type=float)
                 dimensions = Dimensions(length, width, height)
-                status = input("status : ")
-                package_type = input("package_type : ")
+                status = click.prompt("status", default=Package.statuses[0], type=statuses)
+                package_type = click.prompt("Package Type", default=Package.types[0], type=types)
                 
-                print(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
-                sure = input("Do you want to add the package ? [y/n] ")
+                click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
+                sure = click.confirm("Do you want to add the package ?",default=True)
                 
-                if sure == "y" :
+                if sure:
                     new_package = Package(dimensions, status, package_type) 
                     package_database.add(new_package)
                 else :
@@ -46,21 +56,19 @@ def interactive():
                 
 
             elif action2 == "del" :
-                identity = int(input("package id : ")) # attention au cas où aucun id n'est donné : catch error
-                answer = input("Are you sure to delete the data ? [y/n]")
-                if answer == "y" :
+                identity =  package_id_prompt()
+                answer = click.confirm("Are you sure to delete the data ?", default=False)
+                if answer:
                     package_database.remove(identity) 
                 else :
                     os.system('clear')
 
             elif action2 == "sta" :
-                identity = int(input("package id : ")) # idem si aucun id
-                newstatus = input("Which status do you want to apply ? ")
-                print(f"\n You want to change the status of {identity} : {newstatus}")
-                answer = input("Do you want to change the status of the package ? [y/n] ")
-                if answer == "y" :
-                    package = package_database[identity]
-                    package.status = newstatus
+                identity = package_id_prompt()
+                newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses)
+                answer = click.confirm(f"You want to change the status of package {identity} to {newstatus}")
+                if answer:
+                    package_database[identity].status = newstatus
                 else :
                     os.system('clear')
         
