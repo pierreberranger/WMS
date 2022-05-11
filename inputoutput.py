@@ -20,13 +20,23 @@ def txt_to_set_of_packages(file="DATA_BASE.csv") -> SetOfPackages :
             width = float(package_reader[1])
             length = float(package_reader[2])
             height = float(package_reader[3])
-            status = package_reader[4]
-            package_type = package_reader[5]
+            status = package_reader[4].strip()
+            package_type = package_reader[5].strip()
             dimensions = Dimensions(width, length, height)
             new_package = Package(dimensions, status, package_type, id=id)
             new_package.id = id
             package_database.add(new_package)
     return package_database
+
+def display_packages(packages: SetOfPackages):
+    base = "{:<10}|{:<25}|{:<10}"
+    header = base.format('id','description','status')
+    print(header)
+    print ('='*len(header))
+    for package in packages:
+        print(base.format(package.id, package.description, package.status))
+
+
 
 """ PACKAGE_DATABASE = Shipment() # À stocker dans un fichier externe
 
