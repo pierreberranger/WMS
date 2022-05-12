@@ -1,5 +1,7 @@
 #
 wms/
+DATA_BASE.csv
+MAX_ID*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
