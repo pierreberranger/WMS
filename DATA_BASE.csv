@@ -1,3 +1,5 @@
 id, width, length, height, status, package_type 
-308, 1.0, 1.0, 1.0,  1,  1  
-309, 2.0, 2.0, 2.0, 2, 2 
+257, 2.0, 3.0, 3.0, stored, EPAL 
+308, 1.0, 1.0, 1.0, 1, 1 
+262, 12.0, 13.0, 32.0, inbound, EPAL 
+263, 22.0, 32.0, 13.0, inbound, EPAL 

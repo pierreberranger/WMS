@@ -108,6 +108,7 @@ class SetOfShipments(set):
 
 
 class OutBoundShipment(Shipment):
+    statuses = ('inbound','stocked')
 
     def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str=""):
         self.departure_date: datetime = departure_date
@@ -115,6 +116,7 @@ class OutBoundShipment(Shipment):
         super().__init__(status, id, set_of_packages, adressee, sender)
 
 class InBoundShipment(Shipment):
+    statuses = ('stocked', 'outbound')
 
     def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str=""):
         self.arrival_date: datetime = arrival_date

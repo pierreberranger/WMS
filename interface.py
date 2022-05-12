@@ -1,3 +1,4 @@
+from dateutil import parser
 from datetime import datetime
 import os
 
@@ -11,38 +12,118 @@ import click
 """ Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
 
 # créer la variable globale
-package_database = txt_to_set_of_packages() # attention : préciser le fichier dans lequel la datebase est gardée en memoire
-# shipment_database = txt_to_set_of_shipments()
-# set_of_shipments = set() , a suppirmer car du coup on ne peut pas récupérer les shipment par les id ?
+package_database = txt_to_set_of_packages()
+# attention : préciser le fichier dans lequel la datebase est gardée en memoire
+shipment_database = ...
 
-statuses = click.Choice(Package.statuses, case_sensitive=False)
+statuses_package = click.Choice(Package.statuses, case_sensitive=False)
+statuses_inshipment = click.Choice(InBoundShipment.statuses, case_sensitive=False)
+statuses_outshipment = click.Choice(OutBoundShipment.statuses, case_sensitive=False)
 types = click.Choice(Package.types, case_sensitive=False)
 
 def package_id_prompt():
     return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in package_database))), show_choices=False))
 
+def shipment_id_prompt():
+    return int(click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in shipment_database))), show_choices=False))
+
+def default_date() :
+    today_date = datetime.now()
+    year = str(today_date.year)
+    month = str(today_date.month)
+    day = str(today_date.day)
+    hour = str(today_date.hour)
+    minute = str(today_date.minute)
+    if 0<=today_date.month<=9 :
+        month = "0" + month
+    if 0<=today_date.day<=9 :
+        year = "0"+year
+    if 0<=today_date.hour<=9 :
+        hour = "0" + hour
+    if 0<=today_date.minute<=9 :
+        minute = "0"+minute
+    return year+'-'+month+'-'+day+' '+hour+":"+minute
+
+def parse(value: str) :
+    try:
+        date = parser.parse(value)
+    except:
+        raise click.BadParameter("Couldn't understand date.", param=value)
+    return value
+
+def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages(), type_of_shipment: str) :
+    if type_of_shipment == "inshipment" :
+        default_package_status = Package.statuses[1]
+    if type_of_shipment == "outshipment" :
+        default_package_status = Package.statuses[2]
+    if one_by_one : 
+        number_of_packages = click.prompt(f"Number of packages ", type=int)
+        for j in range(number_of_packages) :
+            # Features
+            name = click.prompt("Description of the package")
+            length = click.prompt("Length",type=float)
+            width = click.prompt("Width",type=float)
+            height = click.prompt("Height",type=float)
+            dimensions = Dimensions(length, width, height)
+            status = default_package_status
+            package_type = click.prompt("Package Type", default=Package.types[0], type=types)
+            
+            click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
+            sure = click.confirm("Do you want to add the package ?",default=True)
+            if sure:
+                new_package = Package(dimensions, status, package_type, name) 
+                shipment_packages.add(new_package)
+                package_database.add(new_package)
+                click.echo(f'You added your package with the id : {new_package.id}')
+            print("\n")
+    else :
+        number_of_references = click.prompt(f"How much references do you have ?", type=int)
+        for i in range(number_of_references) :
+            number_of_packages = click.prompt(f"How much packages do you have for the {i+1}ème reference ?", type=int)
+            packages_id_per_reference = []
+            # Packages form in the reference number i
+            name = click.prompt("Description of the package (reference)")
+            length = click.prompt("Length",type=float)
+            width = click.prompt("Width",type=float)
+            height = click.prompt("Height",type=float)
+            dimensions = Dimensions(length, width, height)
+            status = default_package_status
+            package_type = click.prompt("Package Type", default=Package.types[0], type=types)
+            
+            click.echo(f"You entered for this reference the package form : {name}, {length}, {width}, {height}, {status}, {package_type}")
+            sure = click.confirm(f"Do you want to add these packages in number of {number_of_packages} ?",default=True)
+            if sure :
+                for j in range(number_of_packages) :
+                    new_package = Package(dimensions, status, package_type, name) 
+                    shipment_packages.add(new_package)
+                    package_database.add(new_package)
+                    packages_id_per_reference.append(new_package.id)
+            click.echo(f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
+        print("\n")
+
 def interactive():
     in_out = True
     print("Welcome ! \n")
     print("This plateform allows you to manage your packages within many actions")
-    print("If you want to quit, input -quit- \n")
+    print("If you want to quit, input [quit] \n")
 
 
     while (in_out) :
-        print("\n Actions : quit / package / inBoundShipment / outBoundShipment / view")
-        # add_package / delete_package / changestatus_package 
-        action = input("On what element do you want to focus on ? ")
+            
+        element = click.Choice(("package", "inBoundshipment", "outBoundShipment", "view", "quit"), case_sensitive=False)
+        action = click.prompt("Element you want to focus on", type=element)
 
-        if action ==  "package":
-            action2 = click.prompt("More precisely : add package, delete package, or change package status", default='add', type=click.Choice(("add","del","sta")))
+        if action ==  "package" :
+            action2 = click.prompt("Action you want to do : (add,del,status)", default='add', type=click.Choice(("add","del","status", "quit")), show_choices=False)
+            
             if action2 == "add" :
-                # Feature
+                # Features
                 name = click.prompt("Description of the package")
                 length = click.prompt("Length",type=float)
                 width = click.prompt("Width",type=float)
                 height = click.prompt("Height",type=float)
                 dimensions = Dimensions(length, width, height)
-                status = click.prompt("status", default=Package.statuses[0], type=statuses)
+                status = click.prompt("status", default=Package.statuses[0], type=statuses_package)
                 package_type = click.prompt("Package Type", default=Package.types[0], type=types)
                 
                 click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
@@ -51,8 +132,13 @@ def interactive():
                 if sure:
                     new_package = Package(dimensions, status, package_type) 
                     package_database.add(new_package)
-                else :
-                    os.system('clear')
+                    click.echo(f'You added your package with the id : {new_package.id}')
+                print("\n")
+
+            elif action2 == "quit" :
+                #save the data in a text file
+                set_of_packages_to_txt(package_database)
+                in_out = False
                 
 
             elif action2 == "del" :
@@ -60,73 +146,59 @@ def interactive():
                 answer = click.confirm("Are you sure to delete the data ?", default=False)
                 if answer:
                     package_database.remove(identity) 
-                else :
-                    os.system('clear')
+                print("\n")
 
             elif action2 == "sta" :
                 identity = package_id_prompt()
-                newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses)
+                newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses_package)
                 answer = click.confirm(f"You want to change the status of package {identity} to {newstatus}")
                 if answer:
                     package_database[identity].status = newstatus
-                else :
-                    os.system('clear')
+                print("\n")
         
         elif action == "view" :
             display_packages(package_database)
+            print("\n")
 
-        elif action == "inBoundShipment" :
-            print("Do you to declare a new inshipment (answer : d) or do you want to update an inshipment (answer : u) ?")
-            answer = input()
-            if answer == "d" :
-                arrival_date = datetime.fromisoformat(input("Arrival date (YYYY-MM-DD HH:MM)") + ":00")
-                status = "on hold"
+        elif action == "inBoundshipment" :
+            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
+            answer = click.prompt("Actions ", default="declare", type=declare_update)
+            
+            if answer == "declare" :
+                arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                status =Package.statuses[1]
                 inshipment_packages = SetOfPackages()
-                sender = input("Who is the sender of the shipment ? ")
-                adressee = input("Who is the adressee of the shipment ? ")
+                sender = click.prompt("Sender ", type=str) 
+                #On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
+                adressee = click.prompt("Adressee ", type=str)
 
-                print("Write the packages below")
-                print("If you have a set of the same packages, please declare")
-                products_number = input("How many products do you want to declare in the shipment ?")
-                for i in range(products_number) :
-                    quantity = input("The number")
-                    for j in range(quantity) :
-                        # Features
-                        name = input("Description of the package : ")
-                        length = float(input("length : "))
-                        width = float(input("width : "))
-                        height = float(input("height : "))
-                        dimensions = Dimensions(length, width, height)
-                        status = "in transit"
-                        package_type = input("package_type : ")
-                        print(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}, {id_inshipment}, {id_outshipment}")
-                        sure = input("Do you want to add the package ? [y/n] ")
-                        if sure == "y" :
-                            new_package = Package(name, dimensions, status, package_type) # np.nan, np.nan
-                            package_database.add(new_package)
-                            inshipment_packages.add(new_package)
-                        else :
-                            os.system('clear') # what does it do ?
-                new_inshipment = InBoundShipment(arrival_date, status, id, set_of_packages, sender, adressee)
+                one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
+                register_many_packages(one_by_one, inshipment_packages, "inshipment")
+
+                new_inshipment = InBoundShipment(arrival_date, status, inshipment_packages, sender, adressee)
                 #shipment_database.add(new_inshipment)
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
                 id_shipment = new_inshipment.id 
                 for package in inshipment_packages:
                     package.shipment_id = id_shipment
+                
+                click.echo(f'Your Inshipment id is {id_shipment}')
 
-                if answer == "u" :
-                    print("Your inshipment is arrived.")
-                    id_inshipment = input("What inshipment do you want to look ?")
-                    #inshipment = set_of_shipments[id_inshipment] # à créer !
-                    arrival_date = datetime.fromisoformat(input("Arrival date (YYYY-MM-DD HH:MM)") + ":00")
-                    inshipment.status = "warehouse" 
-                    inshipment.arrival_date = arrival_date 
-                    for package in inshipment.set_of_packages : 
-                       package.status = "warehouse"
+            if answer == "update" :
+                print("Your inshipment is arrived.")
+                id_inshipment = shipment_id_prompt()
+                inshipment = shipment_database[id_inshipment]
+                arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                inshipment.status = InBoundShipment.statuses[1]
+                inshipment.arrival_date = arrival_date 
+                for package in inshipment.set_of_packages : 
+                    package.status = Package.statuses[0]
 
-                else :
-                    print("This option is not known...")
-                    os.system('clear') # not sure
+            if answer == "del" :
+                id_inshipment = shipment_id_prompt()
+                shipment_database.remove(id_inshipment)
+
+            print("\n")
         
         elif action == "outBoundShipment" :
             print("Do you to declare a new outshipment (answer : d) or do you want to update an outshipment (answer : u) ?")
@@ -159,7 +231,7 @@ def interactive():
                 #shipment_database.add(new_outshipment)
                 id_shipment = new_outshipment.id 
                 for package in outshipment_packages :
-                   package.shipment_id = id_shipment
+                    package.shipment_id = id_shipment
 
                 if answer == "u" :
                     answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
@@ -171,7 +243,7 @@ def interactive():
                         outshipment.status = "sent" 
                         outshipment.departure_date = departure_date 
                         for package in outshipment.set_of_packages:
-                           package.status = "sent"
+                            package.status = "sent"
 
                     elif answer2 =="a":
                         print("Your outshipment is arrived to the receiver.")
@@ -181,7 +253,7 @@ def interactive():
                         outshipment.status = "delivered"
                         outshipment.expected_arrival_date = arrival_date
                         for package in outshipment.set_of_packages :
-                           package.status = "delivered"
+                            package.status = "delivered"
 
                 else :
                     print("This option is not known...")
@@ -195,17 +267,6 @@ def interactive():
         
         else :
             print("The action doesn't exit yet")
-
-    """ elif action == "trip" :
-            id_trip = int(input("Which trip do you want to look ? "))
-            #add a method to see the packages of the trip
-            print("trip")
-        
-        elif action == "status" :
-            #view of the packages with the status given
-            # we have to define the status we can give to a package
-            print("status") 
-    """
 
 if __name__ == "__main__":
     interactive()
