@@ -134,6 +134,13 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages, t
                     packages_id_per_reference.append(new_package.id)
             click.echo(f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
         print("\n")
+    
+def pick_many_packages_from_warehouse(shipment_packages: SetOfPackages):
+    number_of_packages = click.prompt(f"Number of packages to pick from the warehouse", type=int)
+    for j in range(number_of_packages):
+        identity =  package_id_prompt()
+        answer = click.confirm(f"Are you sure to pick the package with id :{identity} ?", default=False)
+        shipment_packages.add(database[identity])
 
 def interactive():
     in_out = True
@@ -195,9 +202,11 @@ def interactive():
                 new_inshipment = InBoundShipment(arrival_date, status, inshipment_packages, sender, adressee)
                 database.set_of_shipments.add(new_inshipment)
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-                id_shipment = new_inshipment.id 
+                id_shipment = new_inshipment.id
                 for package in inshipment_packages:
                     package.shipment_id = id_shipment ### non implémenté
+                    # ce serait plutot :
+                    # package.shipment_id.append(id_shipment)
                 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
@@ -229,16 +238,17 @@ def interactive():
                 sender = click.prompt("Sender ", type=str) 
                 adressee = click.prompt("Adressee ", type=str)
 
-                one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
-                register_many_packages(one_by_one, outshipment_packages, "outshipment")
+                pick_many_packages_from_warehouse(outshipment_packages, "outshipment")
                 
-                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, database.set_of_packages, adressee, sender)
+                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, outshipment_packages, adressee, sender)
                 #new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
                 database.set_of_shipments.add(new_outshipment)
                 id_shipment = new_outshipment.id 
                 for package in outshipment_packages :
-                    package.shipment_id = id_shipment
+                    package.shipment_id = id_shipment ### non implémenté
+                    # ce serait plutot :
+                    # package.shipment_id.append(id_shipment)
 
             if answer == "update" :
                 #answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
