@@ -53,6 +53,8 @@ class Package():
     # Pour modifier un package dans un Shipment à partir de l'id : 
     # shipment[id].status = status
 
+SetOfPackages = set
+
 class Shipment():
 
     def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str="", id: int=None):
@@ -127,7 +129,7 @@ class PickleRepository:
             self.set_of_shipments.add(object)
         
         with open(self.filepath, "wb") as file:
-            dump(file, object)
+            dump(object, file)
         
 
     def remove(self, object : Union[Package, Shipment, str]):
@@ -138,7 +140,7 @@ class PickleRepository:
         else:
             raise TypeError("the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
         with open(self.filepath, "wb") as file:
-            dump(file, object)
+            dump(object, file)
         
     def __getitem__(self, id : str):
         if not(isinstance(id, str)):

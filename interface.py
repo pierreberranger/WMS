@@ -1,55 +1,23 @@
-<<<<<<< HEAD
-import imp
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, Shipment, OutBoundShipment, PickleRepository
-""" import numpy as np """
-import os
-from datetime import datetime
-from pickle import load, dump
-=======
 from dateutil import parser
 from datetime import datetime
 import os
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, Shipment, OutBoundShipment
-from inputoutput import set_of_packages_to_txt, txt_to_set_of_packages, display_packages
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
+from inputoutput import display_packages
+from pickle import load, dump
 
 import click
 
 """ import numpy as np """
->>>>>>> bc099ffb78cda9b7986f59f466efbcf9f0eb2d96
 
 """ Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
 
 # créer la variable globale
-<<<<<<< HEAD
 filename = "database.txt"
-database : PickleRepository = load(filename) # attention : préciser le fichier dans lequel la datebase est gardée en memoire
-# shipment_database = txt_to_set_of_shipments()
-# set_of_shipments = set() , a suppirmer car du coup on ne peut pas récupérer les shipment par les id ?
-
-in_out = True
-print("Welcome ! \n")
-print("This plateform allows you to manage your packages within many actions")
-print("If you want to quit, input -quit- \n")
+with open(filename, "rb") as file :
+    database: PickleRepository = load(file)
 
 
-while (in_out) :
-    print("\n Actions : quit / package / inBoundShipment / outBoundShipment / view")
-    # add_package / delete_package / changestatus_package 
-    action = input("On what element do you want to focus on ? ")
-
-    if action ==  "package":
-        action2 = input("More precisely : add package [add], delete package [del], or change package status [sta] ")
-        if action2 == "add" :
-            # Feature
-            name = input("Description of the package : ")
-            length = float(input("length : "))
-            width = float(input("width : "))
-            height = float(input("height : "))
-=======
-package_database = txt_to_set_of_packages()
-# attention : préciser le fichier dans lequel la datebase est gardée en memoire
-shipment_database = ...
 
 statuses_package = click.Choice(Package.statuses, case_sensitive=False)
 statuses_inshipment = click.Choice(InBoundShipment.statuses, case_sensitive=False)
@@ -57,10 +25,10 @@ statuses_outshipment = click.Choice(OutBoundShipment.statuses, case_sensitive=Fa
 types = click.Choice(Package.types, case_sensitive=False)
 
 def package_id_prompt():
-    return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in package_database))), show_choices=False))
+    return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in database))), show_choices=False))
 
 def shipment_id_prompt():
-    return int(click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in shipment_database))), show_choices=False))
+    return int(click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False))
 
 def default_date() :
     today_date = datetime.now()
@@ -103,7 +71,7 @@ def add_many_packages() :
         
         if sure:
             new_package = Package(dimensions, status, package_type, name) 
-            package_database.add(new_package)
+            database.add(new_package)
             click.echo(f'You added your package with the id : {new_package.id}')
         
         print("\n")
@@ -114,10 +82,10 @@ def del_many_packages() :
         identity =  package_id_prompt()
         answer = click.confirm("Are you sure to delete the data ?", default=False)
         if answer:
-            package_database.remove(identity)
+            database.remove(identity)
 
 
-def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages(), type_of_shipment: str) :
+def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages, type_of_shipment: str) :
     if type_of_shipment == "inshipment" :
         default_package_status = Package.statuses[1]
     if type_of_shipment == "outshipment" :
@@ -130,24 +98,16 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages(),
             length = click.prompt("Length",type=float)
             width = click.prompt("Width",type=float)
             height = click.prompt("Height",type=float)
->>>>>>> bc099ffb78cda9b7986f59f466efbcf9f0eb2d96
             dimensions = Dimensions(length, width, height)
             status = default_package_status
             package_type = click.prompt("Package Type", default=Package.types[0], type=types)
             
-<<<<<<< HEAD
-            if sure == "y" :
-                new_package = Package(dimensions, status, package_type) 
-                database.add(new_package)
-            else :
-                os.system('clear')
-=======
             click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
             sure = click.confirm("Do you want to add the package ?",default=True)
             if sure:
                 new_package = Package(dimensions, status, package_type, name) 
-                shipment_packages.add(new_package)
-                package_database.add(new_package)
+                shipment_packages.add(new_package) ###?
+                database.add(new_package)
                 click.echo(f'You added your package with the id : {new_package.id}')
             print("\n")
     else :
@@ -163,164 +123,18 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages(),
             dimensions = Dimensions(length, width, height)
             status = default_package_status
             package_type = click.prompt("Package Type", default=Package.types[0], type=types)
->>>>>>> bc099ffb78cda9b7986f59f466efbcf9f0eb2d96
             
             click.echo(f"You entered for this reference the package form : {name}, {length}, {width}, {height}, {status}, {package_type}")
             sure = click.confirm(f"Do you want to add these packages in number of {number_of_packages} ?",default=True)
             if sure :
                 for j in range(number_of_packages) :
                     new_package = Package(dimensions, status, package_type, name) 
-                    shipment_packages.add(new_package)
-                    package_database.add(new_package)
+                    shipment_packages.add(new_package) ###?
+                    database.add(new_package)
                     packages_id_per_reference.append(new_package.id)
             click.echo(f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
         print("\n")
 
-<<<<<<< HEAD
-        elif action2 == "del" :
-            identity = int(input("package id : ")) # attention au cas où aucun id n'est donné : catch error
-            answer = input("Are you sure to delete the data ? [y/n]")
-            if answer == "y" :
-                database.remove(identity) 
-            else :
-                os.system('clear')
-
-        elif action2 == "sta" :
-            identity = int(input("package id : ")) # idem si aucun id
-            newstatus = input("Which status do you want to apply ? ")
-            print(f"\n You want to change the status of {identity} : {newstatus}")
-            answer = input("Do you want to change the status of the package ? [y/n] ")
-            if answer == "y" :
-                package = database[identity]
-                package.status = newstatus
-            else :
-                os.system('clear')
-    
-    elif action == "view" :
-        print("view of the data base")
-    
-    elif action == "inBoundShipment" :
-        print("Do you to declare a new inshipment (answer : d) or do you want to update an inshipment (answer : u) ?")
-        answer = input()
-        if answer == "d" :
-            arrival_date = datetime.fromisoformat(input("Arrival date (YYYY-MM-DD HH:MM)") + ":00")
-            status = "on hold"
-            inshipment_packages = SetOfPackages()
-            sender = input("Who is the sender of the shipment ? ")
-            adressee = input("Who is the adressee of the shipment ? ")
-
-            print("Write the packages below")
-            print("If you have a set of the same packages, please declare")
-            products_number = input("How many products do you want to declare in the shipment ?")
-            for i in range(products_number) :
-                quantity = input("The number")
-                for j in range(quantity) :
-                    # Features
-                    name = input("Description of the package : ")
-                    length = float(input("length : "))
-                    width = float(input("width : "))
-                    height = float(input("height : "))
-                    dimensions = Dimensions(length, width, height)
-                    status = "in transit"
-                    package_type = input("package_type : ")
-                    print(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}, {id_inshipment}, {id_outshipment}")
-                    sure = input("Do you want to add the package ? [y/n] ")
-                    if sure == "y" :
-                        new_package = Package(name, dimensions, status, package_type) # np.nan, np.nan
-                        database.add(new_package)
-                        inshipment_packages.add(new_package)
-                    else :
-                        os.system('clear') # what does it do ?
-            new_inshipment = InBoundShipment(arrival_date, status, id, inshipment_packages, sender, adressee)
-            database.add(new_inshipment) #
-            #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-            id_shipment = new_inshipment.id 
-            for package in inshipment_packages:
-                package.shipment_id = id_shipment
-
-            if answer == "u" :
-                print("Your inshipment is arrived.")
-                id_inshipment = input("What inshipment do you want to look ?")
-                inshipment = database[id_inshipment] # à créer !
-                arrival_date = datetime.fromisoformat(input("Arrival date (YYYY-MM-DD HH:MM)") + ":00")
-                inshipment.status = "warehouse" 
-                inshipment.arrival_date = arrival_date 
-                for package in inshipment.set_of_packages : 
-                   package.status = "warehouse"
-
-            else :
-                print("This option is not known...")
-                os.system('clear') # not sure
-    
-    elif action == "outBoundShipment" :
-        print("Do you to declare a new outshipment (answer : d) or do you want to update an outshipment (answer : u) ?")
-        answer = input()
-        if answer == "d" :
-            departure_date = datetime.fromisoformat(input("Departure date (YYYY-MM-DD HH:MM)") + ":00")
-            expected_arrival_date = datetime.fromisoformat(input("Expected arrival date (YYYY-MM-DD HH:MM)") + ":00")
-            status = "on hold"
-            outshipment_packages = SetOfPackages()
-            sender = input("Who is the sender of the shipment ? ")
-            adressee = input("Who is the adressee of the shipment ? ")
-            print("Write the packages below")
-            print("If you have a set of the same packages, please declare")
-            products_number = input("How many products do you want to declare in the shipment ?")
-            for i in range(products_number) :
-                quantity = input("The number")
-                for j in range(quantity) :
-                    # Features
-                    id_package = input("What is the id of the package ?")
-                    print(f"You entered the package : {id_package}")
-                    sure = input("Do you want to add the package to the outshipment ? [y/n] ")
-                    if sure == "y" :
-                        new_package = database[id_package]
-                        new_package.status = "exit"
-                        outshipment_packages.add(new_package) 
-                    else :
-                        os.system('clear') # what does it do ?
-            new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
-            #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-            database.add(new_outshipment)
-            id_shipment = new_outshipment.id 
-            for package in outshipment_packages :
-               package.shipment_id = id_shipment
-
-            if answer == "u" :
-                answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
-                if answer2 =="e":
-                    print("Your outshipment is on its way.")
-                    id_outshipment = input("What outshipment do you want to look ?")
-                    #outshipment = set_of_shipments[id_outshipment] 
-                    departure_date = date.fromisoformat(input("What is the departure date ? (YYYY-MM-DD HH:MM)") + ":00")
-                    outshipment.status = "sent" 
-                    outshipment.departure_date = departure_date 
-                    for package in outshipment.set_of_packages:
-                       package.status = "sent"
-
-                elif answer2 =="a":
-                    print("Your outshipment is arrived to the receiver.")
-                    id_outshipment = input("What outshipment do you want to look ?")
-                    outshipment = database[id_outshipment]
-                    arrival_date = date.fromisoformat(input("What is the arrival date ? (YYYY-MM-DD HH:MM)") + ":00") 
-                    outshipment.status = "delivered"
-                    outshipment.expected_arrival_date = arrival_date
-                    for package in outshipment.set_of_packages :
-                       package.status = "delivered"
-
-            else :
-                print("This option is not known...")
-                os.system('clear') # not sure
-    
-
-    elif action == "quit" :
-        #save the data in a text file
-        with open(filename, "wb") as file :
-            dump(file, database)
-        in_out = False
-    
-    else :
-        print("The action doesn't exit yet")
-=======
 def interactive():
     in_out = True
     print("Welcome ! \n")
@@ -342,7 +156,8 @@ def interactive():
 
             elif action2 == "quit" :
                 #save the data in a text file
-                set_of_packages_to_txt(package_database)
+                with open(filename, "wb") as file :
+                    dump(database, file)
                 in_out = False
                 
 
@@ -355,11 +170,11 @@ def interactive():
                 newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses_package)
                 answer = click.confirm(f"You want to change the status of package {identity} to {newstatus}")
                 if answer:
-                    package_database[identity].status = newstatus
+                    database[identity].status = newstatus
                 print("\n")
         
         elif action == "view" :
-            display_packages(package_database)
+            display_packages(database)
             print("\n")
 
         elif action == "inBoundshipment" :
@@ -378,18 +193,18 @@ def interactive():
                 register_many_packages(one_by_one, inshipment_packages, "inshipment")
 
                 new_inshipment = InBoundShipment(arrival_date, status, inshipment_packages, sender, adressee)
-                #shipment_database.add(new_inshipment)
+                database.set_of_shipments.add(new_inshipment)
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
                 id_shipment = new_inshipment.id 
                 for package in inshipment_packages:
-                    package.shipment_id = id_shipment
+                    package.shipment_id = id_shipment ### non implémenté
                 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
             if answer == "update" :
                 print("Your inshipment is arrived.")
                 id_inshipment = shipment_id_prompt()
-                inshipment = shipment_database[id_inshipment]
+                inshipment = database[id_inshipment]
                 arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
                 inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
                 inshipment.arrival_date = arrival_date 
@@ -398,7 +213,7 @@ def interactive():
 
             if answer == "del" :
                 id_inshipment = shipment_id_prompt()
-                shipment_database.remove(id_inshipment)
+                database.remove(id_inshipment)
 
             print("\n")
         
@@ -417,21 +232,20 @@ def interactive():
                 one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
                 register_many_packages(one_by_one, outshipment_packages, "outshipment")
                 
-                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, set_of_packages, adressee, sender)
+                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, database.set_of_packages, adressee, sender)
                 #new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-                #shipment_database.add(new_outshipment)
+                database.set_of_shipments.add(new_outshipment)
                 id_shipment = new_outshipment.id 
                 for package in outshipment_packages :
                     package.shipment_id = id_shipment
->>>>>>> bc099ffb78cda9b7986f59f466efbcf9f0eb2d96
 
             if answer == "update" :
                 #answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
                 # cas retiré du cas d'usage
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
-                outshipment = shipment_database[id_outshipment]
+                outshipment = database[id_outshipment]
                 arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
                 outshipment.expected_arrival_date = arrival_date
                 outshipment.status = OutBoundShipment.statuses[1]
@@ -440,14 +254,15 @@ def interactive():
                 
             if answer == "del" :
                 id_inshipment = shipment_id_prompt()
-                shipment_database.remove(id_inshipment)
+                database.remove(id_inshipment)
             print("\n")
 
         
 
         elif action == "quit" :
             #save the data in a text file
-            set_of_packages_to_txt(package_database)
+            with open(filename, "wb") as file :
+                dump(database, file)
             in_out = False
         
         else :
