@@ -1,6 +1,7 @@
 from collections import namedtuple
 from typing import Union
-import datetime
+from datetime import datetime
+from pickle import load, dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
 
@@ -20,6 +21,8 @@ shipments_ids = FileIDGenerator("MAX_ID_Shipments.txt")
 packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 
 class Package():
+    statuses = ('stored','inbound','outbound','delivered')
+    types = ('EPAL','20ISO','OOG')
 
     def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str="", shipment_id=None, id=None) -> None:
         self.status = status
@@ -28,7 +31,7 @@ class Package():
         self.shipment_id = shipment_id
         self.description = description
         if id == None:
-            self.id = next(packages_ids)
+            self.id = f"P{next(packages_ids)}"
         else:
             self.id = id
 
@@ -50,27 +53,6 @@ class Package():
     # Pour modifier un package dans un Shipment à partir de l'id : 
     # shipment[id].status = status
 
-class SetOfPackages(set):
-
-    def __getitem__(self, id: int) -> Package:
-        for package in self:
-            if package.id == id:
-                return package
-        raise KeyError("This id does not exist")
-
-    def remove(self, other: Union[int, Package]) -> None:
-        if isinstance(other, Package):
-            super().remove(other)
-        elif isinstance(other, int):
-            for package in self.copy():
-                if package.id == other:
-                    super().remove(package)
-                    return None
-            raise KeyError("This id does not exist")
-        else:
-            
-            raise ValueError("The argument must be an int or a Package")
-
 class Shipment():
 
     def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str="", id: int=None):
@@ -79,33 +61,43 @@ class Shipment():
         self.adressee: str = adressee
         self.sender: str = sender
         if id == None:
-            self.id = next(shipments_ids)
+            self.id = f"S{next(shipments_ids)}"
         else:
             self.id = id
 
-class SetOfShipments(set):
+class SetOfSomething(set):
 
-    def __getitem__(self, id: int) -> Shipment:
-        for shipment in self:
-            if shipment.id == id:
-                return shipment
+    def __getitem__(self, id: str) -> Union[Package, Shipment]:
+        for object in self:
+            if object.id == id:
+                return object
         raise KeyError("This id does not exist")
 
-    def remove(self, other: Union[int, Shipment]) -> None:
-        if isinstance(other, Shipment):
+    def remove(self, other: Union[str, Union[Package, Shipment]]) -> None:
+        if isinstance(other, Shipment) or isinstance(other, Package):
             super().remove(other)
-        elif isinstance(other, int):
-            for shipment in self.copy():
-                if shipment.id == other:
-                    super().remove(shipment)
+        elif isinstance(other, str):
+            for object in self.copy():
+                if object.id == other:
+                    super().remove(object)
                     return None
             raise KeyError("This id does not exist")
         else:
             
-            raise ValueError("The argument must be an int or a Shipment")
+            raise ValueError(f"The argument must be a string or a Package/Shipment ")
+
+class SetOfPackages(SetOfSomething):
+
+    pass
+
+class SetOfShipments(SetOfSomething):
+
+    pass
+
 
 
 class OutBoundShipment(Shipment):
+    statuses = ('inbound','stocked')
 
     def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str=""):
         self.departure_date: datetime = departure_date
@@ -113,7 +105,46 @@ class OutBoundShipment(Shipment):
         super().__init__(status, id, set_of_packages, adressee, sender)
 
 class InBoundShipment(Shipment):
+    statuses = ('stocked', 'outbound')
 
     def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str=""):
         self.arrival_date: datetime = arrival_date
         super().__init__(status, id, set_of_packages, adressee, sender)
+
+
+class PickleRepository:
+
+    def __init__(self, filepath, set_of_packages, set_of_shipments):
+        self.filepath = filepath
+        self.set_of_packages = set_of_packages
+        self.set_of_shipments = set_of_shipments
+    
+    def add(self, object : Union[Package, Shipment]):
+        if isinstance(object, Package):
+            self.set_of_packages.add(object)
+        elif isinstance(object, Shipment):
+            self.set_of_shipments.add(object)
+        
+        with open(self.filepath, "wb") as file:
+            dump(file, object)
+        
+
+    def remove(self, object : Union[Package, Shipment, str]):
+        if isinstance(object, Package) or object[0]=="P":
+            self.set_of_packages.remove(object)
+        elif isinstance(object, Shipment) or object[0]=="S":
+            self.set_of_shipments.remove(object)
+        else:
+            raise TypeError("the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
+        with open(self.filepath, "wb") as file:
+            dump(file, object)
+        
+    def __getitem__(self, id : str):
+        if not(isinstance(id, str)):
+            raise TypeError("the given object has to be a str Shipment id) or Package id")
+        elif id[0]=="P":
+            self.set_of_packages[id]
+        elif id[0]=="S":
+            self.set_of_shipments[id]
+        else:
+            raise TypeError("the given id has to be a  Shipment id) or Package id")
