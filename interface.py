@@ -51,6 +51,37 @@ def parse(value: str) :
         raise click.BadParameter("Couldn't understand date.", param=value)
     return value
 
+def add_many_packages() :
+    number_of_packages = click.prompt(f"Number of packages ", type=int)
+    for j in range(number_of_packages) :
+        # Features
+        name = click.prompt("Description of the package")
+        length = click.prompt("Length",type=float)
+        width = click.prompt("Width",type=float)
+        height = click.prompt("Height",type=float)
+        dimensions = Dimensions(length, width, height)
+        status = click.prompt("status", default=Package.statuses[0], type=statuses_package)
+        package_type = click.prompt("Package Type", default=Package.types[0], type=types)
+        
+        click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
+        sure = click.confirm("Do you want to add the package ?",default=True)
+        
+        if sure:
+            new_package = Package(dimensions, status, package_type, name) 
+            package_database.add(new_package)
+            click.echo(f'You added your package with the id : {new_package.id}')
+        
+        print("\n")
+
+def del_many_packages() :
+    number_of_packages = click.prompt(f"Number of packages ", type=int)
+    for j in range(number_of_packages) :
+        identity =  package_id_prompt()
+        answer = click.confirm("Are you sure to delete the data ?", default=False)
+        if answer:
+            package_database.remove(identity)
+
+
 def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages(), type_of_shipment: str) :
     if type_of_shipment == "inshipment" :
         default_package_status = Package.statuses[1]
@@ -118,22 +149,7 @@ def interactive():
             
             if action2 == "add" :
                 # Features
-                name = click.prompt("Description of the package")
-                length = click.prompt("Length",type=float)
-                width = click.prompt("Width",type=float)
-                height = click.prompt("Height",type=float)
-                dimensions = Dimensions(length, width, height)
-                status = click.prompt("status", default=Package.statuses[0], type=statuses_package)
-                package_type = click.prompt("Package Type", default=Package.types[0], type=types)
-                
-                click.echo(f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
-                sure = click.confirm("Do you want to add the package ?",default=True)
-                
-                if sure:
-                    new_package = Package(dimensions, status, package_type) 
-                    package_database.add(new_package)
-                    click.echo(f'You added your package with the id : {new_package.id}')
-                print("\n")
+                add_many_packages()
 
             elif action2 == "quit" :
                 #save the data in a text file
@@ -142,10 +158,7 @@ def interactive():
                 
 
             elif action2 == "del" :
-                identity =  package_id_prompt()
-                answer = click.confirm("Are you sure to delete the data ?", default=False)
-                if answer:
-                    package_database.remove(identity) 
+                del_many_packages()
                 print("\n")
 
             elif action2 == "sta" :
@@ -232,7 +245,7 @@ def interactive():
                 arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
                 outshipment.expected_arrival_date = arrival_date
                 outshipment.status = OutBoundShipment.statuses[1]
-                for package in shoutipment.set_of_packages : 
+                for package in outshipment.set_of_packages : 
                     package.status = Package.statuses[3]
                 
             if answer == "del" :
