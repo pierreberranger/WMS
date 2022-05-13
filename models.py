@@ -64,6 +64,7 @@ class Shipment():
             self.id = f"S{next(shipments_ids)}"
         else:
             self.id = id
+            
 
 class SetOfSomething(set):
 
