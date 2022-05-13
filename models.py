@@ -1,7 +1,12 @@
 from collections import namedtuple
 from typing import Union
+<<<<<<< Updated upstream
 from datetime import datetime
 from pickle import load, dump
+=======
+import datetime
+from pickle import dump, load 
+>>>>>>> Stashed changes
 
 Dimensions = namedtuple("Dimensions", "width length height")
 
@@ -53,6 +58,48 @@ class Package():
     # Pour modifier un package dans un Shipment à partir de l'id : 
     # shipment[id].status = status
 
+<<<<<<< Updated upstream
+=======
+class SetOfSomething(set):
+
+    def __getitem__(self, id: int) -> Package:
+        for package in self:
+            if package.id == id:
+                return package
+        raise KeyError("This id does not exist")
+
+    def remove(self, other: Union[int, Package]) -> None:
+        if isinstance(other, Package):
+            super().remove(other)
+        elif isinstance(other, int):
+            for package in self.copy():
+                if package.id == other:
+                    super().remove(package)
+                    return None
+            raise KeyError("This id does not exist")
+        else:
+            
+            raise ValueError("The argument must be an int or a Package")
+
+    def add(self, container_filename, object):
+        with open(container_filename, "rb") as database_file : 
+            self = load(database_file)
+        
+        with open(container_filename, "wb") as database_file :
+            super().add(object)
+            dump(self, database_file)
+
+        
+class SetOfPackages(SetOfSomething):
+
+    pass
+
+
+class SetOfShipments(SetOfSomething):
+
+    pass
+
+>>>>>>> Stashed changes
 class Shipment():
 
     def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str="", id: int=None):
@@ -66,6 +113,7 @@ class Shipment():
             self.id = id
             
 
+<<<<<<< Updated upstream
 class SetOfSomething(set):
 
     def __getitem__(self, id: str) -> Union[Package, Shipment]:
@@ -95,6 +143,16 @@ class SetOfShipments(SetOfSomething):
 
     pass
 
+=======
+
+class InBoundShipment(Shipment):
+
+    def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str=""):
+        self.arrival_date: datetime = arrival_date
+        super().__init__(status, id, set_of_packages, adressee, sender)
+
+
+>>>>>>> Stashed changes
 
 
 class OutBoundShipment(Shipment):
@@ -103,6 +161,7 @@ class OutBoundShipment(Shipment):
     def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str=""):
         self.departure_date: datetime = departure_date
         self.expected_arrival_date: datetime = expected_arrival_date
+<<<<<<< Updated upstream
         super().__init__(status, id, set_of_packages, adressee, sender)
 
 class InBoundShipment(Shipment):
@@ -149,3 +208,6 @@ class PickleRepository:
             self.set_of_shipments[id]
         else:
             raise TypeError("the given id has to be a  Shipment id) or Package id")
+=======
+        super().__init__(status, id, set_of_packages, adressee, sender)
+>>>>>>> Stashed changes
