@@ -189,7 +189,7 @@ def interactive():
                 id_inshipment = shipment_id_prompt()
                 inshipment = shipment_database[id_inshipment]
                 arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                inshipment.status = InBoundShipment.statuses[1]
+                inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
                 inshipment.arrival_date = arrival_date 
                 for package in inshipment.set_of_packages : 
                     package.status = Package.statuses[0]
@@ -201,63 +201,45 @@ def interactive():
             print("\n")
         
         elif action == "outBoundShipment" :
-            print("Do you to declare a new outshipment (answer : d) or do you want to update an outshipment (answer : u) ?")
-            answer = input()
-            if answer == "d" :
-                departure_date = datetime.fromisoformat(input("Departure date (YYYY-MM-DD HH:MM)") + ":00")
-                expected_arrival_date = datetime.fromisoformat(input("Expected arrival date (YYYY-MM-DD HH:MM)") + ":00")
-                status = "on hold"
+            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
+            answer = click.prompt("Actions ", default="declare", type=declare_update)
+            
+            if answer == "declare" :
+                departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                status = Package.statuses[2]
                 outshipment_packages = SetOfPackages()
-                sender = input("Who is the sender of the shipment ? ")
-                adressee = input("Who is the adressee of the shipment ? ")
-                print("Write the packages below")
-                print("If you have a set of the same packages, please declare")
-                products_number = input("How many products do you want to declare in the shipment ?")
-                for i in range(products_number) :
-                    quantity = input("The number")
-                    for j in range(quantity) :
-                        # Features
-                        id_package = input("What is the id of the package ?")
-                        print(f"You entered the package : {id_package}")
-                        sure = input("Do you want to add the package to the outshipment ? [y/n] ")
-                        if sure == "y" :
-                            new_package = package_database[id_package]
-                            new_package.status = "exit"
-                            outshipment_packages.add(new_package) 
-                        else :
-                            os.system('clear') # what does it do ?
-                new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
+                sender = click.prompt("Sender ", type=str) 
+                adressee = click.prompt("Adressee ", type=str)
+
+                one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
+                register_many_packages(one_by_one, outshipment_packages, "outshipment")
+                
+                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, set_of_packages, adressee, sender)
+                #new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
                 #shipment_database.add(new_outshipment)
                 id_shipment = new_outshipment.id 
                 for package in outshipment_packages :
                     package.shipment_id = id_shipment
 
-                if answer == "u" :
-                    answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
-                    if answer2 =="e":
-                        print("Your outshipment is on its way.")
-                        id_outshipment = input("What outshipment do you want to look ?")
-                        #outshipment = set_of_shipments[id_outshipment] 
-                        departure_date = date.fromisoformat(input("What is the departure date ? (YYYY-MM-DD HH:MM)") + ":00")
-                        outshipment.status = "sent" 
-                        outshipment.departure_date = departure_date 
-                        for package in outshipment.set_of_packages:
-                            package.status = "sent"
+            if answer == "update" :
+                #answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
+                # cas retiré du cas d'usage
+                print("Your outshipment is delivered.")
+                id_outshipment = shipment_id_prompt()
+                outshipment = shipment_database[id_outshipment]
+                arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                outshipment.expected_arrival_date = arrival_date
+                outshipment.status = OutBoundShipment.statuses[1]
+                for package in shoutipment.set_of_packages : 
+                    package.status = Package.statuses[3]
+                
+            if answer == "del" :
+                id_inshipment = shipment_id_prompt()
+                shipment_database.remove(id_inshipment)
+            print("\n")
 
-                    elif answer2 =="a":
-                        print("Your outshipment is arrived to the receiver.")
-                        id_outshipment = input("What outshipment do you want to look ?")
-                        #outshipment = set_of_shipments[id_outshipment]
-                        arrival_date = date.fromisoformat(input("What is the arrival date ? (YYYY-MM-DD HH:MM)") + ":00") 
-                        outshipment.status = "delivered"
-                        outshipment.expected_arrival_date = arrival_date
-                        for package in outshipment.set_of_packages :
-                            package.status = "delivered"
-
-                else :
-                    print("This option is not known...")
-                    os.system('clear') # not sure
         
 
         elif action == "quit" :
