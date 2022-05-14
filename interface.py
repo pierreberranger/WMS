@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
-from inputoutput import display_packages
+from inputoutput import display
 from pickle import load, dump
 
 import click
@@ -25,10 +25,10 @@ statuses_outshipment = click.Choice(OutBoundShipment.statuses, case_sensitive=Fa
 types = click.Choice(Package.types, case_sensitive=False)
 
 def package_id_prompt():
-    return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in database))), show_choices=False))
+    return click.prompt("package id ",type=click.Choice(list((str(p.id) for p in database.set_of_packages))), show_choices=False)
 
 def shipment_id_prompt():
-    return int(click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False))
+    return click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False)
 
 def default_date() :
     today_date = datetime.now()
@@ -172,7 +172,7 @@ def interactive():
                 del_many_packages()
                 print("\n")
 
-            elif action2 == "sta" :
+            elif action2 == "status" :
                 identity = package_id_prompt()
                 newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses_package)
                 answer = click.confirm(f"You want to change the status of package {identity} to {newstatus}")
@@ -181,7 +181,7 @@ def interactive():
                 print("\n")
         
         elif action == "view" :
-            display_packages(database)
+            display(database.set_of_packages)
             print("\n")
 
         elif action == "inBoundshipment" :

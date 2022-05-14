@@ -44,7 +44,7 @@ class Package():
             raise ValueError("A Package can only be compared to a Package or an int") 
 
     def __hash__(self):
-        return self.id
+        return int("0" + self.id[1:])
     
     def is_same_package(self, other) -> bool:
         return self.dimensions == other.dimensions and self.status == other.status \
@@ -62,11 +62,14 @@ class Shipment():
         self.set_of_packages: SetOfPackages = set_of_packages
         self.adressee: str = adressee
         self.sender: str = sender
+        self.description: str = description
         if id == None:
             self.id = f"S{next(shipments_ids)}"
         else:
             self.id = id
-            
+        
+    def __hash__(self):
+        return int("1" + self.id[1:])
 
 class SetOfSomething(set):
 
@@ -146,8 +149,8 @@ class PickleRepository:
         if not(isinstance(id, str)):
             raise TypeError("the given object has to be a str Shipment id) or Package id")
         elif id[0]=="P":
-            self.set_of_packages[id]
+            return self.set_of_packages[id]
         elif id[0]=="S":
-            self.set_of_shipments[id]
+            return self.set_of_shipments[id]
         else:
             raise TypeError("the given id has to be a  Shipment id) or Package id")
