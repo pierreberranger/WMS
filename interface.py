@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
-from inputoutput import display_packages
+from inputoutput import display
 from pickle import load, dump
 
 import click
@@ -174,7 +174,7 @@ def interactive():
                 print("\n")
         
         elif action == "view" :
-            display_packages(database)
+            display(database.set_of_packages)
             print("\n")
 
         elif action == "inBoundshipment" :

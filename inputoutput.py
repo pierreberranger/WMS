@@ -1,4 +1,4 @@
-from models import SetOfPackages, Dimensions, Package
+from models import SetOfPackages, Dimensions, Package, SetOfSomething
 from csv import reader
 
 # code to be adapted, it is not the last version
@@ -28,13 +28,13 @@ def txt_to_set_of_packages(file="DATA_BASE.csv") -> SetOfPackages :
             package_database.add(new_package)
     return package_database
 
-def display_packages(packages: SetOfPackages):
+def display(set_of_something: SetOfSomething):
     base = "{:<10}|{:<25}|{:<10}"
     header = base.format('id','description','status')
     print(header)
     print ('='*len(header))
-    for package in packages:
-        print(base.format(package.id, package.description, package.status))
+    for something in set_of_something:
+        print(base.format(something.id, something.description, something.status))
 
 
 
