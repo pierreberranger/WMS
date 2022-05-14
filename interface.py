@@ -256,9 +256,9 @@ def interactive():
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
                 outshipment = database[id_outshipment]
-                arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
                 outshipment.expected_arrival_date = arrival_date
-                outshipment.status = OutBoundShipment.statuses[1]
+                outshipment.status = OutBoundShipment.statuses[2] # 'delivered'
                 for package in outshipment.set_of_packages : 
                     package.status = Package.statuses[3]
                 
