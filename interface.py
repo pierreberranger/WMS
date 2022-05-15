@@ -241,7 +241,7 @@ def interactive():
                     package.shipment_id = id_shipment
 
             if answer == "update" :
-                #answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
+                #answer2 = input("Do you want to declare the actual exit of the outshipment [e] or to declare its actual arrival ? [a] ")
                 # cas retiré du cas d'usage
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
