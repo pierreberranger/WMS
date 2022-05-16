@@ -132,7 +132,7 @@ class PickleRepository:
             self.set_of_shipments.add(object)
         
         with open(self.filepath, "wb") as file:
-            dump(object, file)
+            dump(self, file)
         
 
     def remove(self, object : Union[Package, Shipment, str]):
