@@ -3,22 +3,30 @@ import datetime
 
 from models import SetOfPackages, InBoundShipment, OutBoundShipment, SetOfShipments, shipments_ids, Package, Dimensions, packages_ids
 
+
 class TestSetOfShipments(unittest.TestCase):
-    
+
     def setUp(self):
-        self.first_id = "S"+ str(next(packages_ids) + 1)
-        self.database1 = SetOfPackages( [Package( dimensions=Dimensions(1,2,4), status="shipped", package_type="classic"),
-                        Package(dimensions=Dimensions(1,2,3), status="delivered", package_type="classic"),
-                        Package(dimensions=Dimensions(1,2,3), status="shipped", package_type="big-bag"),
-        ])
-        self.database2 = SetOfPackages( [Package( dimensions=Dimensions(3,4,5), status="shipped", package_type="classic"),
-                        Package(dimensions=Dimensions(3,4,5), status="delivered", package_type="classic"),
-                        Package(dimensions=Dimensions(3,4,5), status="shipped", package_type="big-bag"),
-        ])
-        self.shipment1 = InBoundShipment(id=next(shipments_ids),arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")
-        self.shipment2 = OutBoundShipment(id=next(shipments_ids),departure_date=datetime.datetime(2022, 5, 12, 16, 34), expected_arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="left", set_of_packages=self.database2, sender="EntrepotNostos1", adressee="Jo")
+        self.first_id = "S" + str(next(packages_ids) + 1)
+        self.database1 = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), status="shipped", package_type="classic"),
+                                        Package(dimensions=Dimensions(
+                                            1, 2, 3), status="delivered", package_type="classic"),
+                                        Package(dimensions=Dimensions(
+                                            1, 2, 3), status="shipped", package_type="big-bag"),
+                                        ])
+        self.database2 = SetOfPackages([Package(dimensions=Dimensions(3, 4, 5), status="shipped", package_type="classic"),
+                                        Package(dimensions=Dimensions(
+                                            3, 4, 5), status="delivered", package_type="classic"),
+                                        Package(dimensions=Dimensions(
+                                            3, 4, 5), status="shipped", package_type="big-bag"),
+                                        ])
+        self.shipment1 = InBoundShipment(id=next(shipments_ids), arrival_date=datetime.datetime(
+            2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")
+        self.shipment2 = OutBoundShipment(id=next(shipments_ids), departure_date=datetime.datetime(2022, 5, 12, 16, 34), expected_arrival_date=datetime.datetime(
+            2022, 5, 11, 16, 34), status="left", set_of_packages=self.database2, sender="EntrepotNostos1", adressee="Jo")
         self.first_shipment_id = "S" + str(next(shipments_ids) - 3)
-        self.set_of_shipments = SetOfShipments([self.shipment1, self.shipment2])
+        self.set_of_shipments = SetOfShipments(
+            [self.shipment1, self.shipment2])
 
     def test_get_item(self):
         shipment_id1 = self.shipment1.id
