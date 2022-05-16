@@ -275,7 +275,8 @@ def interactive():
                     package.shipment_id = id_shipment ### non implémenté
                     # ce serait plutot :
                     # package.shipment_id.append(id_shipment)
-
+            click.echo(f'Your OutBoundshipment id is {id_shipment}')
+            
             if answer == "update" :
                 #answer2 = input("Do you want to declare the actual exit of the outshipment [e] or to declare its actual arrival ? [a] ")
                 # cas retiré du cas d'usage
