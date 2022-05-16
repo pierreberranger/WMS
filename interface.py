@@ -17,18 +17,16 @@ filename = "database.txt"
 with open(filename, "rb") as file :
     database: PickleRepository = load(file)
 
-
-
 statuses_package = click.Choice(Package.statuses, case_sensitive=False)
 statuses_inshipment = click.Choice(InBoundShipment.statuses, case_sensitive=False)
 statuses_outshipment = click.Choice(OutBoundShipment.statuses, case_sensitive=False)
 types = click.Choice(Package.types, case_sensitive=False)
 
 def package_id_prompt():
-    return int(click.prompt("package id ",type=click.Choice(list((str(p.id) for p in database))), show_choices=False))
+    return click.prompt("package id ",type=click.Choice(list((str(p.id) for p in database.set_of_packages))), show_choices=False)
 
 def shipment_id_prompt():
-    return int(click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False))
+    return click.prompt("shipment id ",type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False)
 
 def default_date() :
     today_date = datetime.now()
@@ -46,6 +44,35 @@ def default_date() :
     if 0<=today_date.minute<=9 :
         minute = "0"+minute
     return year+'-'+month+'-'+day+' '+hour+":"+minute
+
+def isoformat_check() :
+    years_accepted = [y for y in range(2022, 2101)]
+    months_accepted = [m for m in range(1,13)]
+    day_accepted = [d for d in range(1,32)]
+    hour_accepted = [h for h in range(0, 24)]
+    minute_accepted = [m for m in range(0,60)]
+
+    in_out = True
+    while in_out :
+        in_out = False
+        date = input("Write the date : ")
+    
+        try :
+            len(date) == 16
+            year = int(date[:4])
+            month = int(date[5:7])
+            day = int(date[8:10])
+            hour = int(date[11:13])
+            minute = int(date[14:])
+            ind_year = years_accepted.index(year)
+            ind_month = months_accepted.index(month)
+            ind_day = day_accepted.index(day)
+            ind_hour = hour_accepted.index(hour)
+            ind_minute = minute_accepted.index(minute)
+        except :
+            in_out = True
+            print("Couldn't read the date, respect the format YYYY-MM-DD HH-mm")
+    return date
 
 def parse(value: str) :
     try:
@@ -85,11 +112,9 @@ def del_many_packages() :
             database.remove(identity)
 
 
-def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages, type_of_shipment: str) :
-    if type_of_shipment == "inshipment" :
-        default_package_status = Package.statuses[1]
-    if type_of_shipment == "outshipment" :
-        default_package_status = Package.statuses[2]
+def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages) :
+    default_package_status = Package.statuses[1]
+
     if one_by_one : 
         number_of_packages = click.prompt(f"Number of packages ", type=int)
         for j in range(number_of_packages) :
@@ -134,6 +159,13 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages, t
                     packages_id_per_reference.append(new_package.id)
             click.echo(f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
         print("\n")
+    
+def pick_many_packages_from_warehouse(shipment_packages: SetOfPackages):
+    number_of_packages = click.prompt(f"Number of packages to pick from the warehouse", type=int)
+    for j in range(number_of_packages):
+        identity =  package_id_prompt()
+        answer = click.confirm(f"Are you sure to pick the package with id :{identity} ?", default=False)
+        shipment_packages.add(database[identity])
 
 def interactive():
     in_out = True
@@ -142,16 +174,14 @@ def interactive():
     print("If you want to quit, input [quit] \n")
 
 
-    while (in_out) :
-            
-        element = click.Choice(("package", "inBoundshipment", "outBoundShipment", "view", "quit"), case_sensitive=False)
+    while (in_out) :   
+        element = click.Choice(("package", "inBoundshipment", "outBoundshipment", "view", "quit"), case_sensitive=False)
         action = click.prompt("Element you want to focus on", type=element)
 
         if action ==  "package" :
             action2 = click.prompt("Action you want to do : (add,del,status)", default='add', type=click.Choice(("add","del","status", "quit")), show_choices=False)
             
             if action2 == "add" :
-                # Features
                 add_many_packages()
 
             elif action2 == "quit" :
@@ -165,7 +195,7 @@ def interactive():
                 del_many_packages()
                 print("\n")
 
-            elif action2 == "sta" :
+            elif action2 == "status" :
                 identity = package_id_prompt()
                 newstatus = click.prompt("New status", default=Package.statuses[2], type=statuses_package)
                 answer = click.confirm(f"You want to change the status of package {identity} to {newstatus}")
@@ -183,6 +213,7 @@ def interactive():
             
             if answer == "declare" :
                 arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                #arrival_date = isoformat_check()
                 status =Package.statuses[1]
                 inshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
@@ -190,14 +221,16 @@ def interactive():
                 adressee = click.prompt("Adressee ", type=str)
 
                 one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
-                register_many_packages(one_by_one, inshipment_packages, "inshipment")
+                register_many_packages(one_by_one, inshipment_packages)
 
                 new_inshipment = InBoundShipment(arrival_date, status, inshipment_packages, sender, adressee)
-                database.set_of_shipments.add(new_inshipment)
-                #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-                id_shipment = new_inshipment.id 
+                database.add(new_inshipment)
+                
+                id_shipment = new_inshipment.id
                 for package in inshipment_packages:
-                    package.shipment_id = id_shipment 
+                    package.shipment_id = id_shipment ### non implémenté
+                    # ce serait plutot :
+                    # package.shipment_id.append(id_shipment)
                 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
@@ -206,6 +239,7 @@ def interactive():
                 id_inshipment = shipment_id_prompt()
                 inshipment = database[id_inshipment]
                 arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                #arrival_date = isoformat_check()
                 inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
                 inshipment.arrival_date = arrival_date 
                 for package in inshipment.set_of_packages : 
@@ -217,38 +251,41 @@ def interactive():
 
             print("\n")
         
-        elif action == "outBoundShipment" :
+        elif action == "outBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
             if answer == "declare" :
                 departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                #departure_date = isoformat_check()
                 expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                #expected_arrival_date = isoformat_check()
                 status = Package.statuses[2]
                 outshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
                 adressee = click.prompt("Adressee ", type=str)
 
-                one_by_one = click.confirm("Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
-                register_many_packages(one_by_one, outshipment_packages, "outshipment")
+                pick_many_packages_from_warehouse(outshipment_packages)
                 
-                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, database.set_of_packages, adressee, sender)
-                #new_outshipment = OutBoundShipment(outshipment_packages, receiver,status, expected_dispatch_date ,dispatch_date, expected_delivery_date, delivery_date) #
-                #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
-                database.set_of_shipments.add(new_outshipment)
+                new_outshipment = OutBoundShipment(departure_date, expected_arrival_date, status, id, outshipment_packages, adressee, sender)
+                database.add(new_outshipment)
                 id_shipment = new_outshipment.id 
+
                 for package in outshipment_packages :
-                    package.shipment_id = id_shipment
+                    package.shipment_id = id_shipment ### non implémenté
+                    # ce serait plutot :
+                    # package.shipment_id.append(id_shipment)
 
             if answer == "update" :
-                #answer2 = input("Do you want to declare the actual exist of the outshipment [e] or to declare its actual arrival ? [a] ")
+                #answer2 = input("Do you want to declare the actual exit of the outshipment [e] or to declare its actual arrival ? [a] ")
                 # cas retiré du cas d'usage
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
                 outshipment = database[id_outshipment]
-                arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                #arrival_date = isoformat_check()
                 outshipment.expected_arrival_date = arrival_date
-                outshipment.status = OutBoundShipment.statuses[1]
+                outshipment.status = OutBoundShipment.statuses[2] # 'delivered'
                 for package in outshipment.set_of_packages : 
                     package.status = Package.statuses[3]
                 
