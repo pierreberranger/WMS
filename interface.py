@@ -197,7 +197,7 @@ def interactive():
                 #Why not create a set of shipment like with the set of packages ? To have a data base with the shipment
                 id_shipment = new_inshipment.id 
                 for package in inshipment_packages:
-                    package.shipment_id = id_shipment ### non implémenté
+                    package.shipment_id = id_shipment 
                 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
