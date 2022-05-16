@@ -1,21 +1,23 @@
+from json import detect_encoding
 from dateutil import parser
 from datetime import datetime
 import os
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository, SetOfShipments
 from inputoutput import display
 from pickle import load, dump
 
 import click
 
-""" import numpy as np """
-
-""" Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
-
-# créer la variable globale
 filename = "database.txt"
 with open(filename, "rb") as file :
     database: PickleRepository = load(file)
+
+# si on fait ça ça marche mais le truc du haut non et je comprends pas pourquoi puisque ça marchait avant !
+# Est ce que c'était parce que la base de donnée était vide ? pour les paquets
+#set_of_packages = SetOfPackages()
+#set_of_shipments = SetOfShipments
+#database = PickleRepository(filename, set_of_packages, set_of_shipments)
 
 statuses_package = click.Choice(Package.statuses, case_sensitive=False)
 statuses_inshipment = click.Choice(InBoundShipment.statuses, case_sensitive=False)
@@ -293,8 +295,6 @@ def interactive():
                 id_inshipment = shipment_id_prompt()
                 database.remove(id_inshipment)
             print("\n")
-
-        i
 
         elif action == "quit" :
             #save the data in a text file
