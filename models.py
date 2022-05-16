@@ -143,14 +143,14 @@ class PickleRepository:
         else:
             raise TypeError("the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
         with open(self.filepath, "wb") as file:
-            dump(object, file)
+            dump(self, file)
         
     def __getitem__(self, id : str):
         if not(isinstance(id, str)):
-            raise TypeError("the given object has to be a str Shipment id) or Package id")
+            raise TypeError("the given object has to be a str Shipment id or Package id")
         elif id[0]=="P":
             return self.set_of_packages[id]
         elif id[0]=="S":
             return self.set_of_shipments[id]
         else:
-            raise TypeError("the given id has to be a  Shipment id) or Package id")
+            raise TypeError("the given id has to be a Shipment id or Package id")
