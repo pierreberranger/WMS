@@ -24,11 +24,11 @@ class Package():
     statuses = ('stored','inbound','outbound','delivered')
     types = ('EPAL','20ISO','OOG')
 
-    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str="", shipment_id=None, id=None) -> None:
+    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str="", shipment_ids=[], id=None) -> None:
         self.status = status
         self.dimensions = dimensions
         self.package_type = package_type
-        self.shipment_id = shipment_id
+        self.shipment_ids = shipment_ids
         self.description = description
         if id == None:
             self.id = f"P{next(packages_ids)}"

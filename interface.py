@@ -228,9 +228,9 @@ def interactive():
                 
                 id_shipment = new_inshipment.id
                 for package in inshipment_packages:
-                    package.shipment_id = id_shipment ### non implémenté
                     # ce serait plutot :
-                    # package.shipment_id.append(id_shipment)
+                    package.shipment_ids.append(id_shipment)
+                    
                 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
@@ -272,7 +272,7 @@ def interactive():
                 id_shipment = new_outshipment.id 
 
                 for package in outshipment_packages :
-                    package.shipment_id = id_shipment ### non implémenté
+                    package.shipment_ids.append(id_shipment) ### non implémenté
                     # ce serait plutot :
                     # package.shipment_id.append(id_shipment)
 
