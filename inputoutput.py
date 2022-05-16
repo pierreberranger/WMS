@@ -22,7 +22,7 @@ def display_shipment(shipment: Shipment):
     
     print(f"id : {shipment.id}, description : {shipment.description}, status : {shipment.status}, adressee : {shipment.adressee}, sender : {shipment.sender}")
     print("\n")
-    print(f"The shipment {shipment.id} contains {len(shipment.set_of_packages)}packages, which are : ")
+    print(f"The shipment {shipment.id} contains {len(shipment.set_of_packages)} packages, which are : ")
     print("\n")
     display_set_of_packages(shipment.set_of_packages)
     
