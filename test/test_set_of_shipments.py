@@ -6,7 +6,7 @@ from models import SetOfPackages, InBoundShipment, OutBoundShipment, SetOfShipme
 class TestSetOfShipments(unittest.TestCase):
     
     def setUp(self):
-        self.first_id = next(packages_ids) + 1
+        self.first_id = "S"+ str(next(packages_ids) + 1)
         self.database1 = SetOfPackages( [Package( dimensions=Dimensions(1,2,4), status="shipped", package_type="classic"),
                         Package(dimensions=Dimensions(1,2,3), status="delivered", package_type="classic"),
                         Package(dimensions=Dimensions(1,2,3), status="shipped", package_type="big-bag"),
@@ -17,7 +17,7 @@ class TestSetOfShipments(unittest.TestCase):
         ])
         self.shipment1 = InBoundShipment(id=next(shipments_ids),arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")
         self.shipment2 = OutBoundShipment(id=next(shipments_ids),departure_date=datetime.datetime(2022, 5, 12, 16, 34), expected_arrival_date=datetime.datetime(2022, 5, 11, 16, 34), status="left", set_of_packages=self.database2, sender="EntrepotNostos1", adressee="Jo")
-        self.first_shipment_id = next(shipments_ids) - 3
+        self.first_shipment_id = "S" + str(next(shipments_ids) - 3)
         self.set_of_shipments = SetOfShipments([self.shipment1, self.shipment2])
 
     def test_get_item(self):
@@ -32,5 +32,5 @@ class TestSetOfShipments(unittest.TestCase):
         self.set_of_shipments.remove(self.first_shipment_id)
         self.assertFalse(shipment_to_remove in self.set_of_shipments)
         with self.assertRaises(KeyError) as err:
-            self.set_of_shipments.remove(next(shipments_ids))
+            self.set_of_shipments.remove("S"+str(next(shipments_ids)))
         self.assertEqual(err.exception.args[0], "This id does not exist")

@@ -1,21 +1,23 @@
-from dateutil import parser
+from json import detect_encoding
+#from dateutil import parser
 from datetime import datetime
 import os
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository, SetOfShipments
 from inputoutput import display
 from pickle import load, dump
 
 import click
 
-""" import numpy as np """
-
-""" Attention du code est écrit en commentaire car nous n'avons merge les fichiers et les fonctions sont donc encore indisponibles"""
-
-# créer la variable globale
 filename = "database.txt"
 with open(filename, "rb") as file :
     database: PickleRepository = load(file)
+
+# si on fait ça ça marche mais le truc du haut non et je comprends pas pourquoi puisque ça marchait avant !
+# Est ce que c'était parce que la base de donnée était vide ? pour les paquets
+#set_of_packages = SetOfPackages()
+#set_of_shipments = SetOfShipments
+#database = PickleRepository(filename, set_of_packages, set_of_shipments)
 
 statuses_package = click.Choice(Package.statuses, case_sensitive=False)
 statuses_inshipment = click.Choice(InBoundShipment.statuses, case_sensitive=False)
@@ -74,12 +76,12 @@ def isoformat_check() :
             print("Couldn't read the date, respect the format YYYY-MM-DD HH-mm")
     return date
 
-def parse(value: str) :
+""" def parse(value: str) :
     try:
         date = parser.parse(value)
     except:
         raise click.BadParameter("Couldn't understand date.", param=value)
-    return value
+    return value """
 
 def add_many_packages() :
     number_of_packages = click.prompt(f"Number of packages ", type=int)
@@ -212,8 +214,8 @@ def interactive():
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
             if answer == "declare" :
-                arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                #arrival_date = isoformat_check()
+                #arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = isoformat_check()
                 status =Package.statuses[1]
                 inshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
@@ -238,8 +240,8 @@ def interactive():
                 print("Your inshipment is arrived.")
                 id_inshipment = shipment_id_prompt()
                 inshipment = database[id_inshipment]
-                arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                #arrival_date = isoformat_check()
+                #arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = isoformat_check()
                 inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
                 inshipment.arrival_date = arrival_date 
                 for package in inshipment.set_of_packages : 
@@ -256,10 +258,10 @@ def interactive():
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
             if answer == "declare" :
-                departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                #departure_date = isoformat_check()
-                expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                #expected_arrival_date = isoformat_check()
+                #departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                departure_date = isoformat_check()
+                #expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                expected_arrival_date = isoformat_check()
                 status = Package.statuses[2]
                 outshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
@@ -275,15 +277,16 @@ def interactive():
                     package.shipment_ids.append(id_shipment) ### non implémenté
                     # ce serait plutot :
                     # package.shipment_id.append(id_shipment)
-
+            click.echo(f'Your OutBoundshipment id is {id_shipment}')
+            
             if answer == "update" :
                 #answer2 = input("Do you want to declare the actual exit of the outshipment [e] or to declare its actual arrival ? [a] ")
                 # cas retiré du cas d'usage
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
                 outshipment = database[id_outshipment]
-                arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                #arrival_date = isoformat_check()
+                #arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = isoformat_check()
                 outshipment.expected_arrival_date = arrival_date
                 outshipment.status = OutBoundShipment.statuses[2] # 'delivered'
                 for package in outshipment.set_of_packages : 

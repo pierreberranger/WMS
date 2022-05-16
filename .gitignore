@@ -29,6 +29,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+MAX_ID_Packages.txt
+MAX_ID_Shipments.txt
+database.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
