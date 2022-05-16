@@ -1,4 +1,4 @@
-from pickle import dump, load
+from pickle import dump
 
 from models import PickleRepository, SetOfPackages, SetOfShipments
 
