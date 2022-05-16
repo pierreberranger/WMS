@@ -296,6 +296,8 @@ def interactive():
                 database.remove(id_inshipment)
             print("\n")
 
+        
+
         elif action == "quit" :
             #save the data in a text file
             with open(filename, "wb") as file :
