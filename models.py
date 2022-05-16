@@ -132,7 +132,7 @@ class PickleRepository:
             self.set_of_shipments.add(object)
         
         with open(self.filepath, "wb") as file:
-            dump(object, file)
+            dump(self, file)
         
 
     def remove(self, object : Union[Package, Shipment, str]):
@@ -143,7 +143,7 @@ class PickleRepository:
         else:
             raise TypeError("the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
         with open(self.filepath, "wb") as file:
-            dump(object, file)
+            dump(self, file)
         
     def __getitem__(self, id : str):
         if not(isinstance(id, str)):
