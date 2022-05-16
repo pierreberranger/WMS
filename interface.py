@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository, SetOfShipments
-from inputoutput import display
+from inputoutput import display_set_of_packages, display_set_of_shipments, display_shipment
 from pickle import load, dump
 
 import click
@@ -206,9 +206,18 @@ def interactive():
                 print("\n")
         
         elif action == "view" :
-            display(database.set_of_packages)
-            print("\n")
-
+            view_type = click.Choice(("package_database", "shipment_database", "particular shipment"), case_sensitive=False)
+            answer = click.prompt("What do you want to view : ", default="package_database", type=view_type)
+            if answer == "package_database":
+                display_set_of_packages(database.set_of_packages)
+                print("\n")
+            if answer == "shipment_database":
+                display_set_of_shipments(database.set_of_shipments)
+                print("\n")
+            if answer == "particular shipment":
+                shipment_id = shipment_id_prompt()
+                display_shipment(database[shipment_id])
+                print("\n")
         elif action == "inBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
             answer = click.prompt("Actions ", default="declare", type=declare_update)
