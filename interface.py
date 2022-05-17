@@ -47,7 +47,7 @@ def default_date() :
         minute = "0"+minute
     return year+'-'+month+'-'+day+' '+hour+":"+minute
 
-def isoformat_check() :
+def datetime_prompt(name_date) :
     years_accepted = [y for y in range(2022, 2101)]
     months_accepted = [m for m in range(1,13)]
     day_accepted = [d for d in range(1,32)]
@@ -55,10 +55,14 @@ def isoformat_check() :
     minute_accepted = [m for m in range(0,60)]
 
     in_out = True
+    today = default_date()
     while in_out :
         in_out = False
-        date = input("Write the date : ")
-    
+        date = input( name_date + "[" + today + "]: ")
+        
+        if len(date) == 0 :
+            print(today)
+            return today
         try :
             len(date) == 16
             year = int(date[:4])
@@ -218,13 +222,14 @@ def interactive():
                 shipment_id = shipment_id_prompt()
                 display_shipment(database[shipment_id])
                 print("\n")
+
         elif action == "inBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
             if answer == "declare" :
                 #arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
+                arrival_date = datetime_prompt("Arrival date ")
                 status =Package.statuses[1]
                 inshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
@@ -250,7 +255,7 @@ def interactive():
                 id_inshipment = shipment_id_prompt()
                 inshipment = database[id_inshipment]
                 #arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
+                arrival_date = datetime_prompt("Arrival date ")
                 inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
                 inshipment.arrival_date = arrival_date 
                 for package in inshipment.set_of_packages : 
@@ -268,9 +273,9 @@ def interactive():
             
             if answer == "declare" :
                 #departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                departure_date = isoformat_check()
+                departure_date = datetime_prompt("Departure date ")
                 #expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                expected_arrival_date = isoformat_check()
+                expected_arrival_date = datetime_prompt("Expected delivered date")
                 status = Package.statuses[2]
                 outshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str) 
@@ -295,7 +300,7 @@ def interactive():
                 id_outshipment = shipment_id_prompt()
                 outshipment = database[id_outshipment]
                 #arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
+                arrival_date = datetime_prompt("Delivered date ")
                 outshipment.expected_arrival_date = arrival_date
                 outshipment.status = OutBoundShipment.statuses[2] # 'delivered'
                 for package in outshipment.set_of_packages : 
