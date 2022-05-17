@@ -50,27 +50,21 @@ def default_date():
         minute = "0" + minute
     return year + '-' + month + '-' + day + ' ' + hour + ":" + minute
 
-
-# Renommer ce truc date_prompt, le nom n'est pas très clair
-# Et click a un type DateTime pour pouvoir se passer de tout ça !
-def isoformat_check():
+def datetime_prompt(name_date) :
     in_out = True
-    while in_out:
+    today = default_date()
+    while in_out :
         in_out = False
-        date = input("Write the date : ")
-
-        # Doux Jésus... datetime.strptime(date)
-        # Ou pourquoi pas une expression régulière
-        try:
-            len(date) == 16
-            year = int(date[:4])
-            month = int(date[5:7])
-            day = int(date[8:10])
-            hour = int(date[11:13])
-            minute = int(date[14:])
-        except Exception:
+        date = input( name_date + "[" + today + "]: ")
+        
+        if len(date) == 0 :
+            print(today)
+            return today
+        try :
+            datetime.strptime(date, "%Y-%m-%d %H:%M")
+        except :
             in_out = True
-            print("Couldn't read the date, respect the format YYYY-MM-DD HH-mm")
+            print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
     return date
 
 
@@ -246,16 +240,14 @@ def interactive():
                 shipment_id = shipment_id_prompt()
                 display_shipment(database[shipment_id])
                 print("\n")
-        elif action == "inBoundshipment":
-            declare_update = click.Choice(
-                ("declare", "update", "del"), case_sensitive=False)
-            answer = click.prompt(
-                "Actions ", default="declare", type=declare_update)
-
-            if answer == "declare":
-                # arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
-                status = Package.statuses[1]
+        elif action == "inBoundshipment" :
+            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
+            answer = click.prompt("Actions ", default="declare", type=declare_update)
+            
+            if answer == "declare" :
+                #arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = datetime_prompt("Arrival date ")
+                status =Package.statuses[1]
                 inshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str)
                 # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
@@ -280,12 +272,12 @@ def interactive():
                 print("Your inshipment is arrived.")
                 id_inshipment = shipment_id_prompt()
                 inshipment = database[id_inshipment]
-                # arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
-                # InBoundShipment.statuses[0] ?
-                inshipment.status = InBoundShipment.statuses[1]
-                inshipment.arrival_date = arrival_date
-                for package in inshipment.set_of_packages:
+
+                #arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                arrival_date = datetime_prompt("Arrival date ")
+                inshipment.status = InBoundShipment.statuses[1] # InBoundShipment.statuses[0] ?
+                inshipment.arrival_date = arrival_date 
+                for package in inshipment.set_of_packages : 
                     package.status = Package.statuses[0]
 
             if answer == "del":
@@ -294,17 +286,16 @@ def interactive():
 
             print("\n")
 
-        elif action == "outBoundshipment":
-            declare_update = click.Choice(
-                ("declare", "update", "del"), case_sensitive=False)
-            answer = click.prompt(
-                "Actions ", default="declare", type=declare_update)
-
-            if answer == "declare":
-                # departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                departure_date = isoformat_check()
-                # expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                expected_arrival_date = isoformat_check()
+        
+        elif action == "outBoundshipment" :
+            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
+            answer = click.prompt("Actions ", default="declare", type=declare_update)
+            
+            if answer == "declare" :
+                #departure_date = click.prompt("Enter the departure date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                departure_date = datetime_prompt("Departure date ")
+                #expected_arrival_date = click.prompt("Enter the expected arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
+                expected_arrival_date = datetime_prompt("Expected delivered date")
                 status = Package.statuses[2]
                 outshipment_packages = SetOfPackages()
                 sender = click.prompt("Sender ", type=str)
@@ -329,8 +320,7 @@ def interactive():
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
                 outshipment = database[id_outshipment]
-                # arrival_date = click.prompt("Enter the arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
-                arrival_date = isoformat_check()
+                arrival_date = datetime_prompt("Delivered date ")
                 outshipment.expected_arrival_date = arrival_date
                 # 'delivered'
                 outshipment.status = OutBoundShipment.statuses[2]
