@@ -48,12 +48,6 @@ def default_date() :
     return year+'-'+month+'-'+day+' '+hour+":"+minute
 
 def datetime_prompt(name_date) :
-    years_accepted = [y for y in range(2022, 2101)]
-    months_accepted = [m for m in range(1,13)]
-    day_accepted = [d for d in range(1,32)]
-    hour_accepted = [h for h in range(0, 24)]
-    minute_accepted = [m for m in range(0,60)]
-
     in_out = True
     today = default_date()
     while in_out :
@@ -64,20 +58,10 @@ def datetime_prompt(name_date) :
             print(today)
             return today
         try :
-            len(date) == 16
-            year = int(date[:4])
-            month = int(date[5:7])
-            day = int(date[8:10])
-            hour = int(date[11:13])
-            minute = int(date[14:])
-            ind_year = years_accepted.index(year)
-            ind_month = months_accepted.index(month)
-            ind_day = day_accepted.index(day)
-            ind_hour = hour_accepted.index(hour)
-            ind_minute = minute_accepted.index(minute)
+            datetime.strptime(date, "%Y-%m-%d %H:%M")
         except :
             in_out = True
-            print("Couldn't read the date, respect the format YYYY-MM-DD HH-mm")
+            print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
     return date
 
 """ def parse(value: str) :
