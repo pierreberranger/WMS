@@ -31,6 +31,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+MAX_ID_Packages.txt
+MAX_ID_Shipments.txt
+database.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -89,6 +92,10 @@ ipython_config.py
 # pyenv
 .python-version
 
+#data_files
+database.txt
+MAX_ID_Packages
+MAX_ID_Shipments
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies

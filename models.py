@@ -1,8 +1,10 @@
 from collections import namedtuple
 from typing import Union
-import datetime
+from datetime import datetime
+from pickle import dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
+
 
 class FileIDGenerator:
     def __init__(self, filename: str):
@@ -16,21 +18,23 @@ class FileIDGenerator:
             file_content.write(f"{next_id}")
         return next_id
 
+
 shipments_ids = FileIDGenerator("MAX_ID_Shipments.txt")
 packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 
-class Package():
-    statuses = ('stored','inbound','outbound','delivered')
-    types = ('EPAL','20ISO','OOG')
 
-    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str="", shipment_id=None, id=None) -> None:
+class Package():
+    statuses = ('stored', 'inbound', 'outbound', 'delivered')
+    types = ('EPAL', '20ISO', 'OOG')
+
+    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str = "", shipment_ids=[], id=None) -> None:
         self.status = status
         self.dimensions = dimensions
         self.package_type = package_type
-        self.shipment_id = shipment_id
+        self.shipment_ids = shipment_ids
         self.description = description
-        if id == None:
-            self.id = next(packages_ids)
+        if id is None:
+            self.id = f"P{next(packages_ids)}"
         else:
             self.id = id
 
@@ -40,82 +44,124 @@ class Package():
         elif isinstance(other, int):
             return self.id == other
         else:
-            raise ValueError("A Package can only be compared to a Package or an int") 
+            raise ValueError(
+                "A Package can only be compared to a Package or an int")
 
     def __hash__(self):
-        return self.id
-    
+        return int("0" + self.id[1:])
+
     def is_same_package(self, other) -> bool:
         return self.dimensions == other.dimensions and self.status == other.status \
-                and self.package_type == other.package_type and self.id == other.id
+            and self.package_type == other.package_type and self.id == other.id
 
-    # Pour modifier un package dans un Shipment à partir de l'id : 
+    # Pour modifier un package dans un Shipment à partir de l'id :
     # shipment[id].status = status
 
-class SetOfPackages(set):
 
-    def __getitem__(self, id: int) -> Package:
-        for package in self:
-            if package.id == id:
-                return package
-        raise KeyError("This id does not exist")
+SetOfPackages = set
 
-    def remove(self, other: Union[int, Package]) -> None:
-        if isinstance(other, Package):
-            super().remove(other)
-        elif isinstance(other, int):
-            for package in self.copy():
-                if package.id == other:
-                    super().remove(package)
-                    return None
-            raise KeyError("This id does not exist")
-        else:
-            
-            raise ValueError("The argument must be an int or a Package")
 
 class Shipment():
 
-    def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str="", id: int=None):
+    def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str = "", id: int = None):
         self.status: str = status
         self.set_of_packages: SetOfPackages = set_of_packages
         self.adressee: str = adressee
         self.sender: str = sender
-        if id == None:
-            self.id = next(shipments_ids)
+        self.description: str = description
+        if id is None:
+            self.id = f"S{next(shipments_ids)}"
         else:
             self.id = id
 
-class SetOfShipments(set):
+    def __hash__(self):
+        return int("1" + self.id[1:])
 
-    def __getitem__(self, id: int) -> Shipment:
-        for shipment in self:
-            if shipment.id == id:
-                return shipment
+
+class SetOfSomething(set):
+
+    def __getitem__(self, id: str) -> Union[Package, Shipment]:
+        for object in self:
+            if object.id == id:
+                return object
         raise KeyError("This id does not exist")
 
-    def remove(self, other: Union[int, Shipment]) -> None:
-        if isinstance(other, Shipment):
+    def remove(self, other: Union[str, Union[Package, Shipment]]) -> None:
+        if isinstance(other, Shipment) or isinstance(other, Package):
             super().remove(other)
-        elif isinstance(other, int):
-            for shipment in self.copy():
-                if shipment.id == other:
-                    super().remove(shipment)
+        elif isinstance(other, str):
+            for object in self.copy():
+                if object.id == other:
+                    super().remove(object)
                     return None
             raise KeyError("This id does not exist")
         else:
-            
-            raise ValueError("The argument must be an int or a Shipment")
+
+            raise ValueError("The argument must be a string or a Package/Shipment ")
+
+
+class SetOfPackages(SetOfSomething):
+
+    pass
+
+
+class SetOfShipments(SetOfSomething):
+
+    pass
 
 
 class OutBoundShipment(Shipment):
+    statuses = ('inbound', 'stocked', 'delivered')
 
-    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str=""):
+    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str = ""):
         self.departure_date: datetime = departure_date
         self.expected_arrival_date: datetime = expected_arrival_date
         super().__init__(status, id, set_of_packages, adressee, sender)
 
-class InBoundShipment(Shipment):
 
-    def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str=""):
+class InBoundShipment(Shipment):
+    statuses = ('stocked', 'outbound')
+
+    def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str = ""):
         self.arrival_date: datetime = arrival_date
         super().__init__(status, id, set_of_packages, adressee, sender)
+
+
+class PickleRepository:
+
+    def __init__(self, filepath, set_of_packages, set_of_shipments):
+        self.filepath = filepath
+        self.set_of_packages = set_of_packages
+        self.set_of_shipments = set_of_shipments
+
+    def add(self, object: Union[Package, Shipment]):
+        if isinstance(object, Package):
+            self.set_of_packages.add(object)
+        elif isinstance(object, Shipment):
+            self.set_of_shipments.add(object)
+
+        with open(self.filepath, "wb") as file:
+            dump(self, file)
+
+    def remove(self, object: Union[Package, Shipment, str]):
+        if isinstance(object, Package) or object[0] == "P":
+            self.set_of_packages.remove(object)
+        elif isinstance(object, Shipment) or object[0] == "S":
+            self.set_of_shipments.remove(object)
+        else:
+            raise TypeError(
+                "the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
+        with open(self.filepath, "wb") as file:
+            dump(self, file)
+
+    def __getitem__(self, id: str):
+        if not(isinstance(id, str)):
+            raise TypeError(
+                "the given object has to be a str Shipment id or Package id")
+        elif id[0] == "P":
+            return self.set_of_packages[id]
+        elif id[0] == "S":
+            return self.set_of_shipments[id]
+        else:
+            raise TypeError(
+                "the given id has to be a Shipment id or Package id")
