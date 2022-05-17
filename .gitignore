@@ -2,6 +2,7 @@
 wms/
 DATA_BASE.csv
 MAX_ID*
+env_nostos/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
