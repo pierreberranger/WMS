@@ -4,113 +4,12 @@ from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBound
 from inputoutput import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
+from service_layer import *
+
 import click
 
 filename = "database.txt"
 database.load(filename)
-
-# si on fait ça ça marche mais le truc du haut non et je comprends pas pourquoi puisque ça marchait avant !
-# Est ce que c'était parce que la base de donnée était vide ? pour les paquets
-# set_of_packages = SetOfPackages()
-# set_of_shipments = SetOfShipments
-# database = PickleRepository(filename, set_of_packages, set_of_shipments)
-
-statuses_package = click.Choice(Package.statuses, case_sensitive=False)
-statuses_inshipment = click.Choice(
-    InBoundShipment.statuses, case_sensitive=False)
-statuses_outshipment = click.Choice(
-    OutBoundShipment.statuses, case_sensitive=False)
-types = click.Choice(Package.types, case_sensitive=False)
-
-
-def package_id_prompt():
-    return click.prompt("package id ", type=click.Choice(list((str(p.id) for p in database.set_of_packages))), show_choices=False)
-
-
-def shipment_id_prompt():
-    return click.prompt("shipment id ", type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), show_choices=False)
-
-
-def default_date():
-    # return datetime.now().strftime("%Y-%m-%d %H:%M")
-    today_date = datetime.now()
-    year = str(today_date.year)
-    month = str(today_date.month)
-    day = str(today_date.day)
-    hour = str(today_date.hour)
-    minute = str(today_date.minute)
-    if 0 <= today_date.month <= 9:
-        month = "0" + month
-    if 0 <= today_date.day <= 9:
-        year = "0" + year
-    if 0 <= today_date.hour <= 9:
-        hour = "0" + hour
-    if 0 <= today_date.minute <= 9:
-        minute = "0" + minute
-    return year + '-' + month + '-' + day + ' ' + hour + ":" + minute
-
-def datetime_prompt(name_date) :
-    in_out = True
-    today = default_date()
-    while in_out :
-        in_out = False
-        date = input( name_date + "[" + today + "]: ")
-        
-        if len(date) == 0 :
-            print(today)
-            return today
-        try :
-            datetime.strptime(date, "%Y-%m-%d %H:%M")
-        except :
-            in_out = True
-            print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
-    return date
-
-
-""" def parse(value: str) :
-    try:
-        date = parser.parse(value)
-    except:
-        raise click.BadParameter("Couldn't understand date.", param=value)
-    return value """
-
-
-def add_many_packages():
-    number_of_packages = click.prompt("Number of packages ", type=int)
-    for j in range(number_of_packages):
-        # Features
-        name = click.prompt("Description of the package")
-        length = click.prompt("Length", type=float)
-        width = click.prompt("Width", type=float)
-        height = click.prompt("Height", type=float)
-        dimensions = Dimensions(length, width, height)
-        status = click.prompt(
-            "status", default=Package.statuses[0], type=statuses_package)
-        package_type = click.prompt(
-            "Package Type", default=Package.types[0], type=types)
-
-        click.echo(
-            f"You entered the package : {name}, {length}, {width}, {height}, {status}, {package_type}")
-        sure = click.confirm("Do you want to add the package ?", default=True)
-
-        if sure:
-            new_package = Package(dimensions, status, package_type, name)
-            database.set_of_packages.add(new_package)
-            click.echo(
-                f'You added your package with the id : {new_package.id}')
-
-        print("\n")
-
-
-def del_many_packages():
-    number_of_packages = click.prompt("Number of packages ", type=int)
-    for j in range(number_of_packages):
-        identity = package_id_prompt()
-        answer = click.confirm(
-            "Are you sure to delete the data ?", default=False)
-        if answer:
-            database.set_of_packages.remove(identity)
-
 
 def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages):
     default_package_status = Package.statuses[1]
@@ -170,6 +69,7 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages):
             click.echo(
                 f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
         print("\n")
+        
 
 
 def pick_many_packages_from_warehouse(shipment_packages: SetOfPackages):
@@ -193,39 +93,28 @@ def interactive():
     print("If you want to quit, input [quit] \n")
 
     while (in_out):
-        element = click.Choice(("package", "inBoundshipment",
-                               "outBoundshipment", "view", "quit"), case_sensitive=False)
-        action = click.prompt("Element you want to focus on", type=element)
+        
+        object_focused = click.prompt("Element you want to focus on", type=objects_concerned_user)
 
-        if action == "package":
-            action2 = click.prompt("Action you want to do : (add,del,status)", default='add', type=click.Choice(
+        if object_focused == "package":
+            action = click.prompt("Action you want to do : (add,del,status)", default='add', type=click.Choice(
                 ("add", "del", "status", "quit")), show_choices=False)
 
-            if action2 == "add":
-                add_many_packages()
+            if action == "add":
+                add_packages_to_database(database)
 
-            elif action2 == "quit":
-                # save the data in a text file
+            elif action == "quit":
                 database.save()
                 in_out = False
 
-            elif action2 == "del":
-                del_many_packages()
-                print("\n")
+            elif action == "del":
+                del_packages_from_database(database)
 
-            elif action2 == "status":
-                identity = package_id_prompt()
-                newstatus = click.prompt(
-                    "New status", default=Package.statuses[2], type=statuses_package)
-                answer = click.confirm(
-                    f"You want to change the status of package {identity} to {newstatus}")
-                if answer:
-                    database.set_of_packages[identity].status = newstatus
-                print("\n")
+            elif action == "status":
+                change_status_package(database)
 
-        elif action == "view":
-            view_type = click.Choice(
-                ("package_database", "shipment_database", "particular shipment"), case_sensitive=False)
+        elif object_focused == "view":
+            
             answer = click.prompt(
                 "What do you want to view : ", default="package_database", type=view_type)
             if answer == "package_database":
@@ -238,7 +127,8 @@ def interactive():
                 shipment_id = shipment_id_prompt()
                 display_shipment(database.set_of_shipments[shipment_id])
                 print("\n")
-        elif action == "inBoundshipment" :
+
+        elif object_focused == "inBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
@@ -285,7 +175,7 @@ def interactive():
             print("\n")
 
         
-        elif action == "outBoundshipment" :
+        elif object_focused == "outBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
@@ -330,7 +220,7 @@ def interactive():
                 database.set_of_shipments.remove(id_inshipment)
             print("\n")
 
-        elif action == "quit":
+        elif object_focused == "quit":
             # save the data in a text file
             database.save()
             in_out = False
