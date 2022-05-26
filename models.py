@@ -4,7 +4,7 @@ from datetime import datetime
 from pickle import dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
-
+from pickle_data import with_save
 
 class FileIDGenerator:
     def __init__(self, filename: str):
@@ -38,6 +38,10 @@ class Package():
         else:
             self.id = id
 
+    @with_save
+    def __setattr__(self, __name: str, value: str) -> None:
+        self.__dict__[__name] = value
+
     def __eq__(self, other):
         if isinstance(other, Package):
             return self.id == other.id
@@ -53,9 +57,6 @@ class Package():
     def is_same_package(self, other) -> bool:
         return self.dimensions == other.dimensions and self.status == other.status \
             and self.package_type == other.package_type and self.id == other.id
-
-    # Pour modifier un package dans un Shipment à partir de l'id :
-    # shipment[id].status = status
 
 
 SetOfPackages = set
@@ -74,8 +75,15 @@ class Shipment():
         else:
             self.id = id
 
+    @with_save
+    def __setattr__(self, __name: str, value: str) -> None:
+        self.__dict__[__name] = value
+
     def __hash__(self):
         return int("1" + self.id[1:])
+
+    def __eq__(self, other):
+        return self.id == other.id
 
 
 class SetOfSomething(set):
@@ -86,6 +94,7 @@ class SetOfSomething(set):
                 return object
         raise KeyError("This id does not exist")
 
+    @with_save
     def remove(self, other: Union[str, Union[Package, Shipment]]) -> None:
         if isinstance(other, Shipment) or isinstance(other, Package):
             super().remove(other)
@@ -99,6 +108,9 @@ class SetOfSomething(set):
 
             raise ValueError("The argument must be a string or a Package/Shipment ")
 
+    @with_save
+    def add(self, other):
+        super().add(other)
 
 class SetOfPackages(SetOfSomething):
 
@@ -125,43 +137,3 @@ class InBoundShipment(Shipment):
     def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str = ""):
         self.arrival_date: datetime = arrival_date
         super().__init__(status, id, set_of_packages, adressee, sender)
-
-
-class PickleRepository:
-
-    def __init__(self, filepath, set_of_packages, set_of_shipments):
-        self.filepath = filepath
-        self.set_of_packages = set_of_packages
-        self.set_of_shipments = set_of_shipments
-
-    def add(self, object: Union[Package, Shipment]):
-        if isinstance(object, Package):
-            self.set_of_packages.add(object)
-        elif isinstance(object, Shipment):
-            self.set_of_shipments.add(object)
-
-        with open(self.filepath, "wb") as file:
-            dump(self, file)
-
-    def remove(self, object: Union[Package, Shipment, str]):
-        if isinstance(object, Package) or object[0] == "P":
-            self.set_of_packages.remove(object)
-        elif isinstance(object, Shipment) or object[0] == "S":
-            self.set_of_shipments.remove(object)
-        else:
-            raise TypeError(
-                "the given object has to be a Shipment (or Shipment id)/ Package (or Package id)")
-        with open(self.filepath, "wb") as file:
-            dump(self, file)
-
-    def __getitem__(self, id: str):
-        if not(isinstance(id, str)):
-            raise TypeError(
-                "the given object has to be a str Shipment id or Package id")
-        elif id[0] == "P":
-            return self.set_of_packages[id]
-        elif id[0] == "S":
-            return self.set_of_shipments[id]
-        else:
-            raise TypeError(
-                "the given id has to be a Shipment id or Package id")

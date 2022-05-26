@@ -2,11 +2,13 @@ import unittest
 import datetime
 
 from models import SetOfPackages, InBoundShipment, OutBoundShipment, SetOfShipments, shipments_ids, Package, Dimensions, packages_ids
-
+import pickle_data as data
 
 class TestSetOfShipments(unittest.TestCase):
 
     def setUp(self):
+        self.TEST_DATA_FILE = 'testdata'
+        data.load(self.TEST_DATA_FILE)
         self.first_id = "S" + str(next(packages_ids) + 1)
         self.database1 = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), status="shipped", package_type="classic"),
                                         Package(dimensions=Dimensions(
@@ -42,3 +44,6 @@ class TestSetOfShipments(unittest.TestCase):
         with self.assertRaises(KeyError) as err:
             self.set_of_shipments.remove("S"+str(next(shipments_ids)))
         self.assertEqual(err.exception.args[0], "This id does not exist")
+
+    def tearDown(self):
+        data.unload()

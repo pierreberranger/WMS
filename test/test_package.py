@@ -1,9 +1,13 @@
 import unittest
 
 from models import Package, Dimensions, packages_ids
-
+import pickle_data as data
 
 class TestPackages(unittest.TestCase):
+
+    def setUp(self):
+        self.TEST_DATA_FILE = 'testdata'
+        data.load(self.TEST_DATA_FILE)
 
     def test_attribute_id(self):
         dimensions, status, package_type = Dimensions(
@@ -32,3 +36,6 @@ class TestPackages(unittest.TestCase):
         self.assertTrue(new_package.is_same_package(new_package2))
         new_package2.dimensions = Dimensions(2, 2, 2)
         self.assertFalse(new_package.is_same_package(new_package2))
+
+    def tearDown(self):
+        data.unload()
