@@ -11,11 +11,11 @@ class TestDecorator(unittest.TestCase):
         data.load("filename_test.txt")
 
         shipment = Shipment("status", SetOfPackages(), "adressee", "sender")
-        data.shipments = SetOfShipments([shipment])
+        data.set_of_shipments = SetOfShipments([shipment])
         shipment.set_of_packages.add(Package(Dimensions(1,2,3), "arrived", "classic", "machin")) 
 
         data.load("filename_test.txt")
-        packages2, shipments2 = data.packages, data.shipments
+        packages2, shipments2 = data.set_of_packages, data.set_of_shipments
         self.assertEqual(shipments2, SetOfShipments([shipment]))
         self.assertEqual(packages2, None)
 

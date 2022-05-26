@@ -1,14 +1,13 @@
 from datetime import datetime
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, PickleRepository
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
 from inputoutput import display_set_of_packages, display_set_of_shipments, display_shipment
-from pickle import load, dump
+import pickle_data as database
 
 import click
 
 filename = "database.txt"
-with open(filename, "rb") as file:
-    database: PickleRepository = load(file)
+database.load(filename)
 
 # si on fait ça ça marche mais le truc du haut non et je comprends pas pourquoi puisque ça marchait avant !
 # Est ce que c'était parce que la base de donnée était vide ? pour les paquets
@@ -96,7 +95,7 @@ def add_many_packages():
 
         if sure:
             new_package = Package(dimensions, status, package_type, name)
-            database.add(new_package)
+            database.set_of_packages.add(new_package)
             click.echo(
                 f'You added your package with the id : {new_package.id}')
 
@@ -110,7 +109,7 @@ def del_many_packages():
         answer = click.confirm(
             "Are you sure to delete the data ?", default=False)
         if answer:
-            database.remove(identity)
+            database.set_of_packages.remove(identity)
 
 
 def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages):
@@ -136,7 +135,7 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages):
             if sure:
                 new_package = Package(dimensions, status, package_type, name)
                 shipment_packages.add(new_package)  # ?
-                database.add(new_package)
+                database.set_of_packages.add(new_package)
                 click.echo(
                     f'You added your package with the id : {new_package.id}')
             print("\n")
@@ -166,7 +165,7 @@ def register_many_packages(one_by_one: bool, shipment_packages: SetOfPackages):
                     new_package = Package(
                         dimensions, status, package_type, name)
                     shipment_packages.add(new_package)  # ?
-                    database.add(new_package)
+                    database.set_of_packages.add(new_package)
                     packages_id_per_reference.append(new_package.id)
             click.echo(
                 f'The packages for the reference n°{i} have the id : {packages_id_per_reference}')
@@ -181,7 +180,7 @@ def pick_many_packages_from_warehouse(shipment_packages: SetOfPackages):
         answer = click.confirm(
             f"Are you sure to pick the package with id :{identity} ?", default=False)
         if answer:
-            shipment_packages.add(database[identity])
+            shipment_packages.add(database.set_of_packages[identity])
             click.echo("Package picked")
         else:
             click.echo("Aborted")
@@ -207,8 +206,7 @@ def interactive():
 
             elif action2 == "quit":
                 # save the data in a text file
-                with open(filename, "wb") as file:
-                    dump(database, file)
+                database.save()
                 in_out = False
 
             elif action2 == "del":
@@ -222,7 +220,7 @@ def interactive():
                 answer = click.confirm(
                     f"You want to change the status of package {identity} to {newstatus}")
                 if answer:
-                    database[identity].status = newstatus
+                    database.set_of_packages[identity].status = newstatus
                 print("\n")
 
         elif action == "view":
@@ -238,7 +236,7 @@ def interactive():
                 print("\n")
             if answer == "particular shipment":
                 shipment_id = shipment_id_prompt()
-                display_shipment(database[shipment_id])
+                display_shipment(database.set_of_shipments[shipment_id])
                 print("\n")
         elif action == "inBoundshipment" :
             declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
@@ -259,7 +257,7 @@ def interactive():
 
                 new_inshipment = InBoundShipment(
                     arrival_date, status, inshipment_packages, sender, adressee)
-                database.add(new_inshipment)
+                database.set_of_shipments.add(new_inshipment)
 
                 id_shipment = new_inshipment.id
                 for package in inshipment_packages:
@@ -271,7 +269,7 @@ def interactive():
             if answer == "update":
                 print("Your inshipment is arrived.")
                 id_inshipment = shipment_id_prompt()
-                inshipment = database[id_inshipment]
+                inshipment = database.set_of_shipments[id_inshipment]
 
                 #arrival_date = click.prompt("Enter the actual arrival date YYYY-MM-DD HH:MM", value_proc=parse, default=default_date())
                 arrival_date = datetime_prompt("Arrival date ")
@@ -282,7 +280,7 @@ def interactive():
 
             if answer == "del":
                 id_inshipment = shipment_id_prompt()
-                database.remove(id_inshipment)
+                database.set_of_shipments.remove(id_inshipment)
 
             print("\n")
 
@@ -305,7 +303,7 @@ def interactive():
 
                 new_outshipment = OutBoundShipment(
                     departure_date, expected_arrival_date, status, id, outshipment_packages, adressee, sender)
-                database.add(new_outshipment)
+                database.set_of_shipments.add(new_outshipment)
                 id_shipment = new_outshipment.id
 
                 for package in outshipment_packages:
@@ -319,7 +317,7 @@ def interactive():
                 # cas retiré du cas d'usage
                 print("Your outshipment is delivered.")
                 id_outshipment = shipment_id_prompt()
-                outshipment = database[id_outshipment]
+                outshipment = database.set_of_shipments[id_outshipment]
                 arrival_date = datetime_prompt("Delivered date ")
                 outshipment.expected_arrival_date = arrival_date
                 # 'delivered'
@@ -329,13 +327,12 @@ def interactive():
 
             if answer == "del":
                 id_inshipment = shipment_id_prompt()
-                database.remove(id_inshipment)
+                database.set_of_shipments.remove(id_inshipment)
             print("\n")
 
         elif action == "quit":
             # save the data in a text file
-            with open(filename, "wb") as file:
-                dump(database, file)
+            database.save()
             in_out = False
 
         else:

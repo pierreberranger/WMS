@@ -1,37 +1,37 @@
 import pickle
 
-packages = None
-shipments = None
+set_of_packages = None
+set_of_shipments = None
 _file = None
 
 def load(file):
-	global packages
-	global shipments
+	global set_of_packages
+	global set_of_shipments
 	global _file
 	with open(file, 'rb') as f:
-		packages, shipments = pickle.load(f)
+		set_of_packages, set_of_shipments = pickle.load(f)
 	_file = file
 
 def unload():
-	global packages
-	global shipments
+	global set_of_packages
+	global set_of_shipments
 	global _file
 
-	packages = None
-	shipments = None
+	set_of_packages = None
+	set_of_shipments = None
 	_file = None
 
 
 def save(file = None):
 	global _file
-	global packages
-	global shipments
+	global set_of_packages
+	global set_of_shipments
 	if file is None:
 		file = _file
 	if file is None:
 		raise FileNotFoundError
 	with open(file, 'wb') as f:
-		pickle.dump((packages, shipments), f)
+		pickle.dump((set_of_packages, set_of_shipments), f)
 
 def with_save(func):
 	def decorated(self, *args):
