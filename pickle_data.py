@@ -34,8 +34,9 @@ def save(file = None):
 		pickle.dump((set_of_packages, set_of_shipments), f)
 
 def with_save(func):
-	def decorated(self, *args):
-		func(self, *args)
+	def decorated(self, *args, **kwargs):
+		print(*args, "hzllo")
+		func(self, *args, **kwargs)
 		save(_file)
 		return None
 	return decorated
