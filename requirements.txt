@@ -3,3 +3,9 @@ defusedxml==0.7.1
 fpdf2==2.5.4
 pdfrw==0.4
 Pillow==9.1.1
+defusedxml==0.7.1
+flake8==4.0.1
+mccabe==0.6.1
+pdfrw==0.4
+pycodestyle==2.8.0
+pyflakes==2.4.0
