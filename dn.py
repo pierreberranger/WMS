@@ -128,7 +128,8 @@ def gross_ship_tax(ship_type: str, ship_volume:int, call:int):
 
 def net_ship_tax(calls_this_year,ratio,ship_type, ship_volume, call):
     reduction = max(frequency_reduction(calls_this_year), ratio_reduction(ratio))
-    return (1-reduction)*gross_ship_tax(ship_type, ship_volume, call)
+    gst = gross_ship_tax(ship_type, ship_volume, call)
+    return (1-reduction)*gst
 
 def frequency_reduction(calls_this_year):
     for n,v in reversed(FREQUENCY_REDUCTIONS):
@@ -235,7 +236,7 @@ def southern_liner():
     added_vals["calls_this_year"] = calls_this_year
     added_vals["calls_this_year_reduction"] = "-{0:.0f}%".format(100*frequency_reduction(calls_this_year))
     added_vals["total_reductions"] = "-{0:.0f}%".format(100*max(ratio_reduction(ratio),frequency_reduction(calls_this_year)))
-    nst = net_ship_tax(calls_this_year,ratio,"12C",2706,0)
+    nst = net_ship_tax(calls_this_year,ratio,"12C",2706,1)
     added_vals["perceived_ship_tax"] = "{0:.2f}".format(nst)
     added_vals["summary_value_1"] = "{0:.2f}".format(nst)
 
