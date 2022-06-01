@@ -13,9 +13,9 @@ statuses_inshipment = click.Choice(
 statuses_outshipment = click.Choice(
     OutBoundShipment.statuses, case_sensitive=False)
 
-types = click.Choice(Package.types, case_sensitive=False)
+package_types = click.Choice(Package.types, case_sensitive=False)
 
-objects_concerned_user = click.Choice(("package", "inBoundshipment",
+objects_focused_user = click.Choice(("package", "inBoundshipment",
                                "outBoundshipment", "view", "quit"), case_sensitive=False)
 
 view_type = click.Choice(
@@ -52,36 +52,53 @@ def datetime_prompt(name_date) -> str :
             print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
     return date
 
-def package_information_prompt() -> Package :
+def package_information_prompt() -> tuple :
     name = click.prompt("Description of the package")
     length = click.prompt("Length", type=float)
     width = click.prompt("Width", type=float)
     height = click.prompt("Height", type=float)
     dimensions = Dimensions(length, width, height)
+    weight = click.prompt("Weight", type=float)
     status = click.prompt(
         "status", default=Package.statuses[0], type=statuses_package)
     package_type = click.prompt(
-        "Package Type", default=Package.types[0], type=types)
-    return (dimensions, status, package_type, name)
+        "Package Type", default=Package.types[0], type=package_types)
+    return (dimensions, weight, status, package_type, name)
+
+def inshipment_information_prompt() -> tuple :
+    arrival_date = datetime_prompt("Arrival date ")
+    status = InBoundShipment.statuses[0]
+    sender = click.prompt("Sender ", type=str)
+    # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
+    adressee = click.prompt("Adressee ", type=str)
+    return (arrival_date, status, sender, adressee)
+
+def outshipment_information_prompt() :
+    departure_date = datetime_prompt("Departure date ")
+    expected_arrival_date = datetime_prompt("Expected delivered date")
+    status = Package.statuses[2]
+    sender = click.prompt("Sender ", type=str)
+    adressee = click.prompt("Adressee ", type=str)
+    return (departure_date, expected_arrival_date, status, sender, adressee)
 
 def new_package_status() -> str :
     return click.prompt(
         "New status", default=Package.statuses[2], type=statuses_package)
 
-def enter_packages_one_by_one() -> bool :
+def choose_enter_one_by_one() -> bool :
     return click.confirm(
         "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
 
 # check before actions
 
-def confirm_package(name, dimensions, status, package_type) -> bool :
+def confirm_package(name, dimensions, weight, status, package_type) -> bool :
     click.echo(
-        f"You entered the package : {name}, {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {status}, {package_type}")
+        f"You entered the package : {name}, {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {weight}, {status}, {package_type}")
     return click.confirm("Do you want to add the package ?", default=True)
 
-def confirm_package_reference(name, dimensions, status, package_type, number_of_packages) -> bool :
+def confirm_package_reference(name, dimensions, weight, status, package_type, number_of_packages) -> bool :
     click.echo(
-        f"You entered for this reference the package form : {name},  {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {status}, {package_type}")
+        f"You entered for this reference the package form : {name},  {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {weight}, {status}, {package_type}")
     return click.confirm(
         f"Do you want to add these packages in number of {number_of_packages} ?", default=True)
 
@@ -89,9 +106,13 @@ def confirm_change_status(identity, newstatus) :
     return click.confirm(
         f"You want to change the status of package {identity} to {newstatus}")
 
-def confirm_del_objects(identity) :
+def confirm_del_objects() :
     return click.confirm(
             "Are you sure to delete the data ?", default=False)
+
+def confirm_pick_package(identity) -> bool :
+    return click.confirm(
+            f"Are you sure to pick the package with id :{identity} ?", default=False)
 
 # Others
 

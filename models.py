@@ -27,9 +27,10 @@ class Package():
     statuses = ('stored', 'inbound', 'outbound', 'delivered')
     types = ('EPAL', '20ISO', 'OOG')
 
-    def __init__(self, dimensions: Dimensions, status: str, package_type: str, description: str = "", shipment_ids=[], id=None) -> None:
+    def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", shipment_ids=[], id=None) -> None:
         self.status = status
         self.dimensions = dimensions
+        self.weight = weight
         self.package_type = package_type
         self.shipment_ids = shipment_ids
         self.description = description
@@ -123,7 +124,7 @@ class SetOfShipments(SetOfSomething):
 
 
 class OutBoundShipment(Shipment):
-    statuses = ('inbound', 'stocked', 'delivered')
+    statuses = ('outbound', 'warehouse', 'delivered')
 
     def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str = ""):
         self.departure_date: datetime = departure_date
@@ -132,7 +133,7 @@ class OutBoundShipment(Shipment):
 
 
 class InBoundShipment(Shipment):
-    statuses = ('stocked', 'outbound')
+    statuses = ('warehouse', 'inbound')
 
     def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str = ""):
         self.arrival_date: datetime = arrival_date
