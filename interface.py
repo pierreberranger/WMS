@@ -262,7 +262,7 @@ def interactive():
                 id_shipment = new_inshipment.id
                 for package in inshipment_packages:
                     # ce serait plutot :
-                    package.shipment_ids.append(id_shipment)
+                    package.shipment_ids.add(id_shipment)
 
                 click.echo(f'Your Inshipment id is {id_shipment}')
 
@@ -302,12 +302,12 @@ def interactive():
                 pick_many_packages_from_warehouse(outshipment_packages)
 
                 new_outshipment = OutBoundShipment(
-                    departure_date, expected_arrival_date, status, id, outshipment_packages, adressee, sender)
+                    departure_date, expected_arrival_date, status, outshipment_packages, adressee, sender)
                 database.set_of_shipments.add(new_outshipment)
                 id_shipment = new_outshipment.id
 
                 for package in outshipment_packages:
-                    package.shipment_ids.append(id_shipment)  # non implémenté
+                    package.shipment_ids.add(id_shipment)  # non implémenté
                     # ce serait plutot :
                     # package.shipment_id.append(id_shipment)
             click.echo(f'Your OutBoundshipment id is {id_shipment}')

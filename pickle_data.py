@@ -35,7 +35,6 @@ def save(file = None):
 
 def with_save(func):
 	def decorated(self, *args, **kwargs):
-		print(*args, "hzllo")
 		func(self, *args, **kwargs)
 		save(_file)
 		return None

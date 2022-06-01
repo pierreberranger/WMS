@@ -26,7 +26,7 @@ class TestPackages(unittest.TestCase):
         new_package2.id = new_package.id
         self.assertTrue(new_package == new_package2)
 
-    def test_is_same_package(self):
+    def test_is_same_shipment(self):
         dimensions, status, package_type = Dimensions(
             1, 2, 3), "shipped", "classic"
         new_package = Package(dimensions, status, package_type)
