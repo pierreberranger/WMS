@@ -24,6 +24,7 @@ shipments_ids = FileIDGenerator("MAX_ID_Shipments.txt")
 packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 bundles_ids = FileIDGenerator("MAX_ID_Bundles.txt")
 containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
+trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
 
 
 class Package():
@@ -251,12 +252,12 @@ class Container:
 
 class Trip:
     
-    def __init__(self, transporter: str, set_of_packages: SetOfPackages = None, trip_id: int = None) -> None:
-        self.id: str = f"C{next(containers_ids)}"
-        if not(set_of_packages is None):
-            for package in set_of_packages:
-                package.container_id = self.id
-        self.transporter = transporter
+    def __init__(self, ship_name: str, set_of_bundles: SetOfBundles = None, trip_id: int = None) -> None:
+        self.id: str = f"T{next(trips_ids)}"
+        if not(set_of_bundles is None):
+            for bundle in set_of_bundles:
+                bundle.trip_id = self.id
+        self.ship_name = ship_name
     
     @property
     def set_of_bundles(self):
