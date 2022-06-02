@@ -98,7 +98,10 @@ class Shipment():
             package.shipment_ids.discard(self.id)
         for package in new_set_of_packages:
             package.shipment_ids.add(self.id)
-        
+
+    @property
+    def weight(self) -> float:
+        return sum(package.weight for package in self.set_of_packages)
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:
@@ -240,6 +243,10 @@ class Bundle:
         for container in new_set_of_containers:
             container.bundle_id = self.id
 
+    @property
+    def weight(self) -> float:
+        return sum(container.weight for container in self.set_of_containers)
+
     def __hash__(self):
         return hash(self.id)
 
@@ -271,6 +278,10 @@ class Container:
                 package.container_id = None
         for package in new_set_of_packages:
             package.container_id = self.id
+
+    @property
+    def weight(self) -> float:
+        return sum(package.weight for package in self.set_of_packages)
 
     def __hash__(self):
         return hash(self.id)
@@ -311,6 +322,10 @@ class Trip:
             return SetOfContainers()
         else:
             return SetOfContainers().union(*(bundle.set_of_containers for bundle in self.set_of_bundles))
+
+    @property
+    def weight(self) -> float:
+        return sum(bundle.weight for bundle in self.set_of_bundles)
 
     def __hash__(self):
         return hash(self.id)
