@@ -22,13 +22,16 @@ class FileIDGenerator:
 
 shipments_ids = FileIDGenerator("MAX_ID_Shipments.txt")
 packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
+bundles_ids = FileIDGenerator("MAX_ID_Bundles.txt")
+containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
 
 
 class Package():
     statuses = ('stored', 'inbound', 'outbound', 'delivered')
     types = ('EPAL', '20ISO', 'OOG')
 
-    def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", shipment_ids=[], id=None) -> None:
+    def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", 
+                    id=None, shipment_ids=None, container_id = None) -> None:
         self.status = status
         self.dimensions = dimensions
         self.weight = weight
@@ -42,6 +45,7 @@ class Package():
             self.id = f"P{next(packages_ids)}"
         else:
             self.id = id
+        self.container_id = container_id
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:
@@ -69,24 +73,23 @@ SetOfPackages = set
 
 class Shipment():
 
-    def __init__(self, status: str, set_of_packages: SetOfPackages = None, adressee: str ="", sender: str = "", description: str = ""):
+    def __init__(self, status: str, set_of_packages: SetOfPackages = None, adressee: str ="", sender: str = "", 
+            description: str = "", bundle_id: int = None, shipment_type: str = ""):
         self.status: str = status
         self.adressee: str = adressee
         self.sender: str = sender
         self.description: str = description
-        self.id = f"S{next(shipments_ids)}"
-        if not(set_of_packages is None):
-            for package in set_of_packages:
-                package.shipment_ids.add(self.id)
+        self.id = f"{shipment_type}S{next(shipments_ids)}"
+        self.bundle_id: int = bundle_id
 
     @property
     def set_of_packages(self):
         if database.set_of_packages is None:
             return SetOfPackages()
         else:
-            return {package for package in database.set_of_packages 
+            return SetOfPackages(package for package in database.set_of_packages 
                             if self.id in package.shipment_ids
-                }
+                )
     @set_of_packages.setter
     def set_of_packages(self, new_set_of_packages):
         for package in database.set_of_packages:
@@ -148,8 +151,8 @@ class OutBoundShipment(Shipment):
     def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, set_of_packages: SetOfPackages = None, adressee: str = "", sender: str = "", description: str = ""):
         self.departure_date: datetime = departure_date
         self.expected_arrival_date: datetime = expected_arrival_date
-        super().__init__(status, set_of_packages, adressee, sender, description)
-        self.id = "0" + self.id
+        super().__init__(status, set_of_packages, adressee, sender, description, shipment_type="O")
+        
 
 
 class InBoundShipment(Shipment):
@@ -157,5 +160,125 @@ class InBoundShipment(Shipment):
 
     def __init__(self, arrival_date, status: str,set_of_packages: SetOfPackages = None, sender: str = "", adressee: str = "", description: str = ""):
         self.arrival_date: datetime = arrival_date
-        super().__init__(status,set_of_packages, adressee, sender, description)
-        self.id = "I" + self.id
+        super().__init__(status,set_of_packages, adressee, sender, description, shipment_type="I")
+
+class SetOfContainers(SetOfSomething):
+    
+    pass
+
+class SetOfBundles(SetOfSomething):
+    
+    pass
+
+class SetOfTrips(SetOfSomething):
+    
+    pass
+
+class Bundle:
+
+    def __init__(self, transporter: str, set_of_shipments: SetOfShipments = None, trip_id: int = None) -> None:
+        self.id = f"B{next(bundles_ids)}"
+        if not(set_of_shipments is None):
+            for shipment in set_of_shipments:
+                shipment.bundle_id = self.id
+        self.transporter = transporter
+        self.trip_id = trip_id
+    
+    @property
+    def set_of_shipments(self):
+        if database.set_of_shipments is None:
+            return SetOfShipments()
+        else:
+            return SetOfShipments(shipment for shipment in database.set_of_shipments 
+                            if self.id == shipment.bundle_id
+                )
+
+    @set_of_shipments.setter
+    def set_of_shipments(self, new_set_of_shipments):
+        for shipment in database.set_of_shipments:
+            if shipment.bundle_id == self.id:
+                shipment.bundle_id = None
+            shipment.bundle_id = None
+        for shipment in new_set_of_shipments:
+            shipment.bundle_id = self.id
+
+    @property
+    def set_of_containers(self):
+        if database.set_of_containers is None:
+            return SetOfContainers()
+        else:
+            return SetOfContainers(container for container in database.set_of_containers 
+                            if self.id == container.bundle_id
+                )
+
+    @set_of_containers.setter
+    def set_of_containers(self, new_set_of_containers):
+        for container in database.set_of_containers:
+            if container.bundle_id == self.id:
+                container.bundle_id = None
+            container.bundle_id = None
+        for container in new_set_of_containers:
+            container.bundle_id = self.id
+
+
+class Container:
+    
+    def __init__(self, set_of_packages: SetOfPackages = None, bundle_id: int = None) -> None:
+        self.id: str = f"C{next(containers_ids)}"
+        if not(set_of_packages is None):
+            for package in set_of_packages:
+                package.container_id = self.id
+        self.bundle_id = bundle_id
+    
+    @property
+    def set_of_packages(self):
+        if database.set_of_packages is None:
+            return SetOfPackages()
+        else:
+            return SetOfPackages(package for package in database.set_of_packages 
+                            if self.id == package.container_id
+                )
+
+    @set_of_packages.setter
+    def set_of_packages(self, new_set_of_packages):
+        for package in database.set_of_packages:
+            if package.container_id == self.id:
+                package.container_id = None
+        for package in new_set_of_packages:
+            package.container_id = self.id
+
+
+
+class Trip:
+    
+    def __init__(self, transporter: str, set_of_packages: SetOfPackages = None, trip_id: int = None) -> None:
+        self.id: str = f"C{next(containers_ids)}"
+        if not(set_of_packages is None):
+            for package in set_of_packages:
+                package.container_id = self.id
+        self.transporter = transporter
+    
+    @property
+    def set_of_bundles(self):
+        if database.set_of_bundles is None:
+            return SetOfBundles()
+        else:
+            return SetOfBundles(bundle for bundle in database.set_of_bundles 
+                            if self.id == bundle.trip_id
+                )
+
+    @set_of_bundles.setter
+    def set_of_bundles(self, new_set_of_bundles):
+        for bundle in database.set_of_bundles:
+            if bundle.trip_id == self.id:
+                bundle.trip_id = None
+            bundle.trip_id = None
+        for bundle in new_set_of_bundles:
+            bundle.trip_id = self.id
+
+    @property
+    def set_of_containers(self):
+        if database.set_of_containers is None:
+            return SetOfContainers()
+        else:
+            return SetOfContainers().union(*(bundle.set_ofcontainers for bundle in self.set_of_bundles))

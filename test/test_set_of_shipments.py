@@ -9,17 +9,17 @@ class TestSetOfShipments(unittest.TestCase):
     def setUp(self):
         self.TEST_DATA_FILE = 'testdata'
         data.load(self.TEST_DATA_FILE)
-        self.database1 = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), status="shipped", package_type="classic"),
+        self.database1 = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), weight=10, status="shipped", package_type="classic"),
                                         Package(dimensions=Dimensions(
-                                            1, 2, 3), status="delivered", package_type="classic"),
+                                            1, 2, 3), weight=10, status="delivered", package_type="classic"),
                                         Package(dimensions=Dimensions(
-                                            1, 2, 3), status="shipped", package_type="big-bag"),
+                                            1, 2, 3), weight=10, status="shipped", package_type="big-bag"),
                                         ])
-        self.database2 = SetOfPackages([Package(dimensions=Dimensions(3, 4, 5), status="shipped", package_type="classic"),
+        self.database2 = SetOfPackages([Package(dimensions=Dimensions(3, 4, 5), weight=10, status="shipped", package_type="classic"),
                                         Package(dimensions=Dimensions(
-                                            3, 4, 5), status="delivered", package_type="classic"),
+                                            3, 4, 5), weight=10, status="delivered", package_type="classic"),
                                         Package(dimensions=Dimensions(
-                                            3, 4, 5), status="shipped", package_type="big-bag"),
+                                            3, 4, 5), weight=10, status="shipped", package_type="big-bag"),
                                         ])
         self.shipment1 = InBoundShipment(arrival_date=datetime.datetime(
             2022, 5, 11, 16, 34), status="coming", set_of_packages=self.database1, sender="Renault", adressee="EntrepotNostos1")

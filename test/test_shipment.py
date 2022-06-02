@@ -9,8 +9,8 @@ class TestShipment(unittest.TestCase):
         self.TEST_DATA_FILE = 'testdata'
         database.load(self.TEST_DATA_FILE)
         self.shipment = Shipment(None, None, None, None, "shipment")
-        self.package1, self.package2, self.package3 = Package(None, "OK", None, shipment_ids={self.shipment.id}), Package(None, "OK", None, shipment_ids={self.shipment.id, "er"}), Package(None, None, None, shipment_ids={"er"})
-        database.set_of_packages = SetOfPackages([self.package1, self.package2, self.package3, Package(None, None, None, shipment_ids=None)])
+        self.package1, self.package2, self.package3 = Package(None, "OK", 10, None, shipment_ids={self.shipment.id}), Package(None, "OK", 10, None, shipment_ids={self.shipment.id, "er"}), Package(None, 10, None, None, shipment_ids={"er"})
+        database.set_of_packages = SetOfPackages([self.package1, self.package2, self.package3, Package(None, None, 10, None, shipment_ids=None)])
     def test_eq(self):
         new_shipment = Shipment(None, None, None, None, "shipment1")
         new_shipment2 = Shipment(None, None, None, None, "shipment2")
