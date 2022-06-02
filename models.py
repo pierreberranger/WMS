@@ -69,7 +69,8 @@ class Package():
             and self.package_type == other.package_type and self.id == other.id
 
 
-SetOfPackages = set
+class SetOfPackages:
+    pass
 
 
 class Shipment():
@@ -110,17 +111,27 @@ class Shipment():
         return self.id == other.id
 
 
+class Bundle:
+    pass
+
+class Container:
+    pass
+
+class Trip:
+    pass
+
 class SetOfSomething(set):
 
-    def __getitem__(self, id: str) -> Union[Package, Shipment]:
+    def __getitem__(self, id: str) -> Union[Package, Shipment, Bundle, Container, Trip]:
         for object in self:
             if object.id == id:
                 return object
         raise KeyError("This id does not exist")
 
     @with_save
-    def remove(self, other: Union[str, Union[Package, Shipment]]) -> None:
-        if isinstance(other, Shipment) or isinstance(other, Package):
+    def remove(self, other: Union[str, Union[Package, Shipment, Bundle, Container, Trip]]) -> None:
+        if (isinstance(other, Shipment) or isinstance(other, Package) or isinstance(other, Bundle) or 
+                isinstance(other, Container) or isinstance(other, Trip)):
             super().remove(other)
         elif isinstance(other, str):
             for object in self.copy():
@@ -133,7 +144,7 @@ class SetOfSomething(set):
             raise ValueError("The argument must be a string or a Package/Shipment ")
 
     @with_save
-    def add(self, other: Union[str, Union[Package, Shipment]]):
+    def add(self, other: Union[str, Union[Package, Shipment, Bundle, Container, Trip]]):
         super().add(other)
 
 class SetOfPackages(SetOfSomething):
@@ -163,30 +174,38 @@ class InBoundShipment(Shipment):
         self.arrival_date: datetime = arrival_date
         super().__init__(status,set_of_packages, adressee, sender, description, shipment_type="I")
 
+
 class SetOfContainers(SetOfSomething):
     
     pass
+
 
 class SetOfBundles(SetOfSomething):
     
     pass
 
+
 class SetOfTrips(SetOfSomething):
     
     pass
 
+
 class Bundle:
 
-    def __init__(self, transporter: str, set_of_shipments: SetOfShipments = None, trip_id: int = None) -> None:
+    def __init__(self, transporter: str, set_of_shipments: SetOfShipments = None, 
+            set_of_containers: SetOfContainers = None, trip_id: int = None) -> None:
         self.id = f"B{next(bundles_ids)}"
         if not(set_of_shipments is None):
             for shipment in set_of_shipments:
                 shipment.bundle_id = self.id
+        if not(set_of_containers is None):
+            for container in set_of_containers:
+                container.bundle_id = self.id
         self.transporter = transporter
         self.trip_id = trip_id
-    
+
     @property
-    def set_of_shipments(self):
+    def set_of_shipments(self) -> SetOfShipments:
         if database.set_of_shipments is None:
             return SetOfShipments()
         else:
@@ -204,7 +223,7 @@ class Bundle:
             shipment.bundle_id = self.id
 
     @property
-    def set_of_containers(self):
+    def set_of_containers(self) -> SetOfContainers:
         if database.set_of_containers is None:
             return SetOfContainers()
         else:
@@ -221,6 +240,11 @@ class Bundle:
         for container in new_set_of_containers:
             container.bundle_id = self.id
 
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        return self.id == other.id
 
 class Container:
     
@@ -232,7 +256,7 @@ class Container:
         self.bundle_id = bundle_id
     
     @property
-    def set_of_packages(self):
+    def set_of_packages(self) -> SetOfPackages:
         if database.set_of_packages is None:
             return SetOfPackages()
         else:
@@ -248,11 +272,15 @@ class Container:
         for package in new_set_of_packages:
             package.container_id = self.id
 
+    def __hash__(self):
+        return hash(self.id)
 
+    def __eq__(self, other):
+        return self.id == other.id
 
 class Trip:
     
-    def __init__(self, ship_name: str, set_of_bundles: SetOfBundles = None, trip_id: int = None) -> None:
+    def __init__(self, ship_name: str, set_of_bundles: SetOfBundles = None) -> None:
         self.id: str = f"T{next(trips_ids)}"
         if not(set_of_bundles is None):
             for bundle in set_of_bundles:
@@ -260,7 +288,7 @@ class Trip:
         self.ship_name = ship_name
     
     @property
-    def set_of_bundles(self):
+    def set_of_bundles(self) -> SetOfBundles:
         if database.set_of_bundles is None:
             return SetOfBundles()
         else:
@@ -278,8 +306,14 @@ class Trip:
             bundle.trip_id = self.id
 
     @property
-    def set_of_containers(self):
+    def set_of_containers(self) -> SetOfContainers:
         if database.set_of_containers is None:
             return SetOfContainers()
         else:
-            return SetOfContainers().union(*(bundle.set_ofcontainers for bundle in self.set_of_bundles))
+            return SetOfContainers().union(*(bundle.set_of_containers for bundle in self.set_of_bundles))
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        return self.id == other.id
