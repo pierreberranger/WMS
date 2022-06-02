@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
+import pickle_data as database
 
 import click
 
@@ -25,12 +26,12 @@ def default_date():
     return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # informations given by the user
-def package_id_prompt(database) -> int :
+def package_id_prompt() -> int :
     return click.prompt("package id ", 
     type=click.Choice(list((str(p.id) for p in database.set_of_packages))), 
     show_choices=False)
 
-def shipment_id_prompt(database) -> int :
+def shipment_id_prompt() -> int :
     return click.prompt("shipment id ", 
     type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), 
     show_choices=False)

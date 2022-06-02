@@ -2,15 +2,14 @@ from datetime import datetime
 from email.policy import default
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
-from inputoutput import display_set_of_packages, display_set_of_shipments, display_shipment
+from display import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
 from service_layer import *
 
 import click
 
-filename = "database.txt"
-database.load(filename)
+load()
 
 def interactive():
     in_out = True
@@ -30,7 +29,7 @@ def interactive():
                 add_packages_to_database(database)
 
             elif action == "quit":
-                database.save()
+                quit_and_save()
                 in_out = False
 
             elif action == "del":
@@ -94,8 +93,7 @@ def interactive():
                 del_shipments(database)
 
         elif object_focused == "quit":
-            # save the data in a text file
-            database.save()
+            quit_and_save()
             in_out = False
 
         else:

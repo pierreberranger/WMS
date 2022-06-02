@@ -1,10 +1,14 @@
 from datetime import datetime
 
 from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
-from inputoutput import display_set_of_packages, display_set_of_shipments, display_shipment
+from display import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
 from user_questions import *
+
+def load():
+    filename = "database.txt"
+    database.load(filename)
 
 def add_one_package() :
     package_informations = package_information_prompt()
@@ -19,7 +23,7 @@ def add_one_package() :
         save_id_package(new_package.id)
     print("\n")
 
-def add_packages_to_database(database) :
+def add_packages_to_database() :
     if choose_enter_one_by_one() :
         for i in range(number_packages()) :
             add_one_package()
@@ -48,15 +52,15 @@ def add_packages_to_database(database) :
 
                 save_id_list_packages(packages_id_per_reference)   
 
-def del_packages_from_database(database):
+def del_packages_from_database():
     for i in range(number_packages()):
-        identity = package_id_prompt(database)
+        identity = package_id_prompt()
         if confirm_del_objects(identity) :
             database.set_of_packages.remove(identity)
         print("\n")
 
-def change_status_package(database) :
-    package_id = package_id_prompt(database)
+def change_status_package() :
+    package_id = package_id_prompt()
     new_status = new_package_status()
     if confirm_change_status(package_id, new_status) :
         database.set_of_packages[package_id].status = new_status
@@ -109,7 +113,7 @@ def register_packages_inshipment(inshipment):
                 save_id_list_packages(packages_id_per_reference)
     inshipment.set_of_packages = shipment_packages
         
-def declare_inshipment(database) :
+def declare_inshipment() :
     inshipment_information = inshipment_information_prompt()
     inshipment = InBoundShipment(inshipment_information[0], inshipment_information[1], 
     inshipment_information[2], 
@@ -120,7 +124,7 @@ def declare_inshipment(database) :
     save_id_shipment(inshipment.id)
 
 
-def update_inshipment(database) :
+def update_inshipment() :
     id_inshipment = shipment_id_prompt()
     inshipment = database.set_of_shipments[id_inshipment]
     arrival_date = datetime_prompt("Arrival date ")
@@ -130,9 +134,9 @@ def update_inshipment(database) :
     for package in inshipment_packages : 
         package.status = Package.statuses[0]
 
-def del_shipments(database) :
+def del_shipments() :
     for i in range(number_packages()):
-        identity = shipment_id_prompt(database)
+        identity = shipment_id_prompt()
         if confirm_del_objects() :
             database.set_of_shipments.remove(identity)
         print("\n")
@@ -149,7 +153,7 @@ def register_packages_outshipment(outshipment) :
             click.echo("Aborted")
     outshipment.set_of_packages = shipment_packages
 
-def declare_outshipment(database) :
+def declare_outshipment() :
     outshipment_information = outshipment_information_prompt()
     outshipment = OutBoundShipment(outshipment_information[0], outshipment_information[1], 
     outshipment_information[2], 
@@ -160,7 +164,7 @@ def declare_outshipment(database) :
     database.set_of_shipments.add(outshipment)
     save_id_shipment(outshipment.id)
 
-def actual_exit_outboundshipment(database) :
+def actual_exit_outboundshipment() :
     id_outshipment = shipment_id_prompt()
     outshipment = database.set_of_shipments[id_outshipment]
     outshipment.status = OutBoundShipment.statuses[0]
@@ -168,7 +172,7 @@ def actual_exit_outboundshipment(database) :
     for package in outshipment_packages :
         package.status = Package.statuses[2]
     
-def delivered_outboundshipment(database) :
+def delivered_outboundshipment() :
     id_outshipment = shipment_id_prompt()
     outshipment = database.set_of_shipments[id_outshipment]
     arrival_date = datetime_prompt("Delivered date ")
@@ -177,3 +181,7 @@ def delivered_outboundshipment(database) :
     outshipment_packages = outshipment.set_of_packages
     for package in outshipment_packages :
         package.status = Package.statuses[3]
+
+def quit_and_save() :
+    # save the data in a text file
+    database.save()
