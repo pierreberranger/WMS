@@ -5,6 +5,7 @@ from pickle import dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
 from pickle_data import with_save
+import pickle_data as database
 
 class FileIDGenerator:
     def __init__(self, filename: str):
@@ -32,7 +33,10 @@ class Package():
         self.dimensions = dimensions
         self.weight = weight
         self.package_type = package_type
-        self.shipment_ids = shipment_ids
+        if shipment_ids is None:
+            self.shipment_ids = set()
+        else:
+            self.shipment_ids = shipment_ids
         self.description = description
         if id is None:
             self.id = f"P{next(packages_ids)}"
@@ -41,7 +45,7 @@ class Package():
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:
-        self.__dict__[__name] = value
+        super().__setattr__(__name, value)
 
     def __eq__(self, other):
         if isinstance(other, Package):
@@ -53,7 +57,7 @@ class Package():
                 "A Package can only be compared to a Package or an int")
 
     def __hash__(self):
-        return int("0" + self.id[1:])
+        return hash(self.id)
 
     def is_same_package(self, other) -> bool:
         return self.dimensions == other.dimensions and self.status == other.status \
@@ -65,23 +69,38 @@ SetOfPackages = set
 
 class Shipment():
 
-    def __init__(self, status: str, set_of_packages: SetOfPackages, adressee: str, sender: str, description: str = "", id: int = None):
+    def __init__(self, status: str, set_of_packages: SetOfPackages = None, adressee: str ="", sender: str = "", description: str = ""):
         self.status: str = status
-        self.set_of_packages: SetOfPackages = set_of_packages
         self.adressee: str = adressee
         self.sender: str = sender
         self.description: str = description
-        if id is None:
-            self.id = f"S{next(shipments_ids)}"
+        self.id = f"S{next(shipments_ids)}"
+        if not(set_of_packages is None):
+            for package in set_of_packages:
+                package.shipment_ids.add(self.id)
+
+    @property
+    def set_of_packages(self):
+        if database.set_of_packages is None:
+            return SetOfPackages()
         else:
-            self.id = id
+            return {package for package in database.set_of_packages 
+                            if self.id in package.shipment_ids
+                }
+    @set_of_packages.setter
+    def set_of_packages(self, new_set_of_packages):
+        for package in database.set_of_packages:
+            package.shipment_ids.discard(self.id)
+        for package in new_set_of_packages:
+            package.shipment_ids.add(self.id)
+        
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:
-        self.__dict__[__name] = value
+        super().__setattr__(__name, value)
 
     def __hash__(self):
-        return int("1" + self.id[1:])
+        return hash(self.id)
 
     def __eq__(self, other):
         return self.id == other.id
@@ -110,7 +129,7 @@ class SetOfSomething(set):
             raise ValueError("The argument must be a string or a Package/Shipment ")
 
     @with_save
-    def add(self, other):
+    def add(self, other: Union[str, Union[Package, Shipment]]):
         super().add(other)
 
 class SetOfPackages(SetOfSomething):
@@ -126,15 +145,17 @@ class SetOfShipments(SetOfSomething):
 class OutBoundShipment(Shipment):
     statuses = ('outbound', 'warehouse', 'delivered')
 
-    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, id: int, set_of_packages: SetOfPackages, adressee: str, sender: str = ""):
+    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, set_of_packages: SetOfPackages = None, adressee: str = "", sender: str = "", description: str = ""):
         self.departure_date: datetime = departure_date
         self.expected_arrival_date: datetime = expected_arrival_date
-        super().__init__(status, id, set_of_packages, adressee, sender)
+        super().__init__(status, set_of_packages, adressee, sender, description)
+        self.id = "0" + self.id
 
 
 class InBoundShipment(Shipment):
     statuses = ('warehouse', 'inbound')
 
-    def __init__(self, arrival_date, status: str, id: int, set_of_packages: SetOfPackages, sender: str, adressee: str = ""):
+    def __init__(self, arrival_date, status: str,set_of_packages: SetOfPackages = None, sender: str = "", adressee: str = "", description: str = ""):
         self.arrival_date: datetime = arrival_date
-        super().__init__(status, id, set_of_packages, adressee, sender)
+        super().__init__(status,set_of_packages, adressee, sender, description)
+        self.id = "I" + self.id
