@@ -327,6 +327,7 @@ class Trip:
 
     @property
     def weight(self) -> float:
+        """The weight is in kg"""
         return sum(bundle.weight for bundle in self.set_of_bundles)
 
     def __hash__(self):
