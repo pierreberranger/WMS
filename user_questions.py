@@ -20,7 +20,7 @@ objects_focused_user = click.Choice(("package", "inBoundshipment",
                                "outBoundshipment", "view", "quit"), case_sensitive=False)
 
 view_type = click.Choice(
-                ("package_database", "shipment_database", "particular shipment"), case_sensitive=False)
+                ("packages", "shipments", "particular shipment"), case_sensitive=False)
 
 def default_date():
     return datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -53,15 +53,19 @@ def datetime_prompt(name_date) -> str :
             print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
     return date
 
-def package_information_prompt() -> tuple :
+def package_information_prompt(object) -> tuple :
     name = click.prompt("Description of the package")
     length = click.prompt("Length", type=float)
     width = click.prompt("Width", type=float)
     height = click.prompt("Height", type=float)
     dimensions = Dimensions(length, width, height)
     weight = click.prompt("Weight", type=float)
-    status = click.prompt(
-        "status", default=Package.statuses[0], type=statuses_package)
+    if object == "package" :
+        status = click.prompt(
+            "status", default=Package.statuses[1], type=statuses_package)
+    elif object == "inshipment" :
+        status = click.prompt(
+            "status", default=Package.statuses[0], type=statuses_package)
     package_type = click.prompt(
         "Package Type", default=Package.types[0], type=package_types)
     return (dimensions, weight, status, package_type, name)
@@ -72,7 +76,8 @@ def inshipment_information_prompt() -> tuple :
     sender = click.prompt("Sender ", type=str)
     # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
     adressee = click.prompt("Adressee ", type=str)
-    return (arrival_date, status, sender, adressee)
+    description = click.prompt("Description of the inshipment")
+    return (arrival_date, status, sender, adressee, description)
 
 def outshipment_information_prompt() :
     departure_date = datetime_prompt("Departure date ")
@@ -80,7 +85,8 @@ def outshipment_information_prompt() :
     status = Package.statuses[2]
     sender = click.prompt("Sender ", type=str)
     adressee = click.prompt("Adressee ", type=str)
-    return (departure_date, expected_arrival_date, status, sender, adressee)
+    description = click.prompt("Description of the outshipment")
+    return (departure_date, expected_arrival_date, status, adressee, sender, description)
 
 def new_package_status() -> str :
     return click.prompt(

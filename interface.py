@@ -22,8 +22,8 @@ def interactive():
         object_focused = click.prompt("Element you want to focus on", type=objects_focused_user)
 
         if object_focused == "package":
-            action = click.prompt("Action you want to do : (add,del,status)", default='add', type=click.Choice(
-                ("add", "del", "status", "quit")), show_choices=False)
+            action = click.prompt("Action you want to do :", default='add', type=click.Choice(
+                ("add", "del", "status", "quit")))
 
             if action == "add":
                 add_packages_to_database()
@@ -41,11 +41,11 @@ def interactive():
         elif object_focused == "view":
             
             answer = click.prompt(
-                "What do you want to view : ", default="package_database", type=view_type)
-            if answer == "package_database":
+                "What do you want to view : ", default="packages", type=view_type)
+            if answer == "packages":
                 display_set_of_packages(database.set_of_packages)
                 print("\n")
-            if answer == "shipment_database":
+            if answer == "shipments":
                 display_set_of_shipments(database.set_of_shipments)
                 print("\n")
             if answer == "particular shipment":
@@ -54,7 +54,7 @@ def interactive():
                 print("\n")
 
         elif object_focused == "inBoundshipment" :
-            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
+            declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
             action = click.prompt("Actions ", default="declare", type=declare_update)
             
             if action == "declare" :
@@ -66,18 +66,22 @@ def interactive():
 
             if action == "del":
                 del_shipments()
+            
+            if action == "quit" :
+                quit_and_save()
+                in_out = False
 
             print("\n")
 
         
         elif object_focused == "outBoundshipment" :
-            declare_update = click.Choice(("declare", "update", "del"), case_sensitive=False)
-            answer = click.prompt("Actions ", default="declare", type=declare_update)
+            declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
+            action = click.prompt("Actions ", default="declare", type=declare_update)
             
-            if answer == "declare" :
+            if action == "declare" :
                 declare_outshipment()
 
-            if answer == "update":
+            if action == "update":
                 exit_delivered = click.Choice(("actual_exit", "delivered"), case_sensitive=False)
                 answer = click.prompt("New Status ", default="actual_exit", type=exit_delivered)
                 
@@ -89,8 +93,12 @@ def interactive():
                     print("Your outshipment is delivered.")
                     delivered_outboundshipment()
 
-            if answer == "del":
+            if action == "del":
                 del_shipments()
+            
+            if action == "quit" :
+                quit_and_save()
+                in_out = False
 
         elif object_focused == "quit":
             quit_and_save()

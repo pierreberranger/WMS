@@ -11,7 +11,7 @@ def load():
     database.load(filename)
 
 def add_one_package() :
-    package_informations = package_information_prompt()
+    package_informations = package_information_prompt("package")
     new_package = Package(package_informations[0], 
     package_informations[1], 
     package_informations[2], 
@@ -31,7 +31,7 @@ def add_packages_to_database() :
         # we have to separate the register of the informations about the package
         # and the creation of the nb same packages 
         for i in range(number_references()) :
-            packages_informations = package_information_prompt()
+            packages_informations = package_information_prompt("package")
             nb_packages = number_packages()
             packages_id_per_reference = []
 
@@ -55,7 +55,7 @@ def add_packages_to_database() :
 def del_packages_from_database():
     for i in range(number_packages()):
         identity = package_id_prompt()
-        if confirm_del_objects(identity) :
+        if confirm_del_objects() :
             database.set_of_packages.remove(identity)
         print("\n")
 
@@ -66,13 +66,13 @@ def change_status_package() :
         database.set_of_packages[package_id].status = new_status
     print("\n")
 
-def register_packages_inshipment(inshipment):
+def register_packages_inshipment():
     shipment_packages = SetOfPackages() 
 
     if choose_enter_one_by_one() :
 
         for j in range(number_packages()):
-            package_informations = package_information_prompt()
+            package_informations = package_information_prompt("inshipment")
             new_package = Package(package_informations[0], 
             package_informations[1], 
             package_informations[2], 
@@ -90,7 +90,7 @@ def register_packages_inshipment(inshipment):
         # we have to separate the register of the informations about the package
         # and the creation of the nb same packages 
         for i in range(number_references()) :
-            packages_informations = package_information_prompt()
+            packages_informations = package_information_prompt("inshipment")
             nb_packages = number_packages()
             packages_id_per_reference = []
 
@@ -111,15 +111,15 @@ def register_packages_inshipment(inshipment):
                     packages_id_per_reference.append(new_package.id)
 
                 save_id_list_packages(packages_id_per_reference)
-    inshipment.set_of_packages = shipment_packages
+    return shipment_packages
         
 def declare_inshipment() :
     inshipment_information = inshipment_information_prompt()
     inshipment = InBoundShipment(inshipment_information[0], inshipment_information[1], 
+    register_packages_inshipment(),
     inshipment_information[2], 
     inshipment_information[3],
     inshipment_information[4])
-    register_packages_inshipment(inshipment)
     database.set_of_shipments.add(inshipment)
     save_id_shipment(inshipment.id)
 
@@ -132,7 +132,7 @@ def update_inshipment() :
     inshipment.arrival_date = arrival_date 
     inshipment_packages = inshipment.set_of_packages
     for package in inshipment_packages : 
-        package.status = Package.statuses[0]
+        package.status = Package.statuses[1]
 
 def del_shipments() :
     for i in range(number_packages()):
@@ -141,7 +141,7 @@ def del_shipments() :
             database.set_of_shipments.remove(identity)
         print("\n")
 
-def register_packages_outshipment(outshipment) :
+def register_packages_outshipment() :
     shipment_packages = SetOfPackages() 
     for j in range(number_packages()):
         identity = package_id_prompt()
@@ -151,16 +151,16 @@ def register_packages_outshipment(outshipment) :
             click.echo("Package picked")
         else:
             click.echo("Aborted")
-    outshipment.set_of_packages = shipment_packages
+    return shipment_packages
 
 def declare_outshipment() :
     outshipment_information = outshipment_information_prompt()
     outshipment = OutBoundShipment(outshipment_information[0], outshipment_information[1], 
     outshipment_information[2], 
+    register_packages_outshipment(),
     outshipment_information[3],
     outshipment_information[4],
     outshipment_information[5])
-    register_packages_outshipment(outshipment)
     database.set_of_shipments.add(outshipment)
     save_id_shipment(outshipment.id)
 
@@ -180,7 +180,7 @@ def delivered_outboundshipment() :
     outshipment.status = OutBoundShipment.statuses[2]
     outshipment_packages = outshipment.set_of_packages
     for package in outshipment_packages :
-        package.status = Package.statuses[3]
+        package.status = Package.statuses[5]
 
 def quit_and_save() :
     # save the data in a text file

@@ -25,10 +25,10 @@ packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 
 
 class Package():
-    statuses = ('stored', 'inbound', 'outbound', 'delivered')
+    statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
     types = ('EPAL', '20ISO', 'OOG')
 
-    def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", shipment_ids=[], id=None) -> None:
+    def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", shipment_ids=None, id=None) -> None:
         self.status = status
         self.dimensions = dimensions
         self.weight = weight
