@@ -26,17 +26,17 @@ def interactive():
                 ("add", "del", "status", "quit")), show_choices=False)
 
             if action == "add":
-                add_packages_to_database(database)
+                add_packages_to_database()
 
             elif action == "quit":
                 quit_and_save()
                 in_out = False
 
             elif action == "del":
-                del_packages_from_database(database)
+                del_packages_from_database()
 
             elif action == "status":
-                change_status_package(database)
+                change_status_package()
 
         elif object_focused == "view":
             
@@ -58,14 +58,14 @@ def interactive():
             action = click.prompt("Actions ", default="declare", type=declare_update)
             
             if action == "declare" :
-                declare_inshipment(database)
+                declare_inshipment()
 
             if action == "update":
                 print("Your inshipment is arrived.")
-                update_inshipment(database)
+                update_inshipment()
 
             if action == "del":
-                del_shipments(database)
+                del_shipments()
 
             print("\n")
 
@@ -75,7 +75,7 @@ def interactive():
             answer = click.prompt("Actions ", default="declare", type=declare_update)
             
             if answer == "declare" :
-                declare_outshipment(database)
+                declare_outshipment()
 
             if answer == "update":
                 exit_delivered = click.Choice(("actual_exit", "delivered"), case_sensitive=False)
@@ -83,14 +83,14 @@ def interactive():
                 
                 if answer == "actual_exit" :
                     print("Your outshipment has left the warehouse")
-                    actual_exit_outboundshipment(database)
+                    actual_exit_outboundshipment()
 
                 elif answer == "delivered_client" :
                     print("Your outshipment is delivered.")
-                    delivered_outboundshipment(database)
+                    delivered_outboundshipment()
 
             if answer == "del":
-                del_shipments(database)
+                del_shipments()
 
         elif object_focused == "quit":
             quit_and_save()
