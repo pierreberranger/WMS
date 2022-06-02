@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, SetOfShipments
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, SetOfShipments, Bundle, SetOfBundles, Trip, SetOfTrips
 from display import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
@@ -45,7 +45,7 @@ def add_packages_to_database() :
                 packages_informations = package_information_prompt("package")
                 nb_packages = number_packages()
                 packages_id_per_reference = []
-
+                
                 if confirm_package_reference(packages_informations[0], 
                     packages_informations[1], 
                     packages_informations[2], 
@@ -54,7 +54,7 @@ def add_packages_to_database() :
                     
                     in_out = False 
 
-                    for j in range(number_packages()) :
+                    for j in range(nb_packages) :
                         new_package = Package(packages_informations[0], 
                         packages_informations[1], 
                         packages_informations[2], 
@@ -128,7 +128,7 @@ def register_packages_inshipment():
                     
                     in_out = False 
 
-                    for j in range(number_packages()) :
+                    for j in range(nb_packages) :
                         new_package = Package(packages_informations[0], 
                         packages_informations[1], 
                         packages_informations[2], 

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
+from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment, Bundle, SetOfBundles, Trip, SetOfTrips
 import pickle_data as database
 
 import click
@@ -73,7 +73,7 @@ def package_information_prompt(object) -> tuple :
     length = click.prompt("Length", type=float)
     width = click.prompt("Width", type=float)
     height = click.prompt("Height", type=float)
-    dimensions = Dimensions(length, width, height)
+    dimensions = Dimensions(width, length, height)
     weight = click.prompt("Weight", type=float)
     if object == "package" :
         status = click.prompt(
@@ -87,7 +87,7 @@ def package_information_prompt(object) -> tuple :
 
 def inshipment_information_prompt() -> tuple :
     arrival_date = datetime_prompt("Arrival date ")
-    status = InBoundShipment.statuses[0]
+    status = InBoundShipment.statuses[1]
     sender = click.prompt("Sender ", type=str)
     # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
     adressee = click.prompt("Adressee ", type=str)
@@ -97,7 +97,7 @@ def inshipment_information_prompt() -> tuple :
 def outshipment_information_prompt() :
     departure_date = datetime_prompt("Departure date ")
     expected_arrival_date = datetime_prompt("Expected delivered date")
-    status = Package.statuses[2]
+    status = OutBoundShipment.statuses[1]
     sender = click.prompt("Sender ", type=str)
     adressee = click.prompt("Adressee ", type=str)
     description = click.prompt("Description of the outshipment")
@@ -109,7 +109,7 @@ def new_package_status() -> str :
 
 def choose_enter_one_by_one() -> bool :
     return click.confirm(
-        "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
+        "Do you want to add the package one by one ? (otherwise you will can x times a same package reference.")
 
 def prompt_transporter() -> str :
     return click.prompt(
@@ -126,7 +126,7 @@ def confirm_package(name, dimensions, weight, status, package_type) -> bool :
         f"You entered the package : {name}, {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {weight}, {status}, {package_type}")
     return click.confirm("Do you want to add the package ?", default=True)
 
-def confirm_package_reference(name, dimensions, weight, status, package_type, number_of_packages) -> bool :
+def confirm_package_reference(dimensions, weight, status, package_type, name, number_of_packages) -> bool :
     click.echo(
         f"You entered for this reference the package form : {name},  {dimensions[0]}, {dimensions[1]}, {dimensions[2]}, {weight}, {status}, {package_type}")
     return click.confirm(
@@ -146,7 +146,7 @@ def confirm_pick_package(identity) -> bool :
 
 def confirm_inshipment(information) :
     return click.confirm(
-            f"Are the information of the inshipment right :arrival_date : {information[0]}, status : {information[1]}, sender : {information[2]}, adressee : {information[3]}, description : {information[4]} ?", default=False)
+            f"Are the information of the inshipment right :arrival_date : {information[0]}, status : {information[1]}, sender : {information[2]}, adressee : {information[3]}, description : {information[4]} ?", default=True)
 
 def confirm_update_inshipment(id_inshipment, arrival_date) :
     return click.confirm(
@@ -154,7 +154,7 @@ def confirm_update_inshipment(id_inshipment, arrival_date) :
 
 def confirm_outshipment(information) :
     return click.confirm(
-            f"Are the information of the inshipment right : departure_date : {information[0]}, expected_arrival_date : {information[1]}, status : {information[2]}, adressee : {information[3]}, sender : {information[4]}, description : {information[5]} ?", default=False)
+            f"Are the information of the inshipment right : departure_date : {information[0]}, expected_arrival_date : {information[1]}, status : {information[2]}, adressee : {information[3]}, sender : {information[4]}, description : {information[5]} ?", default=True)
 
 def confirm_exit_outshipment(id_outshipment) :
     return click.confirm(f"The Outshipment {id_outshipment} has left the warehouse.", default = False)

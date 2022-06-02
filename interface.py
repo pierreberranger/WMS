@@ -1,7 +1,3 @@
-from datetime import datetime
-from email.policy import default
-
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
 from display import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
