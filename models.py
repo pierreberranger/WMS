@@ -255,6 +255,8 @@ class Bundle:
 
 class Container:
     
+    empty_container_weight = 3800
+
     def __init__(self, set_of_packages: SetOfPackages = None, bundle_id: int = None) -> None:
         self.id: str = f"C{next(containers_ids)}"
         if not(set_of_packages is None):
@@ -281,7 +283,7 @@ class Container:
 
     @property
     def weight(self) -> float:
-        return sum(package.weight for package in self.set_of_packages)
+        return sum(package.weight for package in self.set_of_packages) + Container.empty_container_weight
 
     def __hash__(self):
         return hash(self.id)
