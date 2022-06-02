@@ -9,15 +9,15 @@ class TestSetOfPackages(unittest.TestCase):
         self.TEST_DATA_FILE = 'testdata'
         data.load(self.TEST_DATA_FILE)
         self.first_id = "P"+str(next(packages_ids) + 1)
-        self.database = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), status="shipped", package_type="classic"),
+        self.database = SetOfPackages([Package(dimensions=Dimensions(1, 2, 4), weight=10, status="shipped", package_type="classic"),
                                        Package(dimensions=Dimensions(
-                                           1, 2, 3), status="delivered", package_type="classic"),
+                                           1, 2, 3), weight=10, status="delivered", package_type="classic"),
                                        Package(dimensions=Dimensions(
-                                           1, 2, 3), status="shipped", package_type="big-bag"),
+                                           1, 2, 3), weight=10, status="shipped", package_type="big-bag"),
                                        ])
 
     def test_get_item(self):
-        package = Package(dimensions=Dimensions(1, 2, 3),
+        package = Package(dimensions=Dimensions(1, 2, 3), weight=10, 
                           status="delivered", package_type="big-bag")
         package.id = self.first_id
         self.assertEqual(self.database[self.first_id], package)
