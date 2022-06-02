@@ -17,7 +17,7 @@ statuses_outshipment = click.Choice(
 package_types = click.Choice(Package.types, case_sensitive=False)
 
 objects_focused_user = click.Choice(("package", "inBoundshipment",
-                               "outBoundshipment", "view", "quit"), case_sensitive=False)
+                               "outBoundshipment", "bundle", "trip", "view", "quit"), case_sensitive=False)
 
 view_type = click.Choice(
                 ("packages", "shipments", "particular shipment"), case_sensitive=False)
@@ -26,14 +26,29 @@ def default_date():
     return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # informations given by the user
-def package_id_prompt() -> int :
+def package_id_prompt() -> str :
     return click.prompt("package id ", 
     type=click.Choice(list((str(p.id) for p in database.set_of_packages))), 
     show_choices=False)
 
-def shipment_id_prompt() -> int :
+def shipment_id_prompt() -> str :
     return click.prompt("shipment id ", 
-    type=click.Choice(list((str(p.id) for p in database.set_of_shipments))), 
+    type=click.Choice(list((str(s.id) for s in database.set_of_shipments))), 
+    show_choices=False)
+
+def inshipment_id_prompt() -> str :
+    return click.prompt("shipment id ", 
+    type=click.Choice(list((str(s.id) for s in database.set_of_shipments if s.id[0] == "I"))), 
+    show_choices=False)
+
+def outshipment_id_prompt() -> str :
+    return click.prompt("shipment id ", 
+    type=click.Choice(list((str(s.id) for s in database.set_of_shipments if s.id[0] == "O"))), 
+    show_choices=False)
+
+def bundle_id_prompt() -> str :
+    return click.prompt("shipment id ", 
+    type=click.Choice(list((str(b.id) for b in database.set_of_bundles))), 
     show_choices=False)
 
 def datetime_prompt(name_date) -> str :
@@ -96,6 +111,14 @@ def choose_enter_one_by_one() -> bool :
     return click.confirm(
         "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
 
+def prompt_transporter() -> str :
+    return click.prompt(
+        "Transporter ", type=str)
+
+def prompt_ship_name() :
+    return click.prompt(
+        "Ship Name ", default="Nostos Marine Ship", type=str)
+
 # check before actions
 
 def confirm_package(name, dimensions, weight, status, package_type) -> bool :
@@ -121,6 +144,32 @@ def confirm_pick_package(identity) -> bool :
     return click.confirm(
             f"Are you sure to pick the package with id :{identity} ?", default=False)
 
+def confirm_inshipment(information) :
+    return click.confirm(
+            f"Are the information of the inshipment right :arrival_date : {information[0]}, status : {information[1]}, sender : {information[2]}, adressee : {information[3]}, description : {information[4]} ?", default=False)
+
+def confirm_update_inshipment(id_inshipment, arrival_date) :
+    return click.confirm(
+            f"The Indhipment {id_inshipment} arrived on the : {arrival_date}", default=False)
+
+def confirm_outshipment(information) :
+    return click.confirm(
+            f"Are the information of the inshipment right : departure_date : {information[0]}, expected_arrival_date : {information[1]}, status : {information[2]}, adressee : {information[3]}, sender : {information[4]}, description : {information[5]} ?", default=False)
+
+def confirm_exit_outshipment(id_outshipment) :
+    return click.confirm(f"The Outshipment {id_outshipment} has left the warehouse.", default = False)
+
+def confirm_delivered_outshipment(id, date) :
+    return click.confirm(f"The Outshipment {id} has been delivered on the {date}.", default = False)
+
+def confirm_shipment_to_add(identity) :
+    return click.confirm(
+            f"Are you sure to add the shipment with id :{identity} ?", default=False)
+
+def confirm_bundle_to_add(id) :
+    return click.confirm(
+            f"Are you sure to add the bundle with id :{id} ?", default=False)
+
 # Others
 
 def save_id_package(id_package) -> None :
@@ -134,10 +183,24 @@ def save_id_list_packages(list_id) -> None :
 def save_id_shipment(id_shipment) -> None :
     click.echo(f'Your Shipment id is {id_shipment}')
 
+def save_id_bundle(bundle_id) -> None :
+    click.echo(f'Your Bundle id is {bundle_id}')
+
+def save_id_trip(id) -> None :
+    click.echo(f'Your Tripe id is {id}')
+
 def number_packages() -> int :
     return click.prompt("Number of packages ", type=int)
 
 def number_references() -> int :
     return click.prompt("How many references do you have ?", type=int)
+
+def number_shipments() -> int :
+    return click.prompt("Number of shipments ", type=int)
+
+def number_bundles() -> int :
+    return click.prompt("Number of bundles ", type=int)
+
+
 
 

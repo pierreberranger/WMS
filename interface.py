@@ -99,6 +99,38 @@ def interactive():
             if action == "quit" :
                 quit_and_save()
                 in_out = False
+        
+        elif object_focused == "bundle" :
+            answer = click.prompt("Do you want to prompt a bundle already scheduled or choose the automatic bundle ?",
+            default="scheduled", type=click.Choice(("scheduled", "automatic", "quit"), case_sensitive=False))
+
+            if answer == "scheduled" :
+                declare_bundle()
+            
+            elif answer == "automatic" :
+                print("The function is not ready yet, sorry :(")
+            
+            elif answer == "quit" :
+                quit_and_save()
+                in_out = False
+
+
+        elif object_focused == "trip" :
+            answer = click.prompt("Do you want to prompt a trip already scheduled / choose the automatic trip or obtain the Cargo Manifest of a trip ?",
+            default="scheduled", type=click.Choice(("scheduled", "automatic", "CargoManifest", "quit"), case_sensitive=False))
+
+            if answer == "scheduled" :
+                declare_trip()
+            
+            elif answer == "automatic" :
+                print("The function is not ready yet, sorry :(")
+            
+            elif answer == "CargoManifest" :
+                print("The function is not ready yet, sorry :(")
+
+            elif answer == "quit" :
+                quit_and_save()
+                in_out = False
 
         elif object_focused == "quit":
             quit_and_save()
