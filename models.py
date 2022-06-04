@@ -1,7 +1,6 @@
 from collections import namedtuple
 from typing import Union
 from datetime import datetime
-from pickle import dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
 from pickle_data import with_save

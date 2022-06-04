@@ -5,7 +5,8 @@ from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBound
 from display import display_set_of_packages, display_set_of_shipments, display_shipment
 import pickle_data as database
 
-from service_layer import *
+import interface_commands
+import prompt
 
 import click
 
@@ -26,17 +27,17 @@ def interactive():
                 ("add", "del", "status", "quit")))
 
             if action == "add":
-                add_packages_to_database()
+                interface_commands.add_packages_to_database()
 
             elif action == "quit":
-                quit_and_save()
+                interface_commands.save_and_quit()
                 in_out = False
 
             elif action == "del":
-                del_packages_from_database()
+                interface_commands.del_packages_from_database()
 
             elif action == "status":
-                change_status_package()
+                interface_commands.change_status_package()
 
         elif object_focused == "view":
             
@@ -49,7 +50,7 @@ def interactive():
                 display_set_of_shipments(database.set_of_shipments)
                 print("\n")
             if answer == "particular shipment":
-                shipment_id = shipment_id_prompt()
+                shipment_id = prompt.shipment_id()
                 display_shipment(database.set_of_shipments[shipment_id])
                 print("\n")
 
@@ -58,17 +59,17 @@ def interactive():
             action = click.prompt("Actions ", default="declare", type=declare_update)
             
             if action == "declare" :
-                declare_inshipment()
+                interface_commands.declare_inshipment()
 
             if action == "update":
                 print("Your inshipment is arrived.")
-                update_inshipment()
+                interface_commands.update_inshipment()
 
             if action == "del":
-                del_shipments()
+                interface_commands.del_shipments()
             
             if action == "quit" :
-                quit_and_save()
+                interface_commands.save_and_quit()
                 in_out = False
 
             print("\n")
@@ -79,7 +80,7 @@ def interactive():
             action = click.prompt("Actions ", default="declare", type=declare_update)
             
             if action == "declare" :
-                declare_outshipment()
+                interface_commands.declare_outshipment()
 
             if action == "update":
                 exit_delivered = click.Choice(("actual_exit", "delivered"), case_sensitive=False)
@@ -87,17 +88,17 @@ def interactive():
                 
                 if answer == "actual_exit" :
                     print("Your outshipment has left the warehouse")
-                    actual_exit_outboundshipment()
+                    interface_commands.actual_exit_outboundshipment()
 
                 elif answer == "delivered_client" :
                     print("Your outshipment is delivered.")
-                    delivered_outboundshipment()
+                    interface_commands.delivered_outboundshipment()
 
             if action == "del":
-                del_shipments()
+                interface_commands.del_shipments()
             
             if action == "quit" :
-                quit_and_save()
+                interface_commands.save_and_quit()
                 in_out = False
         
         elif object_focused == "bundle" :
@@ -105,13 +106,13 @@ def interactive():
             default="scheduled", type=click.Choice(("scheduled", "automatic", "quit"), case_sensitive=False))
 
             if answer == "scheduled" :
-                declare_bundle()
+                interface_commands.declare_bundle()
             
             elif answer == "automatic" :
                 print("The function is not ready yet, sorry :(")
             
             elif answer == "quit" :
-                quit_and_save()
+                interface_commands.save_and_quit()
                 in_out = False
 
 
@@ -120,7 +121,7 @@ def interactive():
             default="scheduled", type=click.Choice(("scheduled", "automatic", "CargoManifest", "quit"), case_sensitive=False))
 
             if answer == "scheduled" :
-                declare_trip()
+                interface_commands.declare_trip()
             
             elif answer == "automatic" :
                 print("The function is not ready yet, sorry :(")
@@ -129,11 +130,11 @@ def interactive():
                 print("The function is not ready yet, sorry :(")
 
             elif answer == "quit" :
-                quit_and_save()
+                interface_commands.save_and_quit()
                 in_out = False
 
         elif object_focused == "quit":
-            quit_and_save()
+            interface_commands.save_and_quit()
             in_out = False
 
         else:
