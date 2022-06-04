@@ -32,7 +32,7 @@ def choose_enter_one_by_one() -> bool :
     return click.confirm(
         "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
 
-def choose_enter_package_by_id() -> bool:
+def choose_enter_packages_by_id() -> bool:
     return click.confirm(
         "Do you want to add the packages to your inshipment by their ids ? (else you will have enter the all informations about the packages.")
 

@@ -74,126 +74,61 @@ def declare_inshipment():
 def register_packages_in_a_inshipment(inshipment_id: str):
 
     if choose_enter_one_by_one():
-
         for j in range(prompt.number_packages()):
 
             if choose_enter_packages_by_id():
-                
                 keep_looping = True
                 while keep_looping:
-                    identity = prompt.package_id()
-                    if confirm.pick_package(identity):
-                        package_picked = database.set_of_packages[identity]
-                        shipment_packages.add(package_picked)
-                        click.echo("Package picked")
+                    package_id = prompt.package_id()
+                    if confirm.pick_package(package_id):
+                        service_layer.register_package_in_a_inshipment_by_id(package_id, inshipment_id)
+                        click.echo("Package added to the inshipment")
                         keep_looping = False
                     else:
                         click.echo("Aborted")
-
-            keep_looping = True
-            while keep_looping:
-                package_informations = prompt.package_information("inshipment")
-                new_package = Package(package_informations[0], 
-                package_informations[1], 
-                package_informations[2], 
-                package_informations[3],
-                package_informations[4])
-
-                if confirm.package(new_package.description, 
-                new_package.dimensions,new_package.weight, new_package.status, new_package.package_type):
-                    database.set_of_packages.add(new_package)
-                    shipment_packages.add(new_package) 
-                    echo_id_package(new_package.id)
-                    keep_looping = False
-            print("\n")
+                    print("\n")
+            else :
+                keep_looping = True
+                while keep_looping:
+                    package_informations = prompt.package_information("inshipment")
+                    if confirm.package(package_informations):
+                        new_package_id = service_layer.add_one_package(packages_informations)
+                        service_layer.register_package_in_a_inshipment_by_id(new_package_id, inshipment_id)
+                        echo_id_package(new_package_id)
+                        keep_looping = False
+                print("\n")
 
     else:
-        # we have to separate the register of the informations about the package
-        # and the creation of the nb same packages 
         for i in range(prompt.number_references()):
             keep_looping = True
-            while keep_looping:
-                packages_informations = prompt.package_information("inshipment")
-                nb_packages = prompt.number_packages()
-                packages_id_per_reference = []
+            while keep_looping :
 
-                if confirm.package_reference_and_amount(packages_informations[0], 
-                    packages_informations[1], 
-                    packages_informations[2], 
-                    packages_informations[3], 
-                    packages_informations[4], nb_packages):
-                    
-                    keep_looping = False 
+                if choose_enter_packages_by_id :
+                    print("Prompt the id of the package you want to use as reference")
+                    package_id = prompt.package_id()
+                    package_informations = service_layer.access_to_the_package_informations_by_id(package_id)
+                    nb_packages = prompt.number_packages()
+                    packages_id_per_reference = set()
 
-                    for j in range(number_packages()):
-                        new_package = Package(packages_informations[0], 
-                        packages_informations[1], 
-                        packages_informations[2], 
-                        packages_informations[3],
-                        packages_informations[4])
-                        database.set_of_packages.add(new_package)
-                        shipment_packages.add(new_package)
-                        packages_id_per_reference.append(new_package.id)
+                    if confirm.package_reference_and_amount(package_informations, nb_packages) :
+                        keep_looping = False 
+                        for j in range(nb_packages):
+                            new_package_id = service_layer.add_one_package(package_informations)
+                            service_layer.register_package_in_a_inshipment_by_id(new_package_id, inshipment_id)
+                            packages_id_per_reference.add(new_package_id)
 
-                    echo_id_list_packages(packages_id_per_reference)
+                else : 
+                    packages_informations = prompt.package_information("inshipment")
+                    nb_packages = prompt.number_packages()
+                    packages_id_per_reference = set()
 
-    return shipment_packages
-
-
-def register_packages_inshipment():
-    shipment_packages = SetOfPackages() 
-
-    if choose_enter_one_by_one():
-
-        for j in range(prompt.number_packages()):
-            keep_looping = True
-            while keep_looping:
-                package_informations = prompt.package_information("inshipment")
-                new_package = Package(package_informations[0], 
-                package_informations[1], 
-                package_informations[2], 
-                package_informations[3],
-                package_informations[4])
-
-                if confirm.package(new_package.description, 
-                new_package.dimensions,new_package.weight, new_package.status, new_package.package_type):
-                    database.set_of_packages.add(new_package)
-                    shipment_packages.add(new_package) 
-                    echo_id_package(new_package.id)
-                    keep_looping = False
-            print("\n")
-
-    else:
-        # we have to separate the register of the informations about the package
-        # and the creation of the nb same packages 
-        for i in range(prompt.number_references()):
-            keep_looping = True
-            while keep_looping:
-                packages_informations = prompt.package_information("inshipment")
-                nb_packages = prompt.number_packages()
-                packages_id_per_reference = []
-
-                if confirm.package_reference_and_amount(packages_informations[0], 
-                    packages_informations[1], 
-                    packages_informations[2], 
-                    packages_informations[3], 
-                    packages_informations[4], nb_packages):
-                    
-                    keep_looping = False 
-
-                    for j in range(number_packages()):
-                        new_package = Package(packages_informations[0], 
-                        packages_informations[1], 
-                        packages_informations[2], 
-                        packages_informations[3],
-                        packages_informations[4])
-                        database.set_of_packages.add(new_package)
-                        shipment_packages.add(new_package)
-                        packages_id_per_reference.append(new_package.id)
-
-                    echo_id_list_packages(packages_id_per_reference)
-
-    return shipment_packages
+                    if confirm.package_reference_and_amount(packages_informations, nb_packages):
+                        keep_looping = False 
+                        for j in range(nb_packages):
+                            new_package_id = service_layer.add_one_package(packages_informations)
+                            service_layer.register_package_in_a_inshipment_by_id(new_package_id)
+                            packages_id_per_reference.add(new_package_id)
+            echo_ids(packages_id_per_reference)
 
 
 def update_inshipment():
