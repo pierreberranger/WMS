@@ -1,16 +1,9 @@
-from datetime import datetime
-from email.policy import default
-
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
-from display import display_set_of_packages, display_set_of_shipments, display_shipment
-import pickle_data as database
-
-import interface_commands
-import prompt
-
 import click
 
-load()
+import prompt, interface_commands
+import service_layer_display
+
+interface_commands.load()
 
 def interactive():
     in_out = True
@@ -19,8 +12,9 @@ def interactive():
     print("If you want to quit, input [quit] \n")
 
     while (in_out):
-        
-        object_focused = click.prompt("Element you want to focus on", type=objects_focused_user)
+        objects_focused_user_choices = click.Choice(("package", "inBoundshipment",
+                               "outBoundshipment", "bundle", "trip", "view", "quit"), case_sensitive=False)
+        object_focused = click.prompt("Element you want to focus on", type=objects_focused_user_choices)
 
         if object_focused == "package":
             action = click.prompt("Action you want to do :", default='add', type=click.Choice(
@@ -40,18 +34,20 @@ def interactive():
                 interface_commands.change_status_package()
 
         elif object_focused == "view":
-            
+            view_type_choices = click.Choice(
+                ("packages", "shipments", "particular shipment"), case_sensitive=False)
             answer = click.prompt(
-                "What do you want to view : ", default="packages", type=view_type)
+                "What do you want to view : ", default="packages", type=view_type_choices)
+
             if answer == "packages":
-                display_set_of_packages(database.set_of_packages)
+                service_layer_display.set_of_packages()
                 print("\n")
             if answer == "shipments":
-                display_set_of_shipments(database.set_of_shipments)
+                service_layer_display.set_of_shipments()
                 print("\n")
             if answer == "particular shipment":
                 shipment_id = prompt.shipment_id()
-                display_shipment(database.set_of_shipments[shipment_id])
+                service_layer_display.shipment(shipment_id)
                 print("\n")
 
         elif object_focused == "inBoundshipment" :
@@ -63,7 +59,7 @@ def interactive():
 
             if action == "update":
                 print("Your inshipment is arrived.")
-                interface_commands.update_inshipment()
+                interface_commands.declare_inshipment_actual_arrival()
 
             if action == "del":
                 interface_commands.del_shipments()
@@ -88,11 +84,11 @@ def interactive():
                 
                 if answer == "actual_exit" :
                     print("Your outshipment has left the warehouse")
-                    interface_commands.actual_exit_outboundshipment()
+                    interface_commands.declare_outshipment_actual_departure()
 
                 elif answer == "delivered_client" :
                     print("Your outshipment is delivered.")
-                    interface_commands.delivered_outboundshipment()
+                    interface_commands.declare_outboundshipment_actual_delivery()
 
             if action == "del":
                 interface_commands.del_shipments()

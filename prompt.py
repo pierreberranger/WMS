@@ -1,6 +1,10 @@
 import click
-from user_questions import *
 import pickle_data as database
+from datetime import datetime
+
+from service_layer import Dimensions
+from available_choices import statuses_package_choices, statuses_inshipment_choices, statuses_outshipment_choices, package_types_choices, statuses_package_namedtuple, statuses_inshipment_namedtuple, statuses_outshipment_namedtuple, package_types_namedtuple
+
 
 # informations given by the user
 def package_id() -> str:
@@ -28,9 +32,9 @@ def bundle_id() -> str:
     type=click.Choice(list((str(b.id) for b in database.set_of_bundles))), 
     show_choices=False)
 
-def datetime(name_date) -> str:
+def datetime(name_date: str) -> datetime:
     in_out = True
-    today = default_date()
+    today = datetime.now().strftime("%Y-%m-%d %H:%M")
     while in_out:
         in_out = False
         date = input( name_date + "[" + today + "]: ")
@@ -39,7 +43,7 @@ def datetime(name_date) -> str:
             print(today)
             return today
         try:
-            datetime.strptime(date, "%Y-%m-%d %H:%M")
+            date = datetime.strptime(date, "%Y-%m-%d %H:%M")
         except:
             in_out = True
             print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
@@ -50,21 +54,21 @@ def package_information(object) -> dict:
     length = click.prompt("Length", type=float)
     width = click.prompt("Width", type=float)
     height = click.prompt("Height", type=float)
-    dimensions = Dimensions(length, width, height)
+    dimensions = Dimensions(width, length, height)
     weight = click.prompt("Weight", type=float)
     if object == "package":
         status = click.prompt(
-            "status", default=Package.statuses[1], type=statuses_package)
+            "status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
     elif object == "inshipment":
         status = click.prompt(
-            "status", default=Package.statuses[0], type=statuses_package)
+            "status", default=statuses_inshipment_namedtuple.inbound, type=statuses_inshipment_choices)
     package_type = click.prompt(
-        "Package Type", default=Package.types[0], type=package_types)
+        "Package Type", default=package_types_namedtuple.EPAL, type=package_types_choices)
     return {"dimensions": dimensions, "weight": weight, "status": status, "package_type": package_type, "description": description}
 
 def inshipment_information() -> dict:
     arrival_date = datetime("Arrival date ")
-    status = InBoundShipment.statuses[0]
+    status = statuses_inshipment_namedtuple.inbound
     sender = click.prompt("Sender ", type=str)
     # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
     adressee = click.prompt("Adressee ", type=str)
@@ -74,7 +78,7 @@ def inshipment_information() -> dict:
 def outshipment_information() -> dict:
     departure_date = datetime("Departure date ")
     expected_arrival_date = datetime("Expected delivered date")
-    status = Package.statuses[2]
+    status = statuses_package_namedtuple.warehouse
     sender = click.prompt("Sender ", type=str)
     adressee = click.prompt("Adressee ", type=str)
     description = click.prompt("Description of the outshipment")
@@ -82,7 +86,7 @@ def outshipment_information() -> dict:
 
 def new_package_status() -> str:
     return click.prompt(
-        "New status", default=Package.statuses[2], type=statuses_package)
+        "New status", default=statuses_package_namedtuple.shipbound, type=statuses_package_choices)
 
 def transporter() -> str:
     return click.prompt(

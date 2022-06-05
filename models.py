@@ -25,7 +25,6 @@ bundles_ids = FileIDGenerator("MAX_ID_Bundles.txt")
 containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
 trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
 
-
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
     types = ('EPAL', '20ISO', 'OOG')
@@ -46,6 +45,12 @@ class Package():
         else:
             self.id = id
         self.container_id = container_id
+
+    def __copy__(self):
+        """ package_copy = self.__class__.__new__(self.__class__)
+        package_copy = 
+        return package_copy """
+        pass
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:

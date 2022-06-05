@@ -1,29 +1,52 @@
-import confirm, prompt, service_layer
+import click
 
-from display import display_set_of_packages, display_set_of_shipments, display_shipment
+import confirm, prompt, service_layer, echo
 
-from user_questions import *
+
+def load() -> None:
+    """
+    Loads the database
+    """
+    service_layer.load()
+
+def save_and_quit() -> None:
+    """
+    Saves the database then quits
+    """
+    service_layer.save_and_quit()
 
 # Package 
 
-def add_one_package():
+def add_one_package() -> None:
+    """
+    Adds one package to the database by asking its information 
+    to the user then echos the new package id.
+    """
+
     keep_looping = True
     while keep_looping:
         package_informations = prompt.package_information("package")
         if confirm.package(package_informations):
             new_package_id = service_layer.add_one_package(package_informations)
-            echo_id_package(new_package_id)
+            echo.id_package(new_package_id)
             keep_looping = False
     print("\n")
 
-def add_packages_to_database():
-    if choose_enter_one_by_one():
-        for i in range(prompt.number_packages()):
+def add_packages_to_database() -> None:
+    """
+    Adds packages to the database by two possible ways :
+    - Adds the packages one by one by asking their information 
+        to the user then echos the new package id
+    - Adds N times packages sharing the same informations then echos all the new packages id
+    """
+
+    if confirm.enter_one_by_one():
+        for _ in range(prompt.number_packages()):
             add_one_package()
     else:
         # we have to separate the register of the informations about the package
         # and the creation of the nb same packages 
-        for i in range(prompt.number_references()):
+        for _ in range(prompt.number_references()):
             keep_looping = True
             while keep_looping:
                 packages_informations = prompt.package_information("package")
@@ -34,23 +57,31 @@ def add_packages_to_database():
                     
                     keep_looping = False 
 
-                    for j in range(prompt.number_packages()):
+                    for _ in range(prompt.number_packages()):
                         new_package_id = service_layer.add_one_package(packages_informations)
                         packages_id_of_this_reference.add(new_package_id)
 
-                    echo_ids(packages_id_of_this_reference)   
+                    echo.ids(packages_id_of_this_reference)   
 
-def del_packages_from_database():
-    for i in range(prompt.number_packages()):
+def del_packages_from_database() -> None:
+    """Deletes N packages from the database by asking their id to the user.
+        N : an input asked to the user""" 
+
+    for _ in range(prompt.number_packages()):
         keep_looping = True
         while keep_looping:
-            identity = prompt.package_id()
+            package_id = prompt.package_id()
             if confirm.del_objects():
-                service_layer.del_one_package(identity)
+                service_layer.del_one_package(package_id)
                 keep_looping = False
         print("\n")
 
-def change_status_package():
+def change_status_package() -> None:
+    """
+    Changes the status of a package by asking the user 
+    its id and its new status.
+    """ 
+    
     keep_looping = True
     while keep_looping:
         package_id = prompt.package_id()
@@ -62,179 +93,226 @@ def change_status_package():
 
 # Inshipment 
 
-def declare_inshipment():
+def declare_inshipment() -> None: # fonction destinée aux Shipments
+    """
+    Adds a new shipment to the database by asking the user 
+    its informations and the packages to add to this shipment.
+    """ 
+
     keep_looping = True
     while keep_looping:
         inshipment_informations = prompt.inshipment_information()
         keep_looping = not confirm.inshipment(inshipment_informations)
     inshipment_id = service_layer.declare_inshipment(inshipment_informations)
-    echo_id_shipment(inshipment_id)
-    register_packages_in_a_inshipment(inshipment_id)
+    echo.id_shipment(inshipment_id)
+    register_packages_in_an_inshipment(inshipment_id)
 
-def register_packages_in_a_inshipment(inshipment_id: str):
+def register_packages_in_an_inshipment(inshipment_id: str) -> None: # fonction destinée aux Shipments
+    """
+    Adds packages to an inshipment by two different ways :
+    - Adds the packages one by one by asking their information or their id
+    to the user. Then echos the new package id of newly created packages.
+    - Adds N times packages sharing the same informations. 
+    The package informations used as reference can be entered by the user
+    or determined thanks to the id of an existing package
+    
+    Parameters :
+        inshipment_id (str) : The id of the shipment to add packages to
+    """
 
-    if choose_enter_one_by_one():
-        for j in range(prompt.number_packages()):
 
-            if choose_enter_packages_by_id():
+    if confirm.enter_one_by_one():
+        for _ in range(prompt.number_packages()):
+
+            if confirm.enter_packages_by_id():
                 keep_looping = True
                 while keep_looping:
                     package_id = prompt.package_id()
                     if confirm.pick_package(package_id):
-                        service_layer.register_package_in_a_inshipment_by_id(package_id, inshipment_id)
+                        service_layer.register_package_in_a_shipment_by_id(package_id, inshipment_id)
                         click.echo("Package added to the inshipment")
                         keep_looping = False
                     else:
                         click.echo("Aborted")
                     print("\n")
-            else :
+            else:
                 keep_looping = True
                 while keep_looping:
                     package_informations = prompt.package_information("inshipment")
                     if confirm.package(package_informations):
                         new_package_id = service_layer.add_one_package(packages_informations)
-                        service_layer.register_package_in_a_inshipment_by_id(new_package_id, inshipment_id)
-                        echo_id_package(new_package_id)
+                        service_layer.register_package_in_a_shipment_by_id(new_package_id, inshipment_id)
+                        echo.id_package(new_package_id)
                         keep_looping = False
                 print("\n")
 
     else:
-        for i in range(prompt.number_references()):
+        for _ in range(prompt.number_references()):
             keep_looping = True
-            while keep_looping :
+            while keep_looping:
 
-                if choose_enter_packages_by_id :
+                if confirm.enter_packages_by_id:
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
-                    package_informations = service_layer.access_to_the_package_informations_by_id(package_id)
+                    package_informations = service_layer.access_to_the_package_informations_by_id(package_id) # passer par un constructeur de copies permet de s'affranchir de cette étape
                     nb_packages = prompt.number_packages()
-                    packages_id_per_reference = set()
+                    packages_id_of_this_reference = set()
 
-                    if confirm.package_reference_and_amount(package_informations, nb_packages) :
+                    if confirm.package_reference_and_amount(package_informations, nb_packages): 
                         keep_looping = False 
-                        for j in range(nb_packages):
+                        for _ in range(nb_packages):
                             new_package_id = service_layer.add_one_package(package_informations)
-                            service_layer.register_package_in_a_inshipment_by_id(new_package_id, inshipment_id)
-                            packages_id_per_reference.add(new_package_id)
+                            service_layer.register_package_in_a_shipment_by_id(new_package_id, inshipment_id)
+                            packages_id_of_this_reference.add(new_package_id)
 
-                else : 
+                else: 
                     packages_informations = prompt.package_information("inshipment")
                     nb_packages = prompt.number_packages()
-                    packages_id_per_reference = set()
+                    packages_id_of_this_reference = set()
 
                     if confirm.package_reference_and_amount(packages_informations, nb_packages):
                         keep_looping = False 
-                        for j in range(nb_packages):
+                        for _ in range(nb_packages):
                             new_package_id = service_layer.add_one_package(packages_informations)
-                            service_layer.register_package_in_a_inshipment_by_id(new_package_id)
-                            packages_id_per_reference.add(new_package_id)
-            echo_ids(packages_id_per_reference)
+                            service_layer.register_package_in_a_shipment_by_id(new_package_id)
+                            packages_id_of_this_reference.add(new_package_id)
+            echo.ids(packages_id_of_this_reference)
 
 
-def update_inshipment():
+def declare_inshipment_actual_arrival() -> None: # fonction destinée aux futurs DropOffs et potentiellement aux Shipments
+    """
+    - Changes the arrival date of an inshipment by asking the user 
+    its id and the actual arrival date to the warehouse. 
+    - Updates the status of the packages of the given inshipment to `"warehouse"`.
+    """
+    
     keep_looping = True 
     while keep_looping:
         id_inshipment = prompt.inshipment_id()
-        inshipment = database.set_of_shipments[id_inshipment]
-        arrival_date = prompt.datetime("Arrival date ")
-        if confirm.update_inshipment(id_inshipment, arrival_date):
-            inshipment.status = InBoundShipment.statuses[0] 
-            inshipment.arrival_date = arrival_date 
-            inshipment_packages = inshipment.set_of_packages
-            for package in inshipment_packages: 
-                package.status = Package.statuses[1]
+        actual_arrival_date = prompt.datetime("Arrival date ")
+        if confirm.update_inshipment(id_inshipment, actual_arrival_date):
+            service_layer.declare_inshipment_actual_arrival(id_inshipment, actual_arrival_date)
             keep_looping = False
 
-def del_shipments():
-    for i in range(prompt.number_packages()):
+def del_shipments() -> None:
+    """
+    Deletes N shipments from the database by asking their id to the user.
+        N : an input asked to the user
+    """
+    for _ in range(prompt.number_shipments()):
         keep_looping = True
         while keep_looping:
-            identity = prompt.shipment_id()
+            shipment_id = prompt.shipment_id()
             if confirm.del_objects():
-                database.set_of_shipments.remove(identity)
+                service_layer.del_inshipment(shipment_id)
                 keep_looping = False
         print("\n")
 
 # Outshipment 
 
-def register_packages_outshipment():
-    shipment_packages = SetOfPackages() 
-    for j in range(prompt.number_packages()):
-        keep_looping = True
+def declare_outshipment() -> None: # fonction destinée aux DropOffs dans le sens où on rentre les packages par id
+    """
+    Adds a new outshipment to the database by asking the user 
+    its informations and the packages to add to this outshipment.
+    """
+    
+    keep_looping = True
+    while keep_looping:
+        outshipment_informations = prompt.outshipment_information()
+        if confirm.outshipment(outshipment_informations):
+            keep_looping = False
+    outshipment_id = service_layer.declare_outshipment(outshipment_informations)
+    echo.id_shipment(outshipment_id)
+    register_packages_in_an_outshipment(outshipment_id)
+
+def register_packages_in_an_outshipment(outshipment_id: str) -> None: # fonction destinée aux DropOffs dans le sens où on rentre les packages par id
+    """
+    Adds packages to an outshipment one by one by asking their id
+    to the user.
+    
+    Parameters :
+        outshipment_id (str) : The id of the outshipment to add packages to
+    """
+    
+    for _ in range(prompt.number_packages()):
+        keep_looping = True  
         while keep_looping:
-            identity = prompt.package_id()
-            if confirm.pick_package(identity):
-                package_picked = database.set_of_packages[identity]
-                shipment_packages.add(package_picked)
-                click.echo("Package picked")
+            package_id = prompt.package_id()
+            if confirm.pick_package(package_id):
+                service_layer.register_package_in_a_shipment_by_id(package_id, outshipment_id)
+                click.echo("Package added")
                 keep_looping = False
             else:
                 click.echo("Aborted")
-    return shipment_packages
 
-def declare_outshipment():
+
+def declare_outshipment_actual_departure() -> None:
+    """
+    - Changes the departure date of an outshipment by asking the user 
+    its id and the actual departure date from the warehouse. 
+    - Updates the status of the given outshipment to `"outbound"`.
+    - Updates the status of the packages of the given outshipment to `"shipbound"`.
+    """
+
     keep_looping = True
     while keep_looping:
-        outshipment_information = prompt.outshipment_information()
-        if confirm.outshipment(outshipment_information):
-            keep_looping = False
-    outshipment = OutBoundShipment(outshipment_information[0], outshipment_information[1], 
-    outshipment_information[2], 
-    register_packages_outshipment(),
-    outshipment_information[3],
-    outshipment_information[4],
-    outshipment_information[5])
-    database.set_of_shipments.add(outshipment)
-    echo_id_shipment(outshipment.id)
-
-def actual_exit_outboundshipment():
-    keep_looping = True
-    while keep_looping:
-        id_outshipment = prompt.outshipment_id()
-        outshipment = database.set_of_shipments[id_outshipment]
-        if confirm.exit_outshipment(id_outshipment):
-            outshipment.status = OutBoundShipment.statuses[0]
-            outshipment_packages = outshipment.set_of_packages
-            for package in outshipment_packages:
-                package.status = Package.statuses[2]
+        outshipment_id = prompt.outshipment_id()
+        actual_departure_date = prompt.datetime("Departure date ")
+        if confirm.exit_outshipment(outshipment_id):
+            service_layer.declare_outshipment_actual_departure(actual_departure_date, outshipment_id)
             keep_looping = False
     
-def delivered_outboundshipment():
+def declare_outboundshipment_actual_delivery() -> None:
+    """
+    - Changes the delivery date of an outshipment by asking the user 
+    its id and the actual delivery date from the warehouse. 
+    - Updates the status of the given outshipment to `"delivered"`.
+    - Updates the status of the packages of the given outshipment to `"delivered"`.
+    """
+
     keep_looping = True
     while keep_looping:
-        id_outshipment = prompt.outshipment_id()
-        outshipment = database.set_of_shipments[id_outshipment]
-        arrival_date = prompt.datetime("Delivered date ")
-        if confirm.delivered_outshipment(id_outshipment, arrival_date):
-            outshipment.expected_arrival_date = arrival_date
-            outshipment.status = OutBoundShipment.statuses[2]
-            outshipment_packages = outshipment.set_of_packages
-            for package in outshipment_packages:
-                package.status = Package.statuses[5]
+        outshipment_id = prompt.outshipment_id()
+        actual_delivery_date = prompt.datetime("Delivered date ")
+        if confirm.delivered_outshipment(outshipment_id, actual_delivery_date):
+            service_layer.declare_inshipment_actual_delivery(outshipment_id, actual_delivery_date)
             keep_looping = False
 
 # Bundle
 
-def declare_bundle():
-    transporter = prompt.transporter()
-    shipments = SetOfShipments()
-    for i in range(prompt.number_shipments()):
+def declare_bundle() -> None: # Fonction à modifier après avoir modifié la logique
+    """
+    Adds a new groupage to the database by asking the user 
+    its informations and the shipments to add to this groupage.
+    """
+
+    print("Fonction à modifier après avoir modifié la logique ")
+    pass 
+
+    shipments = SetOfShipments() 
+
+    freight_forwarder = prompt.freight_forwarder()
+    for _ in range(prompt.number_shipments()):
         keep_looping = True
         while keep_looping:
-            shipment_to_add = database.set_of_shipments[prompt.outshipment_id()]
-            if confirm.shipment_to_add(shipment_to_add.id):
+            outshipment_id = prompt.outshipment_id()
+            if confirm.shipment_to_add(outshipment_id):
+                shipment_to_add = database.set_of_shipments[outshipment_id]
                 shipments.add(shipment_to_add)
                 keep_looping = False
             else:
                 print("Aborted")
-    new_bundle = Bundle(transporter, shipments)
+    new_bundle = Bundle(freight_forwarder, shipments)
     database.set_of_bundles.add(new_bundle)
-    echo_id_bundle(new_bundle.id)
+    echo.id_bundle(new_bundle.id)
 
-def declare_trip():
+def declare_trip(): # Fonction à modifier après avoir modifié la logique
+    print("Fonction à modifier après avoir modifié la logique ")
+    pass 
+
     ship_name = prompt.ship_name()
     bundles = SetOfBundles()
-    for i in range(prompt.number_bundles()):
+    for _ in range(prompt.number_bundles()):
         keep_looping = True
         while keep_looping:
             bundle_to_add = database.set_of_bundles[prompt.bundle_id()]
@@ -245,7 +323,4 @@ def declare_trip():
                 print("Canceled, enter the right bundle")
     new_trip = Trip(ship_name, bundles)
     database.set_of_trips.add(new_trip)
-    echo_id_trip(new_trip.id)
-
-
-    
+    echo.id_trip(new_trip.id)
