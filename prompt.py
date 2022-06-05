@@ -32,7 +32,7 @@ def bundle_id() -> str:
     type=click.Choice(list((str(b.id) for b in database.set_of_bundles))), 
     show_choices=False)
 
-def datetime(name_date: str) -> datetime:
+def date(name_date: str) -> datetime:
     in_out = True
     today = datetime.now().strftime("%Y-%m-%d %H:%M")
     while in_out:
@@ -67,7 +67,7 @@ def package_information(object) -> dict:
     return {"dimensions": dimensions, "weight": weight, "status": status, "package_type": package_type, "description": description}
 
 def inshipment_information() -> dict:
-    arrival_date = datetime("Arrival date ")
+    arrival_date = date("Arrival date ")
     status = statuses_inshipment_namedtuple.inbound
     sender = click.prompt("Sender ", type=str)
     # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
@@ -76,8 +76,8 @@ def inshipment_information() -> dict:
     return {"arrival_date": arrival_date, "status": status, "sender": sender, "adressee": adressee, "description": description}
 
 def outshipment_information() -> dict:
-    departure_date = datetime("Departure date ")
-    expected_arrival_date = datetime("Expected delivered date")
+    departure_date = date("Departure date ")
+    expected_arrival_date = date("Expected delivered date")
     status = statuses_package_namedtuple.warehouse
     sender = click.prompt("Sender ", type=str)
     adressee = click.prompt("Adressee ", type=str)

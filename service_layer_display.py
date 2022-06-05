@@ -31,8 +31,8 @@ def shipment(shipment_id: str) -> None:
     shipment_informations = shipment.__dict__
     print(f"{shipment_informations}")
     print("\n")
-    set_of_packages = shipment.set_of_packages
+    shipment_packages = shipment.set_of_packages
     print(
-        f"The shipment {shipment_id} contains {len(set_of_packages)} packages, which are : ")
+        f"The shipment {shipment_id} contains {len(shipment_packages)} packages, which are : ")
     print("\n")
-    set_of_packages(set_of_packages)
+    set_of_packages(shipment_packages)

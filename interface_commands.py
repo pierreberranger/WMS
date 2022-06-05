@@ -57,7 +57,7 @@ def add_packages_to_database() -> None:
                     
                     keep_looping = False 
 
-                    for _ in range(prompt.number_packages()):
+                    for _ in range(nb_packages):
                         new_package_id = service_layer.add_one_package(packages_informations)
                         packages_id_of_this_reference.add(new_package_id)
 

@@ -25,9 +25,10 @@ bundles_ids = FileIDGenerator("MAX_ID_Bundles.txt")
 containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
 trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
 
+
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
-    types = ('EPAL', '20ISO', 'OOG')
+    types = ('EPAL', 'ISO20', 'OOG') # 20ISO Bug quand on crée le namedtuple dans available_choices
 
     def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", 
                     id=None, shipment_ids=None, container_id = None) -> None:
