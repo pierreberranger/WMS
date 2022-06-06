@@ -1,7 +1,6 @@
 from collections import namedtuple
 from typing import Union
 from datetime import datetime
-from pickle import dump
 
 Dimensions = namedtuple("Dimensions", "width length height")
 from pickle_data import with_save
@@ -29,7 +28,7 @@ trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
 
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
-    types = ('EPAL', '20ISO', 'OOG')
+    types = ('EPAL', 'ISO20', 'OOG') # 20ISO Bug quand on crée le namedtuple dans available_choices
 
     def __init__(self, dimensions: Dimensions, weight : float, status: str, package_type: str, description: str = "", 
                     id=None, shipment_ids=None, container_id = None) -> None:
@@ -47,6 +46,12 @@ class Package():
         else:
             self.id = id
         self.container_id = container_id
+
+    def __copy__(self):
+        """ package_copy = self.__class__.__new__(self.__class__)
+        package_copy = 
+        return package_copy """
+        pass
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:
@@ -81,7 +86,7 @@ class Shipment():
         self.adressee: str = adressee
         self.sender: str = sender
         self.description: str = description
-        self.id = f"{shipment_type}S{next(shipments_ids)}"
+        self.id: str = f"{shipment_type}S{next(shipments_ids)}"
         self.bundle_id: int = bundle_id
 
     @property
@@ -123,6 +128,51 @@ class Container:
 class Trip:
     pass
 
+class TypedSet(set):
+
+    def __init__(self, cls, *args):
+        self.cls = cls 
+        if (not args) or all(self.cls == obj.__class__ for obj in args[0]):
+            super().__init__(*args)
+        else:
+            raise TypeError(f"Expected type: {self.cls_name}")
+
+    @property
+    def cls_name(self) -> str:
+        return self.cls.__name__
+
+    def __getitem__(self, id: str):
+        if id[0] != self.cls_name[0]:
+            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
+        for object in self:
+            if object.id == id:
+                return object
+        raise KeyError(f"This {self.cls_name.lower()} id does not exist")
+
+    @with_save
+    def remove(self, other) -> None:
+        if isinstance(other, self.cls):
+            super().remove(other)
+
+        elif isinstance(other, str) and other[0] != self.cls_name[0]:
+            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
+        elif isinstance(other, str):
+            for object in self.copy():
+                if object.id == other:
+                    super().remove(object)
+                    return None
+            raise KeyError(f"This {self.cls_name.lower()} id does not exist")
+        
+        else:
+            raise TypeError(f"The argument must be a string or a {self.cls_name}")
+
+    @with_save
+    def add(self, other) -> None:
+        if isinstance(other, self.cls):
+            super().add(other)
+        else:
+            raise TypeError(f"Expected type: {self.cls_name}")
+
 class SetOfSomething(set):
 
     def __getitem__(self, id: str) -> Union[Package, Shipment, Bundle, Container, Trip]:
@@ -145,6 +195,7 @@ class SetOfSomething(set):
         else:
 
             raise ValueError("The argument must be a string or a Package/Shipment ")
+
 
     @with_save
     def add(self, other: Union[str, Union[Package, Shipment, Bundle, Container, Trip]]):
