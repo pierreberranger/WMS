@@ -1,5 +1,4 @@
 from collections import namedtuple
-from typing import Type, Union
 from datetime import datetime
 
 Dimensions = namedtuple("Dimensions", "width length height")
