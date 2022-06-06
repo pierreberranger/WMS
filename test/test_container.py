@@ -1,6 +1,6 @@
 import unittest
 
-from models import Bundle, Package, Shipment, TypedSet, Container
+from models import Groupage, Package, Shipment, TypedSet, Container
 import pickle_data as database
 
 class TestContainer(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestContainer(unittest.TestCase):
         database.set_of_packages.add(self.package4)
         database.set_of_containers = TypedSet(Container, [self.container1, self.container2])
         database.set_of_shipments = TypedSet(Shipment, [self.shipment, self.shipment2])
-        self.bundle = Bundle("transporter", TypedSet(Shipment, [self.shipment]), TypedSet(Container, [self.container1, self.container2]), trip_id=None)
+        self.groupage = Groupage("transporter", TypedSet(Shipment, [self.shipment]), TypedSet(Container, [self.container1, self.container2]), trip_id=None)
     
     def test_init(self):
         self.assertEqual(self.package4.container_id, self.container2.id)

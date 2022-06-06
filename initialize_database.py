@@ -1,5 +1,5 @@
 from pickle import dump
-from models import *
+from models import Package, Shipment, Container, Groupage, Trip, TypedSet
 
 with open('test/testdata', 'wb') as f:
-    dump((TypedSet(Package), TypedSet(Shipment), TypedSet(Container),TypedSet(Bundle), TypedSet(Trip)), f)
+    dump((TypedSet(Package), TypedSet(Shipment), TypedSet(Container),TypedSet(Groupage), TypedSet(Trip)), f)
