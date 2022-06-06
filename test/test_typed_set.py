@@ -6,7 +6,7 @@ import pickle_data as database
 class TestTypedSet(unittest.TestCase):
 
     def setUp(self):
-        self.TEST_DATA_FILE = 'testdata'
+        self.TEST_DATA_FILE = 'test/testdata'
         database.load(self.TEST_DATA_FILE)
         self.package = Package(None, None, None, None)
         self.shipment = Shipment(None)

@@ -6,7 +6,7 @@ import pickle_data as data
 class TestPackages(unittest.TestCase):
 
     def setUp(self):
-        self.TEST_DATA_FILE = 'testdata'
+        self.TEST_DATA_FILE = 'test/testdata'
         data.load(self.TEST_DATA_FILE)
 
     def test_attribute_id(self):

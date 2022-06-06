@@ -47,6 +47,8 @@ def save(file = None):
 		raise FileNotFoundError
 	with open(file, 'wb') as f:
 		pickle.dump((set_of_packages, set_of_shipments, set_of_containers, set_of_bundles, set_of_trips), f)
+	with open(file, 'rb') as f:
+		set_of_packages1, set_of_shipments, set_of_containers, set_of_bundles, set_of_trips= pickle.load(f)
 
 def with_save(func):
 	def decorated(self, *args, **kwargs):

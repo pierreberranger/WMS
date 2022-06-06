@@ -1,12 +1,9 @@
 #
 wms/
-DATA_BASE.csv
-MAX_ID*
-database.txt
 env_nostos/
 
-test/
-testdata
+MAX_ID*
+database.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

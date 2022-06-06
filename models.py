@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Union
+from typing import Type, Union
 from datetime import datetime
 
 Dimensions = namedtuple("Dimensions", "width length height")
@@ -24,6 +24,52 @@ packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
 bundles_ids = FileIDGenerator("MAX_ID_Bundles.txt")
 containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
 trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
+
+
+class TypedSet(set):
+
+    def __init__(self, cls, *args):
+        self.cls = cls 
+        if (not args) or all(self.cls == obj.__class__ for obj in args[0]):
+            super().__init__(*args)
+        else:
+            raise TypeError(f"Expected type: {self.cls_name}")
+
+    @property
+    def cls_name(self) -> str:
+        return self.cls.__name__
+
+    def __getitem__(self, id: str):
+        if id[0] != self.cls_name[0]:
+            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
+        for object in self:
+            if object.id == id:
+                return object
+        raise KeyError(f"This {self.cls_name.lower()} id does not exist")
+
+    @with_save
+    def remove(self, other) -> None:
+        if isinstance(other, self.cls):
+            super().remove(other)
+
+        elif isinstance(other, str) and other[0] != self.cls_name[0]:
+            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
+        elif isinstance(other, str):
+            for object in self.copy():
+                if object.id == other:
+                    super().remove(object)
+                    return None
+            raise KeyError(f"This {self.cls_name.lower()} id does not exist")
+        
+        else:
+            raise TypeError(f"The argument must be a string or a {self.cls_name}")
+
+    @with_save
+    def add(self, other) -> None:
+        if isinstance(other, self.cls):
+            super().add(other)
+        else:
+            raise TypeError(f"Expected type: {self.cls_name}")
 
 
 class Package():
@@ -74,13 +120,9 @@ class Package():
             and self.package_type == other.package_type and self.id == other.id
 
 
-class SetOfPackages:
-    pass
-
-
 class Shipment():
 
-    def __init__(self, status: str, set_of_packages: SetOfPackages = None, adressee: str ="", sender: str = "", 
+    def __init__(self, status: str, set_of_packages: TypedSet = None, adressee: str ="", sender: str = "", 
             description: str = "", bundle_id: int = None, shipment_type: str = ""):
         self.status: str = status
         self.adressee: str = adressee
@@ -92,11 +134,12 @@ class Shipment():
     @property
     def set_of_packages(self):
         if database.set_of_packages is None:
-            return SetOfPackages()
+            return TypedSet(Package)
         else:
-            return SetOfPackages(package for package in database.set_of_packages 
-                            if self.id in package.shipment_ids
-                )
+            return TypedSet(Package, (package for package in database.set_of_packages 
+                                        if self.id in package.shipment_ids)
+                    )
+                            
     @set_of_packages.setter
     def set_of_packages(self, new_set_of_packages):
         for package in database.set_of_packages:
@@ -119,135 +162,27 @@ class Shipment():
         return self.id == other.id
 
 
-class Bundle:
-    pass
-
-class Container:
-    pass
-
-class Trip:
-    pass
-
-class TypedSet(set):
-
-    def __init__(self, cls, *args):
-        self.cls = cls 
-        if (not args) or all(self.cls == obj.__class__ for obj in args[0]):
-            super().__init__(*args)
-        else:
-            raise TypeError(f"Expected type: {self.cls_name}")
-
-    @property
-    def cls_name(self) -> str:
-        return self.cls.__name__
-
-    def __getitem__(self, id: str):
-        if id[0] != self.cls_name[0]:
-            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
-        for object in self:
-            if object.id == id:
-                return object
-        raise KeyError(f"This {self.cls_name.lower()} id does not exist")
-
-    @with_save
-    def remove(self, other) -> None:
-        if isinstance(other, self.cls):
-            super().remove(other)
-
-        elif isinstance(other, str) and other[0] != self.cls_name[0]:
-            raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
-        elif isinstance(other, str):
-            for object in self.copy():
-                if object.id == other:
-                    super().remove(object)
-                    return None
-            raise KeyError(f"This {self.cls_name.lower()} id does not exist")
-        
-        else:
-            raise TypeError(f"The argument must be a string or a {self.cls_name}")
-
-    @with_save
-    def add(self, other) -> None:
-        if isinstance(other, self.cls):
-            super().add(other)
-        else:
-            raise TypeError(f"Expected type: {self.cls_name}")
-
-class SetOfSomething(set):
-
-    def __getitem__(self, id: str) -> Union[Package, Shipment, Bundle, Container, Trip]:
-        for object in self:
-            if object.id == id:
-                return object
-        raise KeyError("This id does not exist")
-
-    @with_save
-    def remove(self, other: Union[str, Union[Package, Shipment, Bundle, Container, Trip]]) -> None:
-        if (isinstance(other, Shipment) or isinstance(other, Package) or isinstance(other, Bundle) or 
-                isinstance(other, Container) or isinstance(other, Trip)):
-            super().remove(other)
-        elif isinstance(other, str):
-            for object in self.copy():
-                if object.id == other:
-                    super().remove(object)
-                    return None
-            raise KeyError("This id does not exist")
-        else:
-
-            raise ValueError("The argument must be a string or a Package/Shipment ")
-
-
-    @with_save
-    def add(self, other: Union[str, Union[Package, Shipment, Bundle, Container, Trip]]):
-        super().add(other)
-
-class SetOfPackages(SetOfSomething):
-
-    pass
-
-
-class SetOfShipments(SetOfSomething):
-
-    pass
-
-
 class OutBoundShipment(Shipment):
     statuses = ('outbound', 'warehouse', 'delivered')
 
-    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, set_of_packages: SetOfPackages = None, adressee: str = "", sender: str = "", description: str = ""):
+    def __init__(self, departure_date: datetime, expected_arrival_date: datetime, status: str, set_of_packages: TypedSet = None, adressee: str = "", sender: str = "", description: str = ""):
         self.departure_date: datetime = departure_date
         self.expected_arrival_date: datetime = expected_arrival_date
         super().__init__(status, set_of_packages, adressee, sender, description, shipment_type="O")
-        
 
 
 class InBoundShipment(Shipment):
     statuses = ('warehouse', 'inbound')
 
-    def __init__(self, arrival_date, status: str,set_of_packages: SetOfPackages = None, sender: str = "", adressee: str = "", description: str = ""):
+    def __init__(self, arrival_date, status: str,set_of_packages: TypedSet = None, sender: str = "", adressee: str = "", description: str = ""):
         self.arrival_date: datetime = arrival_date
         super().__init__(status,set_of_packages, adressee, sender, description, shipment_type="I")
 
 
-class SetOfContainers(SetOfSomething):
-    
-    pass
-
-
-class SetOfBundles(SetOfSomething):
-    
-    pass
-
-
-class SetOfTrips(SetOfSomething):
-    
-    pass
-
-
 class Bundle:
 
-    def __init__(self, transporter: str, set_of_shipments: SetOfShipments = None, 
-            set_of_containers: SetOfContainers = None, trip_id: int = None) -> None:
+    def __init__(self, transporter: str, set_of_shipments: TypedSet = None, 
+            set_of_containers: TypedSet = None, trip_id: int = None) -> None:
         self.id = f"B{next(bundles_ids)}"
         if not(set_of_shipments is None):
             for shipment in set_of_shipments:
@@ -259,12 +194,12 @@ class Bundle:
         self.trip_id = trip_id
 
     @property
-    def set_of_shipments(self) -> SetOfShipments:
+    def set_of_shipments(self) -> TypedSet:
         if database.set_of_shipments is None:
-            return SetOfShipments()
+            return TypedSet(Shipment)
         else:
-            return SetOfShipments(shipment for shipment in database.set_of_shipments 
-                            if self.id == shipment.bundle_id
+            return TypedSet(Shipment, (shipment for shipment in database.set_of_shipments 
+                            if self.id == shipment.bundle_id)
                 )
 
     @set_of_shipments.setter
@@ -277,12 +212,12 @@ class Bundle:
             shipment.bundle_id = self.id
 
     @property
-    def set_of_containers(self) -> SetOfContainers:
+    def set_of_containers(self) -> TypedSet:
         if database.set_of_containers is None:
-            return SetOfContainers()
+            return TypedSet(Container)
         else:
-            return SetOfContainers(container for container in database.set_of_containers 
-                            if self.id == container.bundle_id
+            return TypedSet(Container, (container for container in database.set_of_containers 
+                            if self.id == container.bundle_id)
                 )
 
     @set_of_containers.setter
@@ -308,7 +243,7 @@ class Container:
     
     empty_container_weight = 3800
 
-    def __init__(self, set_of_packages: SetOfPackages = None, bundle_id: int = None) -> None:
+    def __init__(self, set_of_packages: TypedSet = None, bundle_id: int = None) -> None:
         self.id: str = f"C{next(containers_ids)}"
         if not(set_of_packages is None):
             for package in set_of_packages:
@@ -316,12 +251,12 @@ class Container:
         self.bundle_id = bundle_id
     
     @property
-    def set_of_packages(self) -> SetOfPackages:
+    def set_of_packages(self) -> TypedSet:
         if database.set_of_packages is None:
-            return SetOfPackages()
+            return TypedSet(Package)
         else:
-            return SetOfPackages(package for package in database.set_of_packages 
-                            if self.id == package.container_id
+            return TypedSet(Package, (package for package in database.set_of_packages 
+                            if self.id == package.container_id)
                 )
 
     @set_of_packages.setter
@@ -344,7 +279,7 @@ class Container:
 
 class Trip:
     
-    def __init__(self, ship_name: str, set_of_bundles: SetOfBundles = None) -> None:
+    def __init__(self, ship_name: str, set_of_bundles: TypedSet = None) -> None:
         self.id: str = f"T{next(trips_ids)}"
         if not(set_of_bundles is None):
             for bundle in set_of_bundles:
@@ -352,12 +287,12 @@ class Trip:
         self.ship_name = ship_name
     
     @property
-    def set_of_bundles(self) -> SetOfBundles:
+    def set_of_bundles(self) -> TypedSet:
         if database.set_of_bundles is None:
-            return SetOfBundles()
+            return TypedSet(Bundle)
         else:
-            return SetOfBundles(bundle for bundle in database.set_of_bundles 
-                            if self.id == bundle.trip_id
+            return TypedSet(Bundle, (bundle for bundle in database.set_of_bundles 
+                            if self.id == bundle.trip_id)
                 )
 
     @set_of_bundles.setter
@@ -370,11 +305,11 @@ class Trip:
             bundle.trip_id = self.id
 
     @property
-    def set_of_containers(self) -> SetOfContainers:
+    def set_of_containers(self) -> TypedSet:
         if database.set_of_containers is None:
-            return SetOfContainers()
+            return TypedSet(Container)
         else:
-            return SetOfContainers().union(*(bundle.set_of_containers for bundle in self.set_of_bundles))
+            return TypedSet(Container).union(*(bundle.set_of_containers for bundle in self.set_of_bundles))
 
     @property
     def weight(self) -> float:
