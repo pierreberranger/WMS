@@ -1,7 +1,5 @@
 #
 wms/
-MAX_ID*
-database.txt
 env_nostos/
 
 # Database files
