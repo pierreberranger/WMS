@@ -142,12 +142,12 @@ class Shipment():
         if database.set_of_packages is None:
             return TypedSet(Package)
         else:
-            return TypedSet(Package, (package for package in database.set_of_packages 
-                                        if self.id == package.shipment_id)
+            return TypedSet(Package, [package for package in database.set_of_packages 
+                                        if self.id == package.shipment_id]
                     )
                             
     @set_of_packages.setter
-    def set_of_packages(self, new_set_of_packages):
+    def set_of_packages(self, new_set_of_packages) -> None:
         for package in database.set_of_packages:
             package.shipment_id = None
         for package in new_set_of_packages:
@@ -186,8 +186,8 @@ class DropOff:
         if database.set_of_packages is None:
             return TypedSet(Package)
         else:
-            return TypedSet(Package, (package for package in database.set_of_packages 
-                                        if self.id == package.dropoff_id)
+            return TypedSet(Package, [package for package in database.set_of_packages 
+                                        if self.id == package.dropoff_id]
                     )
                             
     @set_of_packages.setter
@@ -226,8 +226,8 @@ class Groupage:
         if database.set_of_shipments is None:
             return TypedSet(Shipment)
         else:
-            return TypedSet(Shipment, (shipment for shipment in database.set_of_shipments 
-                            if self.id == shipment.groupage_id)
+            return TypedSet(Shipment, [shipment for shipment in database.set_of_shipments 
+                            if self.id == shipment.groupage_id]
                 )
 
     @set_of_shipments.setter
@@ -244,8 +244,8 @@ class Groupage:
         if database.set_of_containers is None:
             return TypedSet(Container)
         else:
-            return TypedSet(Container, (container for container in database.set_of_containers 
-                            if self.id == container.groupage_id)
+            return TypedSet(Container, [container for container in database.set_of_containers 
+                            if self.id == container.groupage_id]
                 )
 
     @set_of_containers.setter
@@ -283,8 +283,8 @@ class Container:
         if database.set_of_packages is None:
             return TypedSet(Package)
         else:
-            return TypedSet(Package, (package for package in database.set_of_packages 
-                            if self.id == package.container_id)
+            return TypedSet(Package, [package for package in database.set_of_packages 
+                            if self.id == package.container_id]
                 )
 
     @set_of_packages.setter
@@ -319,8 +319,8 @@ class Trip:
         if database.set_of_groupages is None:
             return TypedSet(Groupage)
         else:
-            return TypedSet(Groupage, (groupage for groupage in database.set_of_groupages 
-                            if self.id == groupage.trip_id)
+            return TypedSet(Groupage, [groupage for groupage in database.set_of_groupages 
+                            if self.id == groupage.trip_id]
                 )
 
     @set_of_groupages.setter

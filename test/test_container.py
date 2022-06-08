@@ -8,11 +8,10 @@ class TestContainer(unittest.TestCase):
     def setUp(self):
         self.TEST_DATA_FILE = 'test/testdata'
         database.load(self.TEST_DATA_FILE)
-        self.shipment = Shipment(None, None, None, None, "shipment")
-        self.shipment2 = Shipment(None, None, None, None, "shipment2")
+        self.shipment = Shipment("shipment", None, None, None, None)
+        self.shipment2 = Shipment("shipment2", None, None, None, None)
         self.package1, self.package2, self.package3, self.package4, self.package5 = Package(None, 10, "OK", None), Package(None, 10, "OK", None), Package(None, 10, None, None), Package(None, 15, None, None), Package(None, 10, None, None)
         database.set_of_packages = TypedSet(Package, [self.package1, self.package2, self.package3, self.package5])
-        print(f"{database.set_of_packages=}")
         self.container1 = Container(database.set_of_packages)
         self.container2 = Container(TypedSet(Package, [self.package4]))
         database.set_of_packages.add(self.package4)
