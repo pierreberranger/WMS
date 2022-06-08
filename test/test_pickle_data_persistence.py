@@ -44,10 +44,10 @@ class TestPickleDataPersistence(unittest.TestCase):
 		package = Package(None, None, None, None, "ADDED_PACK")
 		database.set_of_packages.add(package)
 	
-		shipment = Shipment(None, None, None, "ADDED_SHIPMENT_SENDER")
+		shipment = Shipment(None, None, description="ADDED_SHIPMENT_SENDER")
 		database.set_of_shipments.add(shipment)
 		database.save()
 		database.unload()
 		database.load(TEST_DATA_FILE)
 		self.assertTrue(any([package.description == "ADDED_PACK" for package in database.set_of_packages]))
-		self.assertTrue(any([shipment.sender == "ADDED_SHIPMENT_SENDER" for shipment in database.set_of_shipments]))
+		self.assertTrue(any([shipment.description == "ADDED_SHIPMENT_SENDER" for shipment in database.set_of_shipments]))

@@ -39,6 +39,9 @@ class TypedSet(set):
     def cls_name(self) -> str:
         return self.cls.__name__
 
+    def __reduce__(self):
+        return (self.__class__, (self.cls, super().__reduce__()[1][0])) # On récupère [x for x in self]
+
     def __getitem__(self, id: str):
         if id[0] != self.cls_name[0]:
             raise TypeError(f"Expected id pattern : '{self.cls_name[0]}*'")
