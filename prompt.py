@@ -12,19 +12,14 @@ def package_id() -> str:
     type=click.Choice(list((str(p.id) for p in database.set_of_packages))), 
     show_choices=False)
 
+def dropoff_id() -> str:
+    return click.prompt("dropoff id ", 
+    type=click.Choice(list((str(d.id) for d in database.set_of_dropoffs))), 
+    show_choices=False)
+
 def shipment_id() -> str:
     return click.prompt("shipment id ", 
     type=click.Choice(list((str(s.id) for s in database.set_of_shipments))), 
-    show_choices=False)
-
-def inshipment_id() -> str:
-    return click.prompt("shipment id ", 
-    type=click.Choice(list((str(s.id) for s in database.set_of_shipments if s.id[0] == "I"))), 
-    show_choices=False)
-
-def outshipment_id() -> str:
-    return click.prompt("shipment id ", 
-    type=click.Choice(list((str(s.id) for s in database.set_of_shipments if s.id[0] == "O"))), 
     show_choices=False)
 
 def bundle_id() -> str:
@@ -59,30 +54,27 @@ def package_information(object) -> dict:
     if object == "package":
         status = click.prompt(
             "status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
-    elif object == "inshipment":
+    elif object == "shipment":
         status = click.prompt(
-            "status", default=statuses_inshipment_namedtuple.inbound, type=statuses_inshipment_choices)
+            "status", default=statuses_shipment_namedtuple.inbound, type=statuses_shipment_choices)
     package_type = click.prompt(
         "Package Type", default=package_types_namedtuple.EPAL, type=package_types_choices)
     return {"dimensions": dimensions, "weight": weight, "status": status, "package_type": package_type, "description": description}
 
-def inshipment_information() -> dict:
+def dropoff_information() -> dict:
+    status = statuses_dropoff_namedtuple.inbound
+    sender = click.prompt("Sender ", type=str)
     arrival_date = date("Arrival date ")
-    status = statuses_inshipment_namedtuple.inbound
-    sender = click.prompt("Sender ", type=str)
-    # On pourrait ensuit imaginer une liste de fournisseur qu'on passerait en type avec un click.Choice ?
-    adressee = click.prompt("Adressee ", type=str)
     description = click.prompt("Description of the inshipment")
-    return {"arrival_date": arrival_date, "status": status, "sender": sender, "adressee": adressee, "description": description}
+    return {"status": status, "sender": sender, "arrival_date": arrival_date, "description": description}
 
-def outshipment_information() -> dict:
-    departure_date = date("Departure date ")
-    expected_arrival_date = date("Expected delivered date")
-    status = statuses_package_namedtuple.warehouse
-    sender = click.prompt("Sender ", type=str)
+def shipment_information() -> dict:
+    status = statuses_shipment_namedtuple.inbound
     adressee = click.prompt("Adressee ", type=str)
-    description = click.prompt("Description of the outshipment")
-    return {"departure_date": departure_date, "expected_arrival_date": expected_arrival_date, "status": status, "adressee": adressee, "sender": sender, "description": description}
+    departure_date_from_warehouse = date("Departure date from warehouse ")
+    delivery_date = date("Delivery date ")
+    description = click.prompt("Description of the shipment")
+    return {"status": status, "adressee": adressee, "departure_date_from_warehouse" : departure_date_from_warehouse,  "delivery_date": delivery_date,  "description": description}
 
 def new_package_status() -> str:
     return click.prompt(
@@ -101,6 +93,9 @@ def number_packages() -> int:
 
 def number_references() -> int:
     return click.prompt("How many references do you have ?", type=int)
+
+def number_dropoffs() -> int:
+    return click.prompt("Number of dropoffs ", type=int)
 
 def number_shipments() -> int:
     return click.prompt("Number of shipments ", type=int)

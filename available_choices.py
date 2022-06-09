@@ -18,16 +18,16 @@ package_types_namedtuple = PackageTypes(*Package.types)
 
 package_types_choices = click.Choice(Package.types, case_sensitive=False)
 
-# InBoundshipments
-InBoundshipmentStatuses = namedtuple("InBoundshipmentStatuses", InBoundShipment.statuses)
-statuses_inshipment_namedtuple = InBoundshipmentStatuses(*InBoundShipment.statuses) 
+# DropOff
+DropOffStatuses = namedtuple("DropOffStatuses", DropOff.statuses)
+statuses_dropoff_namedtuple = DropOffStatuses(*DropOff.statuses) 
 
-statuses_inshipment_choices = click.Choice(
-    InBoundShipment.statuses, case_sensitive=False)
+statuses_dropoff_choices = click.Choice(
+    DropOff.statuses, case_sensitive=False)
 
-# OutBoundshipments
-OutBoundshipmentStatuses = namedtuple("OutBoundshipmentStatuses", OutBoundShipment.statuses)
-statuses_outshipment_namedtuple = OutBoundshipmentStatuses(*OutBoundShipment.statuses) 
+# Shipments
+ShipmentStatuses = namedtuple("ShipmentStatuses", Shipment.statuses)
+statuses_shipment_namedtuple = ShipmentStatuses(*Shipment.statuses) 
 
-statuses_outshipment_choices = click.Choice(
-    OutBoundShipment.statuses, case_sensitive=False)
+statuses_shipment_choices = click.Choice(
+    Shipment.statuses, case_sensitive=False)

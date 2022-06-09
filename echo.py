@@ -9,6 +9,9 @@ def ids(ids: Union[set, list, tuple]) -> None :
     click.echo(
         f'The packages for the reference have the id : {ids}')
 
+def id_dropoff(id_dropoff) -> None :
+    click.echo(f'Your DropOff id is {id_dropoff}')
+
 def id_shipment(id_shipment) -> None :
     click.echo(f'Your Shipment id is {id_shipment}')
 

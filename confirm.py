@@ -33,23 +33,23 @@ def pick_package(identity) -> bool:
     return click.confirm(
             f"Are you sure to pick the package with id:{identity} ?", default=False)
 
-def inshipment(shipment_informations) -> bool:
+def dropoff(dropoff_informations) -> bool:
     return click.confirm(
-            f"Are the information of the inshipment right:arrival_date: {shipment_informations} ?", default=False)
+            f"Are the information of the dropoff right:arrival_date: {dropoff_informations} ?", default=False)
 
-def update_inshipment(id_inshipment, arrival_date) -> bool:
+def shipment(shipment_informations) -> bool:
     return click.confirm(
-            f"The Indhipment {id_inshipment} arrived on the: {arrival_date}", default=False)
+            f"Are the information of the shipment right:arrival_date: {shipment_informations} ?", default=False)
 
-def outshipment(outshipment_informations) -> bool:
+def update_dropoff(id_dropoff, arrival_date) -> bool:
     return click.confirm(
-            f"Are the information of the Outshipment right: departure_date: {outshipment_informations} ?", default=False)
+            f"The DropOff {id_dropoff} arrived on the: {arrival_date}", default=False)
 
-def exit_outshipment(id_outshipment) -> bool:
-    return click.confirm(f"The Outshipment {id_outshipment} has left the warehouse.", default = False)
+def exit_shipment(id_shipment) -> bool:
+    return click.confirm(f"The Shipment {id_shipment} has left the warehouse.", default = False)
 
-def delivered_outshipment(id, date) -> bool:
-    return click.confirm(f"The Outshipment {id} has been delivered on the {date}.", default = False)
+def delivered_shipment(id, date) -> bool:
+    return click.confirm(f"The Shipment {id} has been delivered on the {date}.", default = False)
 
 def shipment_to_add(identity) -> bool:
     return click.confirm(

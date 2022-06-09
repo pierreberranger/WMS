@@ -181,9 +181,10 @@ class Shipment():
 class DropOff:
     statuses = ('inbound', 'warehouse')
 
-    def __init__(self, status: str, set_of_packages: TypedSet = None, 
+    def __init__(self, status: str, sender:str, set_of_packages: TypedSet = None, 
                     arrival_date: datetime = None, description: str = ""):
         self.status = status
+        self.sender = sender
         self.arrival_date: datetime = arrival_date
         self.description: str = description
         self.id: str = f"D{next(dropoff_ids)}"
