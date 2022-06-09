@@ -41,7 +41,7 @@ class TestPickleDataPersistence(unittest.TestCase):
 
 	def test_save(self):
 		database.load(TEST_DATA_FILE)
-		package = Package(None, None, None, None, "ADDED_PACK")
+		package = Package(None, None, None, None, description="ADDED_PACK")
 		database.set_of_packages.add(package)
 	
 		shipment = Shipment(None, None, description="ADDED_SHIPMENT_SENDER")
