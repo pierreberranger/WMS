@@ -1,7 +1,8 @@
 from datetime import datetime
 from confirm import package
-from models import SetOfPackages, Package, Dimensions, InBoundShipment, OutBoundShipment
+from models import Package, Dimensions, Shipment, DropOff, Groupage, Trip
 import pickle_data as database
+
 
 
 def load():
@@ -66,7 +67,7 @@ def del_shipment(id) -> None:
 def declare_shipment_actual_departure_from_warehouse(actual_departure_date_from_warehouse: datetime, shipment_id: str) -> None:
     shipment: Shipment = database.set_of_shipments[shipment_id]
     shipment.departure_date_from_warehouse = actual_departure_date_from_warehouse
-    shipment.status = Shipmement.statuses[2]
+    shipment.status = Shipment.statuses[2]
     shipment_packages = shipment.set_of_packages
     for package in shipment_packages:
         package.status = Package.statuses[2]
@@ -78,3 +79,21 @@ def declare_shipment_actual_delivery(actual_delivery_date: datetime, shipment_id
     shipment_packages = shipment.set_of_packages
     for package in shipment_packages:
         package.status = Package.statuses[5]
+
+def declare_groupage(freight_forwarder: str) -> str:
+    new_groupage = Groupage(freight_forwarder)
+    database.set_of_groupages.add(new_groupage)
+    return groupage_id
+
+def add_shipment_to_a_groupage(groupage_id: str, shipment_id: str) -> None:
+    shipment_to_add = database.set_of_shipments[shipment_id]
+    shipment_to_add.groupage_id = groupage_id
+
+def declare_trip(ship_name: str) -> str:
+    new_trip = Trip(ship_name)
+    database.set_of_trips.add(new_trip)
+    return new_trip.id
+
+def add_shipment_to_a_trip(trip_id: str, groupage_id: str) -> None:
+    groupage_to_add = database.set_of_groupages[groupage_id]
+    groupage_to_add.trip_id = trip_id

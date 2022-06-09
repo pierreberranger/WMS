@@ -12,7 +12,7 @@ def interactive():
     print("If you want to quit, input [quit] \n")
 
     while (in_out):
-        objects_focused_user_choices = click.Choice(("package", "shipment", "dropoff"
+        objects_focused_user_choices = click.Choice(("package", "shipment", "dropoff",
                                 "groupage", "trip", "view", "quit"), case_sensitive=False)
         object_focused = click.prompt("Element you want to focus on", type=objects_focused_user_choices)
 
@@ -97,12 +97,12 @@ def interactive():
                 interface_commands.save_and_quit()
                 in_out = False
         
-        elif object_focused == "bundle" :
-            answer = click.prompt("Do you want to prompt a bundle already scheduled or choose the automatic bundle ?",
+        elif object_focused == "groupage" :
+            answer = click.prompt("Do you want to prompt a groupage already scheduled or choose the automatic groupage ?",
             default="scheduled", type=click.Choice(("scheduled", "automatic", "quit"), case_sensitive=False))
 
             if answer == "scheduled" :
-                interface_commands.declare_bundle()
+                interface_commands.declare_groupage()
             
             elif answer == "automatic" :
                 print("The function is not ready yet, sorry :(")

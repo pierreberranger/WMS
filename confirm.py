@@ -55,6 +55,6 @@ def shipment_to_add(identity) -> bool:
     return click.confirm(
             f"Are you sure to add the shipment with id:{identity} ?", default=False)
 
-def bundle_to_add(id) -> bool:
+def groupage_to_add(id) -> bool:
     return click.confirm(
-            f"Are you sure to add the bundle with id:{id} ?", default=False)
+            f"Are you sure to add the groupage with id:{id} ?", default=False)

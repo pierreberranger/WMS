@@ -205,7 +205,7 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
                 while keep_looping:
                     package_informations = prompt.package_information("shipment")
                     if confirm.package(package_informations):
-                        new_package_id = service_layer.add_one_package(packages_informations)
+                        new_package_id = service_layer.add_one_package(package_informations)
                         service_layer.register_package_in_a_shipment_by_id(new_package_id, shipment_id)
                         echo.id_package(new_package_id)
                         keep_looping = False
@@ -219,14 +219,14 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
                 if confirm.enter_packages_by_id:
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
-                    package_informations = service_layer.access_to_the_package_informations_by_id(package_id) # passer par un constructeur de copies permet de s'affranchir de cette étape
+                    packages_informations = service_layer.access_to_the_package_informations_by_id(package_id) # passer par un constructeur de copies permet de s'affranchir de cette étape
                     nb_packages = prompt.number_packages()
                     packages_id_of_this_reference = set()
 
-                    if confirm.package_reference_and_amount(package_informations, nb_packages): 
+                    if confirm.package_reference_and_amount(packages_informations, nb_packages): 
                         keep_looping = False 
                         for _ in range(nb_packages):
-                            new_package_id = service_layer.add_one_package(package_informations)
+                            new_package_id = service_layer.add_one_package(packages_informations)
                             service_layer.register_package_in_a_shipment_by_id(new_package_id, shipment_id)
                             packages_id_of_this_reference.add(new_package_id)
 
@@ -290,49 +290,40 @@ def del_shipments() -> None:
                 keep_looping = False
         print("\n")
 
-# Bundle
+# groupage
 
-def declare_bundle() -> None: # Fonction à modifier après avoir modifié la logique
+def declare_groupage() -> None:
     """
     Adds a new groupage to the database by asking the user 
     its informations and the shipments to add to this groupage.
     """
 
-    print("Fonction à modifier après avoir modifié la logique ")
-    pass 
-
-    shipments = SetOfShipments() 
-
     freight_forwarder = prompt.freight_forwarder()
+    groupage_id = service_layer.declare_groupage(freight_forwarder)
     for _ in range(prompt.number_shipments()):
         keep_looping = True
         while keep_looping:
-            outshipment_id = prompt.outshipment_id()
-            if confirm.shipment_to_add(outshipment_id):
-                shipment_to_add = database.set_of_shipments[outshipment_id]
-                shipments.add(shipment_to_add)
+            shipment_id = prompt.shipment_id()
+            if confirm.shipment_to_add(shipment_id):
+                service_layer.add_shipment_to_a_groupage(groupage_id, shipment_id)
                 keep_looping = False
             else:
                 print("Aborted")
-    new_bundle = Bundle(freight_forwarder, shipments)
-    database.set_of_bundles.add(new_bundle)
-    echo.id_bundle(new_bundle.id)
+    echo.id_groupage(groupage_id)
 
 def declare_trip(): # Fonction à modifier après avoir modifié la logique
     print("Fonction à modifier après avoir modifié la logique ")
     pass 
-
+    
     ship_name = prompt.ship_name()
-    bundles = SetOfBundles()
-    for _ in range(prompt.number_bundles()):
+    trip_id = service_layer.declare_trip(ship_name)
+    for _ in range(prompt.number_groupages()):
         keep_looping = True
         while keep_looping:
-            bundle_to_add = database.set_of_bundles[prompt.bundle_id()]
-            if confirm.bundle_to_add(bundle_to_add.id):
-                bundles.add(bundle_to_add)
+            groupage_to_add_id = prompt.groupage_id()
+            if confirm.groupage_to_add(groupage_to_add_id):
+                service_layer.add_groupage_to_a_trip(groupage_to_add_id)
                 keep_looping = False
             else:
-                print("Canceled, enter the right bundle")
-    new_trip = Trip(ship_name, bundles)
-    database.set_of_trips.add(new_trip)
-    echo.id_trip(new_trip.id)
+                print("Canceled, enter the right groupage")
+    echo.id_trip(trip_id)

@@ -3,7 +3,7 @@ import pickle_data as database
 from datetime import datetime
 
 from service_layer import Dimensions
-from available_choices import statuses_package_choices, statuses_inshipment_choices, statuses_outshipment_choices, package_types_choices, statuses_package_namedtuple, statuses_inshipment_namedtuple, statuses_outshipment_namedtuple, package_types_namedtuple
+from available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
 
 
 # informations given by the user
@@ -22,9 +22,9 @@ def shipment_id() -> str:
     type=click.Choice(list((str(s.id) for s in database.set_of_shipments))), 
     show_choices=False)
 
-def bundle_id() -> str:
+def groupage_id() -> str:
     return click.prompt("shipment id ", 
-    type=click.Choice(list((str(b.id) for b in database.set_of_bundles))), 
+    type=click.Choice(list((str(b.id) for b in database.set_of_groupages))), 
     show_choices=False)
 
 def date(name_date: str) -> datetime:
@@ -80,9 +80,9 @@ def new_package_status() -> str:
     return click.prompt(
         "New status", default=statuses_package_namedtuple.shipbound, type=statuses_package_choices)
 
-def transporter() -> str:
+def freight_forwarder() -> str:
     return click.prompt(
-        "Transporter ", type=str)
+        "Freight_forwarder ", type=str)
 
 def ship_name() -> str:
     return click.prompt(
@@ -100,5 +100,5 @@ def number_dropoffs() -> int:
 def number_shipments() -> int:
     return click.prompt("Number of shipments ", type=int)
 
-def number_bundles() -> int:
-    return click.prompt("Number of bundles ", type=int)
+def number_groupages() -> int:
+    return click.prompt("Number of groupages ", type=int)

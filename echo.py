@@ -15,8 +15,8 @@ def id_dropoff(id_dropoff) -> None :
 def id_shipment(id_shipment) -> None :
     click.echo(f'Your Shipment id is {id_shipment}')
 
-def id_bundle(bundle_id) -> None :
-    click.echo(f'Your Bundle id is {bundle_id}')
+def id_groupage(groupage_id) -> None :
+    click.echo(f'Your Groupage id is {groupage_id}')
 
 def id_trip(id) -> None :
     click.echo(f'Your Tripe id is {id}')

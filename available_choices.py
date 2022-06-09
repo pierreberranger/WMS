@@ -1,4 +1,4 @@
-from models import Package, InBoundShipment, OutBoundShipment
+from models import Package, Shipment, DropOff
 
 import click
 from collections import namedtuple
