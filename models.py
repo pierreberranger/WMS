@@ -101,7 +101,6 @@ class Package():
         del new_dict["shipment_id"]
         del new_dict["dropoff_id"]
         del new_dict["container_id"]
-        print(new_dict)
         return Package(**new_dict)
 
     def __copy__(self):

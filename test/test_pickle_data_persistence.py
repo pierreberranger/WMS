@@ -3,7 +3,7 @@ import unittest
 import pickle_data as database
 from pickle import dump
 
-from models import Package, Shipment, TypedSet, Container, Groupage, Trip
+from models import Package, Shipment, TypedSet, Container, Groupage, Trip, DropOff
 
 TEST_DATA_FILE = 'test/testdata'
 
@@ -11,10 +11,11 @@ class TestPickleDataPersistence(unittest.TestCase):
 
 	def setUp(self):
 		with open(TEST_DATA_FILE, 'wb') as f:
-			dump((TypedSet(Package), TypedSet(Shipment), TypedSet(Container),TypedSet(Groupage), TypedSet(Trip)), f)
+			dump((TypedSet(Package), TypedSet(DropOff), TypedSet(Shipment), TypedSet(Container),TypedSet(Groupage), TypedSet(Trip)), f)
 
 	def test_load(self):
 		self.assertTrue(database.set_of_packages is None)
+		self.assertTrue(database.set_of_dropoffs is None)
 		self.assertTrue(database.set_of_shipments is None)
 		self.assertTrue(database.set_of_groupages is None)
 		self.assertTrue(database.set_of_containers is None)
@@ -24,6 +25,7 @@ class TestPickleDataPersistence(unittest.TestCase):
 		database.load(TEST_DATA_FILE)
 		
 		self.assertFalse(database.set_of_packages is None)
+		self.assertFalse(database.set_of_dropoffs is None)
 		self.assertFalse(database.set_of_shipments is None)
 		self.assertFalse(database.set_of_groupages is None)
 		self.assertFalse(database.set_of_containers is None)
@@ -34,6 +36,7 @@ class TestPickleDataPersistence(unittest.TestCase):
 		database.unload()
 
 		self.assertTrue(database.set_of_packages is None)
+		self.assertTrue(database.set_of_dropoffs is None)
 		self.assertTrue(database.set_of_shipments is None)
 		self.assertTrue(database.set_of_groupages is None)
 		self.assertTrue(database.set_of_containers is None)

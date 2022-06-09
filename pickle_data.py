@@ -1,6 +1,7 @@
 import pickle
 
 set_of_packages = None
+set_of_dropoffs = None
 set_of_shipments = None
 set_of_containers = None
 set_of_groupages = None
@@ -9,17 +10,19 @@ _file = None
 
 def load(file):
 	global set_of_packages
+	global set_of_dropoffs
 	global set_of_shipments
 	global set_of_containers
 	global set_of_groupages
 	global set_of_trips
 	global _file
 	with open(file, 'rb') as f:
-		set_of_packages, set_of_shipments, set_of_containers, set_of_groupages, set_of_trips = pickle.load(f)
+		set_of_packages, set_of_dropoffs, set_of_shipments, set_of_containers, set_of_groupages, set_of_trips = pickle.load(f)
 	_file = file
 
 def unload():
 	global set_of_packages
+	global set_of_dropoffs
 	global set_of_shipments
 	global set_of_containers
 	global set_of_groupages
@@ -27,6 +30,7 @@ def unload():
 	global _file
 
 	set_of_packages = None
+	set_of_dropoffs = None
 	set_of_shipments = None
 	set_of_containers = None
 	set_of_groupages = None
@@ -37,6 +41,7 @@ def unload():
 def save(file = None):
 	global _file
 	global set_of_packages
+	global set_of_dropoffs
 	global set_of_shipments
 	global set_of_containers
 	global set_of_groupages
@@ -47,7 +52,7 @@ def save(file = None):
 	if file is None:
 		raise FileNotFoundError
 	with open(file, 'wb') as f:
-		pickle.dump((set_of_packages, set_of_shipments, set_of_containers, set_of_groupages, set_of_trips), f)
+		pickle.dump((set_of_packages, set_of_dropoffs, set_of_shipments, set_of_containers, set_of_groupages, set_of_trips), f)
 
 
 def with_save(func):
