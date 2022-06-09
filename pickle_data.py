@@ -1,6 +1,7 @@
 import pickle
 
 set_of_packages = None
+set_of_dropoffs = None
 set_of_shipments = None
 set_of_containers = None
 set_of_groupages = None
@@ -51,7 +52,7 @@ def save(file = None):
 	if file is None:
 		raise FileNotFoundError
 	with open(file, 'wb') as f:
-		pickle.dump((set_of_packages, set_of_dropoffs,  set_of_shipments, set_of_containers, set_of_groupages, set_of_trips), f)
+		pickle.dump((set_of_packages, set_of_dropoffs, set_of_shipments, set_of_containers, set_of_groupages, set_of_trips), f)
 
 
 def with_save(func):
