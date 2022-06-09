@@ -1,54 +1,53 @@
 import unittest
 
-import pickle_data as data
+import pickle_data as database
 from pickle import dump
 
-from models import Package, Shipment, SetOfPackages, SetOfShipments, SetOfBundles, SetOfContainers, SetOfTrips
+from models import Package, Shipment, TypedSet, Container, Groupage, Trip
 
-TEST_DATA_FILE = 'testdata'
+TEST_DATA_FILE = 'test/testdata'
 
 class TestPickleDataPersistence(unittest.TestCase):
 
 	def setUp(self):
 		with open(TEST_DATA_FILE, 'wb') as f:
-			dump((SetOfPackages(), SetOfShipments(), SetOfContainers(), SetOfBundles(), SetOfTrips()), f)
+			dump((TypedSet(Package), TypedSet(Shipment), TypedSet(Container),TypedSet(Groupage), TypedSet(Trip)), f)
 
 	def test_load(self):
-		self.assertTrue(data.set_of_packages is None)
-		self.assertTrue(data.set_of_shipments is None)
-		self.assertTrue(data.set_of_bundles is None)
-		self.assertTrue(data.set_of_containers is None)
-		self.assertTrue(data.set_of_trips is None)
+		self.assertTrue(database.set_of_packages is None)
+		self.assertTrue(database.set_of_shipments is None)
+		self.assertTrue(database.set_of_groupages is None)
+		self.assertTrue(database.set_of_containers is None)
+		self.assertTrue(database.set_of_trips is None)
 
 
-		data.load(TEST_DATA_FILE)
+		database.load(TEST_DATA_FILE)
 		
-		self.assertFalse(data.set_of_packages is None)
-		self.assertFalse(data.set_of_shipments is None)
-		self.assertFalse(data.set_of_bundles is None)
-		self.assertFalse(data.set_of_containers is None)
-		self.assertFalse(data.set_of_trips is None)
+		self.assertFalse(database.set_of_packages is None)
+		self.assertFalse(database.set_of_shipments is None)
+		self.assertFalse(database.set_of_groupages is None)
+		self.assertFalse(database.set_of_containers is None)
+		self.assertFalse(database.set_of_trips is None)
 
 	def test_unload(self):
-		data.load(TEST_DATA_FILE)
-		data.unload()
+		database.load(TEST_DATA_FILE)
+		database.unload()
 
-		self.assertTrue(data.set_of_packages is None)
-		self.assertTrue(data.set_of_shipments is None)
-		self.assertTrue(data.set_of_bundles is None)
-		self.assertTrue(data.set_of_containers is None)
-		self.assertTrue(data.set_of_trips is None)
+		self.assertTrue(database.set_of_packages is None)
+		self.assertTrue(database.set_of_shipments is None)
+		self.assertTrue(database.set_of_groupages is None)
+		self.assertTrue(database.set_of_containers is None)
+		self.assertTrue(database.set_of_trips is None)
 
 	def test_save(self):
-		data.load(TEST_DATA_FILE)
-		package = Package(None, None, None, None, "ADDED_PACK")
-		data.set_of_packages.add(package)
-		
-		shipment = Shipment(None, None, None, "ADDED_SHIPMENT_SENDER")
-		data.set_of_shipments.add(shipment)
-		data.save()
-		data.unload()
-		data.load(TEST_DATA_FILE)
-
-		self.assertTrue(any([package.description == "ADDED_PACK" for package in data.set_of_packages]))
-		self.assertTrue(any([shipment.sender == "ADDED_SHIPMENT_SENDER" for shipment in data.set_of_shipments]))
+		database.load(TEST_DATA_FILE)
+		package = Package(None, None, None, None, description="ADDED_PACK")
+		database.set_of_packages.add(package)
+	
+		shipment = Shipment(None, None, description="ADDED_SHIPMENT_SENDER")
+		database.set_of_shipments.add(shipment)
+		database.save()
+		database.unload()
+		database.load(TEST_DATA_FILE)
+		self.assertTrue(any([package.description == "ADDED_PACK" for package in database.set_of_packages]))
+		self.assertTrue(any([shipment.description == "ADDED_SHIPMENT_SENDER" for shipment in database.set_of_shipments]))
