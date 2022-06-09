@@ -1,5 +1,7 @@
 from collections import namedtuple
 from datetime import datetime
+from copy import deepcopy
+from hashlib import new
 
 Dimensions = namedtuple("Dimensions", "width length height")
 from pickle_data import with_save
@@ -94,11 +96,14 @@ class Package():
         self.container_id = container_id
         self.dropoff_id = dropoff_id
 
-    def __copy__(self):
-        """ package_copy = self.__class__.__new__(self.__class__)
-        package_copy = 
-        return package_copy """
-        pass
+    def __deepcopy__(self, memo=None):
+        new_dict = deepcopy(self.__dict__, memo)
+        del new_dict["id"]
+        del new_dict["shipment_id"]
+        del new_dict["dropoff_id"]
+        del new_dict["container_id"]
+        print(new_dict)
+        return Package(**new_dict)
 
     @with_save
     def __setattr__(self, __name: str, value: str) -> None:

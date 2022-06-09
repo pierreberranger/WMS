@@ -26,6 +26,15 @@ class TestPackages(unittest.TestCase):
         new_package2.id = new_package.id
         self.assertTrue(new_package == new_package2)
 
+    def test_deepcopy(self):
+        package = Package(None, 1, "yo", "big-bag")
+        package_copy = package.__deepcopy__()
+        self.assertNotEqual(package, package_copy) # tests if ids are different
+        self.assertEqual(package.dimensions, package_copy.dimensions)
+        self.assertEqual(package.status, package_copy.status)
+        self.assertEqual(package.package_type, package_copy.package_type)
+        self.assertEqual(package.weight, package_copy.weight)
+
     def test_is_same_shipment(self):
         dimensions, weight, status, package_type = Dimensions(
             1, 2, 3), 10, "shipped", "classic"
