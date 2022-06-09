@@ -6,7 +6,7 @@ import pickle_data as data
 class TestPackages(unittest.TestCase):
 
     def setUp(self):
-        self.TEST_DATA_FILE = 'testdata'
+        self.TEST_DATA_FILE = 'test/testdata'
         data.load(self.TEST_DATA_FILE)
 
     def test_attribute_id(self):
@@ -25,6 +25,15 @@ class TestPackages(unittest.TestCase):
         self.assertFalse(new_package == new_package2)
         new_package2.id = new_package.id
         self.assertTrue(new_package == new_package2)
+
+    def test_deepcopy(self):
+        package = Package(None, 1, "yo", "big-bag")
+        package_copy = package.__deepcopy__()
+        self.assertNotEqual(package, package_copy) # tests if ids are different
+        self.assertEqual(package.dimensions, package_copy.dimensions)
+        self.assertEqual(package.status, package_copy.status)
+        self.assertEqual(package.package_type, package_copy.package_type)
+        self.assertEqual(package.weight, package_copy.weight)
 
     def test_is_same_shipment(self):
         dimensions, weight, status, package_type = Dimensions(
