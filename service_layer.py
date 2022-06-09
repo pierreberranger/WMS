@@ -83,7 +83,7 @@ def declare_shipment_actual_delivery(actual_delivery_date: datetime, shipment_id
 def declare_groupage(freight_forwarder: str) -> str:
     new_groupage = Groupage(freight_forwarder)
     database.set_of_groupages.add(new_groupage)
-    return groupage_id
+    return new_groupage.id
 
 def add_shipment_to_a_groupage(groupage_id: str, shipment_id: str) -> None:
     shipment_to_add = database.set_of_shipments[shipment_id]
@@ -93,7 +93,7 @@ def declare_trip(ship_name: str) -> str:
     new_trip = Trip(ship_name)
     database.set_of_trips.add(new_trip)
     return new_trip.id
-
-def add_shipment_to_a_trip(trip_id: str, groupage_id: str) -> None:
+    
+def add_groupage_to_a_trip(trip_id: str, groupage_id: str) -> None:
     groupage_to_add = database.set_of_groupages[groupage_id]
     groupage_to_add.trip_id = trip_id

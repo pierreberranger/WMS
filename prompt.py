@@ -23,8 +23,8 @@ def shipment_id() -> str:
     show_choices=False)
 
 def groupage_id() -> str:
-    return click.prompt("shipment id ", 
-    type=click.Choice(list((str(b.id) for b in database.set_of_groupages))), 
+    return click.prompt("groupage id ", 
+    type=click.Choice(list((str(g.id) for g in database.set_of_groupages))), 
     show_choices=False)
 
 def date(name_date: str) -> datetime:

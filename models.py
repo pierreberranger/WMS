@@ -221,7 +221,7 @@ class Groupage:
 
     def __init__(self, freight_forwarder: str, set_of_shipments: TypedSet = None, 
             set_of_containers: TypedSet = None, trip_id: int = None) -> None:
-        self.id = f"B{next(groupages_ids)}"
+        self.id = f"G{next(groupages_ids)}"
         if not(set_of_shipments is None):
             for shipment in set_of_shipments:
                 shipment.groupage_id = self.id

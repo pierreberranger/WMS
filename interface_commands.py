@@ -322,7 +322,7 @@ def declare_trip(): # Fonction à modifier après avoir modifié la logique
         while keep_looping:
             groupage_to_add_id = prompt.groupage_id()
             if confirm.groupage_to_add(groupage_to_add_id):
-                service_layer.add_groupage_to_a_trip(groupage_to_add_id)
+                service_layer.add_groupage_to_a_trip(trip_id, groupage_to_add_id)
                 keep_looping = False
             else:
                 print("Canceled, enter the right groupage")
