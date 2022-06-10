@@ -35,15 +35,24 @@ def interactive():
 
         elif object_focused == "view":
             view_type_choices = click.Choice(
-                ("packages", "shipments", "particular shipment"), case_sensitive=False)
+                ("packages", "shipments", "dropoffs", "trips","groupages", "particular shipment"), case_sensitive=False)
             answer = click.prompt(
                 "What do you want to view : ", default="packages", type=view_type_choices)
 
             if answer == "packages":
                 service_layer_display.set_of_packages()
                 print("\n")
+            if answer =="dropoffs" :
+                service_layer_display.set_of_dropoffs()
+                print("\n")
             if answer == "shipments":
                 service_layer_display.set_of_shipments()
+                print("\n")
+            if answer == "trips":
+                service_layer_display.set_of_trips()
+                print("\n")
+            if answer == "groupages":
+                service_layer_display.set_of_groupages()
                 print("\n")
             if answer == "particular shipment":
                 shipment_id = prompt.shipment_id()

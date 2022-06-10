@@ -31,30 +31,30 @@ def del_objects() -> bool:
 
 def pick_package(identity) -> bool:
     return click.confirm(
-            f"Are you sure to pick the package with id:{identity} ?", default=False)
+            f"Are you sure to pick the package with id:{identity} ?", default=True)
 
 def dropoff(dropoff_informations) -> bool:
     return click.confirm(
-            f"Are the information of the dropoff right:arrival_date: {dropoff_informations} ?", default=False)
+            f"Are the information of the dropoff right:arrival_date: {dropoff_informations} ?", default=True)
 
 def shipment(shipment_informations) -> bool:
     return click.confirm(
-            f"Are the information of the shipment right:arrival_date: {shipment_informations} ?", default=False)
+            f"Are the information of the shipment right:arrival_date: {shipment_informations} ?", default=True)
 
 def update_dropoff(id_dropoff, arrival_date) -> bool:
     return click.confirm(
-            f"The DropOff {id_dropoff} arrived on the: {arrival_date}", default=False)
+            f"The DropOff {id_dropoff} arrived on the: {arrival_date}", default=True)
 
 def exit_shipment(id_shipment) -> bool:
-    return click.confirm(f"The Shipment {id_shipment} has left the warehouse.", default = False)
+    return click.confirm(f"The Shipment {id_shipment} has left the warehouse.", default = True)
 
 def delivered_shipment(id, date) -> bool:
-    return click.confirm(f"The Shipment {id} has been delivered on the {date}.", default = False)
+    return click.confirm(f"The Shipment {id} has been delivered on the {date}.", default = True)
 
 def shipment_to_add(identity) -> bool:
     return click.confirm(
-            f"Are you sure to add the shipment with id:{identity} ?", default=False)
+            f"Are you sure to add the shipment with id:{identity} ?", default=True)
 
 def groupage_to_add(id) -> bool:
     return click.confirm(
-            f"Are you sure to add the groupage with id:{id} ?", default=False)
+            f"Are you sure to add the groupage with id:{id} ?", default=True)
