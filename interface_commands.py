@@ -219,14 +219,13 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
                 if confirm.enter_packages_by_id:
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
-                    packages_informations = service_layer.access_to_the_package_informations_by_id(package_id) # passer par un constructeur de copies permet de s'affranchir de cette étape
                     nb_packages = prompt.number_packages()
                     packages_id_of_this_reference = set()
 
-                    if confirm.package_reference_and_amount(packages_informations, nb_packages): 
+                    if confirm.package_reference_by_id_and_amount(package_id, nb_packages): 
                         keep_looping = False 
                         for _ in range(nb_packages):
-                            new_package_id = service_layer.add_one_package(packages_informations)
+                            new_package_id = service_layer.add_one_package_by_id(package_id)
                             service_layer.register_package_in_a_shipment_by_id(new_package_id, shipment_id)
                             packages_id_of_this_reference.add(new_package_id)
 

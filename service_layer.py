@@ -42,15 +42,12 @@ def register_package_in_a_shipment_by_id(package_id: str, shipment_id: str) -> N
     package_to_add: Package = database.set_of_packages[package_id]
     package_to_add.shipment_id = shipment_id
 
-def access_to_the_package_informations_by_id(package_id: str) -> dict:
-    package = database.set_of_packages[package_id]
-    return {"dimensions": package.dimensions, "weight": package.weight, "status": package.status, "package_type": package.package_type, "description": package.description}
+def add_one_package_by_id(id: str) -> str: 
+    new_package: Package = database.set_of_packages[id].__deepcopy__()
+    database.set_of_packages.add(new_package)
+    return new_package.id
 
-""" def add_one_package_by_id(id):
-    new_package: Package = database.set_of_packages[id].__copy__()
-    database.set_of_packages.add(new_package) """
-
-def declare_dropoff_actual_arrival(dropoff_id, actual_arrival_date) -> None:
+def declare_dropoff_actual_arrival(dropoff_id: str, actual_arrival_date: datetime) -> None:
     dropoff = database.set_of_dropoffs[dropoff_id]
     dropoff.status = DropOff.statuses[1] 
     dropoff.arrival_date = actual_arrival_date 
@@ -58,10 +55,10 @@ def declare_dropoff_actual_arrival(dropoff_id, actual_arrival_date) -> None:
     for package in dropoff_packages: 
         package.status = Package.statuses[1]
 
-def del_dropoff(id) -> None:
+def del_dropoff(id: str) -> None:
     database.set_of_dropoffs.remove(id)
 
-def del_shipment(id) -> None:
+def del_shipment(id: str) -> None:
     database.set_of_shipments.remove(id)
 
 def declare_shipment_actual_departure_from_warehouse(actual_departure_date_from_warehouse: datetime, shipment_id: str) -> None:
