@@ -4,6 +4,8 @@ env_nostos/
 
 MAX_ID*
 database.txt
+test/testdata
+test/filename_text.txt
 .DS_Store
 
 # Byte-compiled / optimized / DLL files

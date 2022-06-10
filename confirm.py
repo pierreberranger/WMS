@@ -21,6 +21,12 @@ def package_reference_and_amount(package_informations: dict, number_of_packages:
     return click.confirm(
         f"Do you want to add these packages in number of {number_of_packages} ?", default=True)
 
+def package_reference_by_id_and_amount(package_id: str, number_of_packages: int) -> bool:
+    click.echo(
+        f"You entered for this reference the package id: {package_id}")
+    return click.confirm(
+        f"Do you want to add these packages in number of {number_of_packages} ?", default=True)
+
 def change_status(identity, newstatus) -> bool:
     return click.confirm(
         f"You want to change the status of package {identity} to {newstatus}")
