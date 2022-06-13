@@ -1,23 +1,21 @@
-from tkinter import N
 import unittest
-from xml.dom import NOT_FOUND_ERR
 
-import pickle_data as data
-from models import Shipment, Package, Dimensions, SetOfPackages, SetOfShipments
+import pickle_data as database
+from models import Shipment, Package, Dimensions, TypedSet, Container, Groupage, Trip
+
 
 class TestDecorator(unittest.TestCase):
 
     def test_add_shipment(self):
-        data.load("filename_test.txt")
+        database.load("test/filename_test.txt")
 
-        shipment = Shipment("status", SetOfPackages(), "adressee", "sender")
-        data.set_of_shipments = SetOfShipments([shipment])
-        shipment.set_of_packages.add(Package(Dimensions(1,2,3), "arrived", "classic", "machin")) 
+        shipment = Shipment("status", TypedSet(Package), "adressee")
+        database.set_of_shipments = TypedSet(Shipment, [shipment])
+        shipment.set_of_packages.add(Package(Dimensions(1,2,3), 1, "classic", "machin")) 
 
-        data.load("filename_test.txt")
-        packages2, shipments2 = data.set_of_packages, data.set_of_shipments
-        self.assertEqual(shipments2, SetOfShipments([shipment]))
-        self.assertEqual(packages2, None)
+        packages2, shipments2 = database.set_of_packages, database.set_of_shipments
+        self.assertEqual(shipments2, TypedSet(Shipment, [shipment]))
+        self.assertEqual(packages2, TypedSet(Package))
 
     def tearDown(self):
-        data.unload()
+        database.unload()
