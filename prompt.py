@@ -92,7 +92,7 @@ def number_packages() -> int:
     return click.prompt("Number of packages ", type=int)
 
 def number_references() -> int:
-    return click.prompt("How many references do you have ?", type=int)
+    return click.prompt("Number of references you have ?", type=int)
 
 def number_dropoffs() -> int:
     return click.prompt("Number of dropoffs ", type=int)

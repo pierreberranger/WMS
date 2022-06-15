@@ -2,13 +2,13 @@ import click
 
 # check before actions
 
-def enter_one_by_one() -> bool :
+def enter_one_by_one() -> bool:
     return click.confirm(
         "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
 
 def enter_packages_by_id() -> bool:
     return click.confirm(
-        "Do you want to add the packages to your inshipment by their ids ? (else you will have enter the all informations about the packages.")
+        "Do you want to add the packages to your shipment by their ids ? (else you will have enter the all informations about the packages.")
 
 def package(package_informations: dict) -> bool:
     click.echo(

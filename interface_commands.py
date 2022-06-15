@@ -214,9 +214,10 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
     else:
         for _ in range(prompt.number_references()):
             keep_looping = True
+            print("test1")
             while keep_looping:
-
-                if confirm.enter_packages_by_id:
+                print("test")
+                if confirm.enter_packages_by_id():
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
                     nb_packages = prompt.number_packages()
