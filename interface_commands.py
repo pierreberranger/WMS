@@ -137,7 +137,7 @@ def declare_dropoff_actual_arrival() -> None: # fonction destinée aux futurs Dr
     keep_looping = True 
     while keep_looping:
         id_dropoff = prompt.dropoff_id()
-        actual_arrival_date = prompt.datetime("Arrival date ")
+        actual_arrival_date = prompt.date("Arrival date ")
         if confirm.update_dropoff(id_dropoff, actual_arrival_date):
             service_layer.declare_dropoff_actual_arrival(id_dropoff, actual_arrival_date)
             keep_looping = False
@@ -214,9 +214,8 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
     else:
         for _ in range(prompt.number_references()):
             keep_looping = True
-            print("test1")
             while keep_looping:
-                print("test")
+
                 if confirm.enter_packages_by_id():
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
@@ -239,9 +238,10 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
                         keep_looping = False 
                         for _ in range(nb_packages):
                             new_package_id = service_layer.add_one_package(packages_informations)
-                            service_layer.register_package_in_a_shipment_by_id(new_package_id)
+                            service_layer.register_package_in_a_shipment_by_id(new_package_id, shipment_id)
                             packages_id_of_this_reference.add(new_package_id)
             echo.ids(packages_id_of_this_reference)
+            print("\n")
 
 
 def declare_shipment_actual_departure_from_warehouse() -> None:
@@ -255,7 +255,7 @@ def declare_shipment_actual_departure_from_warehouse() -> None:
     keep_looping = True
     while keep_looping:
         shipment_id = prompt.shipment_id()
-        actual_departure_date_from_warehouse = prompt.datetime("Departure date from warehouse ")
+        actual_departure_date_from_warehouse = prompt.date("Departure date from warehouse ")
         if confirm.exit_shipment(shipment_id):
             service_layer.declare_shipment_actual_departure_from_warehouse(actual_departure_date_from_warehouse, shipment_id)
             keep_looping = False
@@ -271,9 +271,9 @@ def declare_shipment_actual_delivery() -> None:
     keep_looping = True
     while keep_looping:
         shipment_id = prompt.shipment_id()
-        actual_delivery_date = prompt.datetime("Delivered date ")
+        actual_delivery_date = prompt.date("Delivered date ")
         if confirm.delivered_shipment(shipment_id, actual_delivery_date):
-            service_layer.declare_shipment_actual_delivery(shipment_id, actual_delivery_date)
+            service_layer.declare_shipment_actual_delivery(actual_delivery_date, shipment_id)
             keep_looping = False
 
 def del_shipments() -> None:
@@ -311,6 +311,22 @@ def declare_groupage() -> None:
                 print("Aborted")
     echo.id_groupage(groupage_id)
 
+def del_groupages() :
+    """
+    Deletes N groupages from the database by asking their id to the user.
+        N : an input asked to the user
+    """
+    for _ in range(prompt.number_groupages()):
+        keep_looping = True
+        while keep_looping:
+            groupage_id = prompt.groupage_id()
+            if confirm.del_objects():
+                service_layer.del_groupage(groupage_id)
+                keep_looping = False
+        print("\n")
+
+# Trip
+
 def declare_trip(): # Fonction à modifier après avoir modifié la logique
     print("Fonction à modifier après avoir modifié la logique ")
     pass 
@@ -327,3 +343,17 @@ def declare_trip(): # Fonction à modifier après avoir modifié la logique
             else:
                 print("Canceled, enter the right groupage")
     echo.id_trip(trip_id)
+
+def del_trip():
+    """
+    Deletes N groupages from the database by asking their id to the user.
+        N : an input asked to the user
+    """
+    for _ in range(prompt.number_trips()):
+        keep_looping = True
+        while keep_looping:
+            trip_id = prompt.trip_id()
+            if confirm.del_objects():
+                service_layer.del_trip(trip_id)
+                keep_looping = False
+        print("\n")

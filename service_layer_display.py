@@ -29,11 +29,11 @@ def set_of_dropoffs(set_of_dropoffs: TypedSet(DropOff) = None) -> None:
     if set_of_dropoffs is None:
         set_of_dropoffs = database.set_of_dropoffs
     base = "{:<10}|{:<25}|{:<10}|{:<20}"
-    header = base.format('id', 'description', 'status', "arrival_date")
+    header = base.format('id', 'sender', 'status', "arrival_date")
     print(header)
     print('='*len(header))
     for dropoff in set_of_dropoffs:
-        print(base.format(dropoff.id, dropoff.description,
+        print(base.format(dropoff.id, dropoff.sender,
               dropoff.status, dropoff.arrival_date))
 
 def set_of_trips(set_of_trips: TypedSet(Trip) = None) -> None:

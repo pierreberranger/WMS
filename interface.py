@@ -81,11 +81,14 @@ def interactive():
 
         
         elif object_focused == "shipment" :
-            declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
+            declare_update = click.Choice(("declare", "update", "del", "quit", "home"), case_sensitive=False)
             action = click.prompt("Actions ", default="declare", type=declare_update)
             
             if action == "declare" :
                 interface_commands.declare_shipment()
+            
+            if action == "home" :
+                print("\n")
 
             if action == "update":
                 exit_delivered = click.Choice(("actual_exit", "delivered"), case_sensitive=False)
@@ -107,14 +110,14 @@ def interactive():
                 in_out = False
         
         elif object_focused == "groupage" :
-            answer = click.prompt("Do you want to prompt a groupage already scheduled or choose the automatic groupage ?",
-            default="scheduled", type=click.Choice(("scheduled", "automatic", "quit"), case_sensitive=False))
+            answer = click.prompt("Actions ",
+            default="declare", type=click.Choice(("declare", "del", "quit"), case_sensitive=False))
 
-            if answer == "scheduled" :
+            if answer == "declare" :
                 interface_commands.declare_groupage()
             
-            elif answer == "automatic" :
-                print("The function is not ready yet, sorry :(")
+            if answer == "del" :
+                interface_commands.del_groupages()
             
             elif answer == "quit" :
                 interface_commands.save_and_quit()
@@ -122,14 +125,14 @@ def interactive():
 
 
         elif object_focused == "trip" :
-            answer = click.prompt("Do you want to prompt a trip already scheduled / choose the automatic trip or obtain the Cargo Manifest of a trip ?",
-            default="scheduled", type=click.Choice(("scheduled", "automatic", "CargoManifest", "quit"), case_sensitive=False))
+            answer = click.prompt("Actions ",
+            default="scheduled", type=click.Choice(("declare", "del", "CargoManifest", "quit"), case_sensitive=False))
 
-            if answer == "scheduled" :
+            if answer == "declare" :
                 interface_commands.declare_trip()
             
-            elif answer == "automatic" :
-                print("The function is not ready yet, sorry :(")
+            elif answer == "del" :
+                interface_commands.del_trip()
             
             elif answer == "CargoManifest" :
                 print("The function is not ready yet, sorry :(")

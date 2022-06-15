@@ -27,6 +27,11 @@ def groupage_id() -> str:
     type=click.Choice(list((str(g.id) for g in database.set_of_groupages))), 
     show_choices=False)
 
+def trip_id() -> str:
+    return click.prompt("trip id ", 
+    type=click.Choice(list((str(t.id) for t in database.set_of_trips))), 
+    show_choices=False)
+
 def date(name_date: str) -> datetime:
     in_out = True
     today = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -65,7 +70,7 @@ def dropoff_information() -> dict:
     status = statuses_dropoff_namedtuple.inbound
     sender = click.prompt("Sender ", type=str)
     arrival_date = date("Arrival date ")
-    description = click.prompt("Description of the inshipment")
+    description = click.prompt("Description of the dropoff")
     return {"status": status, "sender": sender, "arrival_date": arrival_date, "description": description}
 
 def shipment_information() -> dict:
@@ -102,3 +107,6 @@ def number_shipments() -> int:
 
 def number_groupages() -> int:
     return click.prompt("Number of groupages ", type=int)
+
+def number_trips() -> int:
+    return click.prompt("Number of trips ", type=int)

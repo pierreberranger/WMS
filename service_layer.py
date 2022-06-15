@@ -94,3 +94,9 @@ def declare_trip(ship_name: str) -> str:
 def add_groupage_to_a_trip(trip_id: str, groupage_id: str) -> None:
     groupage_to_add = database.set_of_groupages[groupage_id]
     groupage_to_add.trip_id = trip_id
+
+def del_groupage(groupage_id: str) -> None:
+    database.set_of_groupages.remove(groupage_id)
+
+def del_trip(trip_id: str) -> None:
+    database.set_of_trips.remove(trip_id)
