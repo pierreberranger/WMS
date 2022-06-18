@@ -13,7 +13,7 @@ def interactive():
 
     while (in_out):
         objects_focused_user_choices = click.Choice(("package", "shipment", "dropoff",
-                                "groupage", "trip", "view", "pdf", "quit"), case_sensitive=False)
+                                "groupage", "trip", "view", "quit"), case_sensitive=False)
         object_focused = click.prompt("Element you want to focus on", default="shipment", type=objects_focused_user_choices)
 
         if object_focused == "package":
@@ -33,22 +33,9 @@ def interactive():
             elif action == "status":
                 interface_commands.change_status_package()
 
-        elif object_focused == "pdf":
-            documents = click.Choice(
-                ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
-            document_generated = click.prompt("Document you want to generate ", default="Incoming")
-
-            if document_generated == "CargoManifest":
-                pass
-            elif document_generated == "Incoming":
-                service_layer_display.planning_incoming()
-
-            elif document_generated == "Outputs":
-                pass
-
         elif object_focused == "view":
             list_or_details = click.Choice(
-                ("list", "details"), case_sensitive=False)
+                ("list", "details", "pdf"), case_sensitive=False)
             action = click.prompt("Type of view you want ", default="list", type=list_or_details)
 
             if action == "list":
@@ -110,6 +97,18 @@ def interactive():
                     container_id = prompt.container_id ()
                     service_layer_display.container(container_id)
                     print("\n")
+            if action == "pdf":
+                documents = click.Choice(
+                ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
+                document_generated = click.prompt("Document you want to generate ", default="Incoming")
+
+                if document_generated == "CargoManifest":
+                    pass
+                elif document_generated == "Incoming":
+                    service_layer_display.planning_incoming()
+
+                elif document_generated == "Outputs":
+                    pass
 
         elif object_focused == "dropoff" :
             declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
