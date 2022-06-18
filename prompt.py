@@ -5,22 +5,25 @@ from datetime import datetime
 from service_layer import Dimensions
 from available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
 
-
 # informations given by the user
+
 def package_id() -> str:
     return click.prompt("package id ", 
     type=click.Choice(list((str(p.id) for p in database.set_of_packages))), 
     show_choices=False)
+
 
 def dropoff_id() -> str:
     return click.prompt("dropoff id ", 
     type=click.Choice(list((str(d.id) for d in database.set_of_dropoffs))), 
     show_choices=False)
 
+
 def shipment_id() -> str:
     return click.prompt("shipment id ", 
     type=click.Choice(list((str(s.id) for s in database.set_of_shipments))), 
     show_choices=False)
+
 
 def groupage_id() -> str:
     return click.prompt("groupage id ", 
@@ -31,6 +34,14 @@ def trip_id() -> str:
     return click.prompt("trip id ", 
     type=click.Choice(list((str(t.id) for t in database.set_of_trips))), 
     show_choices=False)
+
+
+def container_id() -> str:
+    return click.prompt("container id ", 
+    type=click.Choice(list((str(c.id) for c in database.set_of_containers))), 
+    show_choices=False)
+
+# Date
 
 def date(name_date: str) -> datetime:
     in_out = True
@@ -48,6 +59,8 @@ def date(name_date: str) -> datetime:
             in_out = True
             print("Couldn't read the date, respect the format YYYY-MM-DD HH:mm")
     return date
+
+# Informations on object 
 
 def package_information(object) -> dict:
     description = click.prompt("Description of the package")

@@ -2,6 +2,18 @@ import click
 
 import confirm, prompt, service_layer, echo
 
+def home (prompt_function):
+
+    def decorated_function(* args, ** kwargs):
+        try :
+            return prompt_function(* args, ** kwargs)
+        except (click.exceptions.Abort, KeyboardInterrupt):
+            click.echo("\nBack to the menu")
+            print("\n")
+            return
+
+    return decorated_function
+        
 
 def load() -> None:
     """
@@ -22,7 +34,6 @@ def add_one_package() -> None:
     Adds one package to the database by asking its information 
     to the user then echos the new package id.
     """
-
     keep_looping = True
     while keep_looping:
         package_informations = prompt.package_information("package")
@@ -32,6 +43,7 @@ def add_one_package() -> None:
             keep_looping = False
     print("\n")
 
+@home
 def add_packages_to_database() -> None:
     """
     Adds packages to the database by two possible ways :
@@ -63,6 +75,7 @@ def add_packages_to_database() -> None:
 
                     echo.ids(packages_id_of_this_reference)   
 
+@home
 def del_packages_from_database() -> None:
     """Deletes N packages from the database by asking their id to the user.
         N : an input asked to the user""" 
@@ -74,8 +87,9 @@ def del_packages_from_database() -> None:
             if confirm.del_objects():
                 service_layer.del_one_package(package_id)
                 keep_looping = False
-        print("\n")
+    print("\n")
 
+@home
 def change_status_package() -> None:
     """
     Changes the status of a package by asking the user 
@@ -89,9 +103,11 @@ def change_status_package() -> None:
         if confirm.change_status(package_id, new_status):
             service_layer.change_package_status(package_id, new_status)
             keep_looping = False
-    print("\n")
+        print("\n")
 
 # DropOff 
+
+@home
 def declare_dropoff() -> None: # fonction destinée aux DropOffs dans le sens où on rentre les packages par id
     """
     Adds a new dropoff to the database by asking the user 
@@ -105,9 +121,10 @@ def declare_dropoff() -> None: # fonction destinée aux DropOffs dans le sens o�
             keep_looping = False
     dropoff_id = service_layer.declare_dropoff(dropoff_informations)
     echo.id_dropoff(dropoff_id)
-    register_packages_in_an_dropoff(dropoff_id)
+    register_packages_in_a_dropoff(dropoff_id)
 
-def register_packages_in_an_dropoff(dropoff_id: str) -> None: # fonction destinée aux DropOffs dans le sens où on rentre les packages par id
+@home
+def register_packages_in_a_dropoff(dropoff_id: str) -> None: # fonction destinée aux DropOffs dans le sens où on rentre les packages par id
     """
     Adds packages to an dropoff one by one by asking their id
     to the user.
@@ -127,6 +144,7 @@ def register_packages_in_an_dropoff(dropoff_id: str) -> None: # fonction destin�
             else:
                 click.echo("Aborted")
 
+@home
 def declare_dropoff_actual_arrival() -> None: # fonction destinée aux futurs DropOffs et potentiellement aux dropoff
     """
     - Changes the arrival date of an dropoff by asking the user 
@@ -142,6 +160,33 @@ def declare_dropoff_actual_arrival() -> None: # fonction destinée aux futurs Dr
             service_layer.declare_dropoff_actual_arrival(id_dropoff, actual_arrival_date)
             keep_looping = False
 
+@home
+def change_arrival_date() -> None:
+    """ Update the arrival date of a dropoff """
+
+    keep_looping = True 
+    while keep_looping:
+        dropoff_id = prompt.dropoff_id()
+        actual_arrival_date = prompt.date("Arrival date ")
+        if confirm.update_dropoff(dropoff_id, actual_arrival_date):
+            service_layer.update_dropoff_arrival_date(dropoff_id, actual_arrival_date)
+            keep_looping = False
+
+@home
+def add_packages_to_a_dropoff() -> None:
+    """ Add packages to a dropoff after its declaration """
+    dropoff_id = prompt.dropoff_id()
+    register_packages_in_a_dropoff(dropoff_id)
+
+@home
+def del_packages_of_a_dropoff() -> None:
+    """ Del Packages of a Dropoff after its declaration """
+    dropoff_id = prompt.dropoff_id()
+    package_id = prompt.package_id()
+    confirm.remove_package_from_dropoff(package_id, dropoff_id)
+    service_layer.remove_package_from_dropoff(package_id, dropoff_id)
+
+@home
 def del_dropoffs() -> None:
     """
     Deletes N dropoffs from the database by asking their id to the user.
@@ -158,6 +203,7 @@ def del_dropoffs() -> None:
 
 # Shipment
 
+@home
 def declare_shipment() -> None: # fonction destinée aux Shipments
     """
     Adds a new shipment to the database by asking the user 
@@ -172,6 +218,7 @@ def declare_shipment() -> None: # fonction destinée aux Shipments
     echo.id_shipment(shipment_id)
     register_packages_in_an_shipment(shipment_id)
 
+@home
 def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction destinée aux Shipments
     """
     Adds packages to an shipment by two different ways :
@@ -215,7 +262,6 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
         for _ in range(prompt.number_references()):
             keep_looping = True
             while keep_looping:
-
                 if confirm.enter_packages_by_id():
                     print("Prompt the id of the package you want to use as reference")
                     package_id = prompt.package_id()
@@ -243,7 +289,18 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
             echo.ids(packages_id_of_this_reference)
             print("\n")
 
+@home
+def add_packages_to_a_shipment() -> None:
+    """ Add packages to a shipment """
+    shipment_id = prompt.shipment_id()
+    register_packages_in_an_shipment(shipment_id)
 
+@home
+def del_packages_to_a_shipment() -> None:
+    """ Del packages to a shipment """
+    del_packages_from_database()
+
+@home
 def declare_shipment_actual_departure_from_warehouse() -> None:
     """
     - Changes the departure date of an shipment by asking the user 
@@ -259,7 +316,8 @@ def declare_shipment_actual_departure_from_warehouse() -> None:
         if confirm.exit_shipment(shipment_id):
             service_layer.declare_shipment_actual_departure_from_warehouse(actual_departure_date_from_warehouse, shipment_id)
             keep_looping = False
-    
+
+@home   
 def declare_shipment_actual_delivery() -> None:
     """
     - Changes the delivery date of an shipment by asking the user 
@@ -276,6 +334,7 @@ def declare_shipment_actual_delivery() -> None:
             service_layer.declare_shipment_actual_delivery(actual_delivery_date, shipment_id)
             keep_looping = False
 
+@home
 def del_shipments() -> None:
     """
     Deletes N shipments from the database by asking their id to the user.
@@ -292,6 +351,7 @@ def del_shipments() -> None:
 
 # groupage
 
+@home
 def declare_groupage() -> None:
     """
     Adds a new groupage to the database by asking the user 
@@ -311,6 +371,7 @@ def declare_groupage() -> None:
                 print("Aborted")
     echo.id_groupage(groupage_id)
 
+@home
 def del_groupages() :
     """
     Deletes N groupages from the database by asking their id to the user.
@@ -327,10 +388,8 @@ def del_groupages() :
 
 # Trip
 
-def declare_trip(): # Fonction à modifier après avoir modifié la logique
-    print("Fonction à modifier après avoir modifié la logique ")
-    pass 
-    
+@home
+def declare_trip(): 
     ship_name = prompt.ship_name()
     trip_id = service_layer.declare_trip(ship_name)
     for _ in range(prompt.number_groupages()):
@@ -344,9 +403,10 @@ def declare_trip(): # Fonction à modifier après avoir modifié la logique
                 print("Canceled, enter the right groupage")
     echo.id_trip(trip_id)
 
+@home
 def del_trip():
     """
-    Deletes N groupages from the database by asking their id to the user.
+    Deletes N trips from the database by asking their id to the user.
         N : an input asked to the user
     """
     for _ in range(prompt.number_trips()):
@@ -357,3 +417,13 @@ def del_trip():
                 service_layer.del_trip(trip_id)
                 keep_looping = False
         print("\n")
+
+@home
+def load_trip() -> None:
+    """Change the statuses of the packages """
+
+    trip_id = prompt.trip_id()
+    service_layer.load_packages_in_trip(trip_id)
+    print("Packages status changed")
+    
+    print("\n")

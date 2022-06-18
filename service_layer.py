@@ -1,7 +1,8 @@
 from datetime import datetime
 from confirm import package
-from models import Package, Dimensions, Shipment, DropOff, Groupage, Trip
+from models import Package, Dimensions, Shipment, DropOff, Groupage, Trip, TypedSet
 import pickle_data as database
+from service_layer_display import trip_packages
 
 
 
@@ -55,8 +56,20 @@ def declare_dropoff_actual_arrival(dropoff_id: str, actual_arrival_date: datetim
     for package in dropoff_packages: 
         package.status = Package.statuses[1]
 
+def update_dropoff_arrival_date(dropoff_id: str, actual_arrival_date: datetime) -> None:
+    dropoff = database.set_of_dropoffs[dropoff_id]
+    dropoff.arrival_date = actual_arrival_date 
+
 def del_dropoff(id: str) -> None:
     database.set_of_dropoffs.remove(id)
+
+def remove_package_from_dropoff(package_id: str, dropoff_id: str) -> None:
+    package = database.set_of_packages[package_id]
+    if package.dropoff_id == dropoff_id :
+        package.dropoff_id = None
+    else :
+        print("Pay attention, the package you want to remove is not in the dropoff you indicate.")
+
 
 def del_shipment(id: str) -> None:
     database.set_of_shipments.remove(id)
@@ -100,3 +113,25 @@ def del_groupage(groupage_id: str) -> None:
 
 def del_trip(trip_id: str) -> None:
     database.set_of_trips.remove(trip_id)
+
+def load_packages_in_trip(trip_id: str) -> None:
+    trip_packages = TypedSet(Package)
+    trip = database.set_of_trips[trip_id]
+    for groupage in trip.set_of_groupages:
+        for shipment in groupage.set_of_shipments:
+            for package in shipment.set_of_packages:
+                trip_packages.add(package)
+    for package in trip_packages :
+        package.status = Package.statuses[3]
+
+def weight_trip(trip_id: str) -> float:
+    trip = database.set_of_trips[trip_id]
+    trip_groupages = trip.set_of_groupages
+    total_weight = 0
+    for groupage in trip_groupages:
+        groupage_id = groupage.id
+        for container in groupage.set_of_containers:
+            if container.groupage_id == groupage_id:
+                total_weight += container.weight
+    return total_weight
+

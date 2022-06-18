@@ -51,6 +51,10 @@ def update_dropoff(id_dropoff, arrival_date) -> bool:
     return click.confirm(
             f"The DropOff {id_dropoff} arrived on the: {arrival_date}", default=True)
 
+def remove_package_from_dropoff(package_id, dropoff_id) -> bool:
+    return click.confirm(
+        f"Do you want to remove the package {package_id} from the dropoff {dropoff_id}",  default=False)
+
 def exit_shipment(id_shipment) -> bool:
     return click.confirm(f"The Shipment {id_shipment} has left the warehouse.", default = True)
 

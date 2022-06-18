@@ -19,4 +19,4 @@ def id_groupage(groupage_id) -> None :
     click.echo(f'Your Groupage id is {groupage_id}')
 
 def id_trip(id) -> None :
-    click.echo(f'Your Tripe id is {id}')
+    click.echo(f'Your Trip id is {id}')
