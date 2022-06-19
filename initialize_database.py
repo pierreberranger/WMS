@@ -3,6 +3,7 @@ from models import Package, Shipment, Container, Groupage, Trip, TypedSet, DropO
 
 # 'test/testdata'
 # 'test/filename_test.txt'
+# 'testdata_loading'
 # 'database.txt'
 
 with open('database.txt', 'wb') as f:

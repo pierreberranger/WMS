@@ -9,8 +9,10 @@ class TestTypedSet(unittest.TestCase):
         self.TEST_DATA_FILE = 'test/testdata'
         database.load(self.TEST_DATA_FILE)
         self.package = Package(None, None, None, None)
+        self.package2 = Package(None, 1, None, None)
         self.shipment = Shipment(None)
         database.set_of_packages.add(self.package)
+        database.set_of_packages.add(self.package2)
 
     def test_cls_constructor(self):
         TypedSet(Package)
@@ -51,6 +53,16 @@ class TestTypedSet(unittest.TestCase):
         with self.assertRaises(KeyError) as err2:
             set_of_packages[package2.id]
         self.assertEqual(err2.exception.args[0], "This package id does not exist")
+
+    def test_union(self):
+        set_of_packages = TypedSet(Package, [self.package])
+        set_of_shipments = TypedSet(Shipment, [self.shipment])
+        with self.assertRaises(TypeError) as err1:
+            set_of_packages.union(set_of_shipments)
+        self.assertEqual(err1.exception.args[0], "Both TypedSet must be of the same class (Package different from Shipment)")
+        set_of_packages2 = TypedSet(Package, [self.package2])
+        unioned_packages_sets = set_of_packages.union(set_of_packages2)
+        self.assertEqual(unioned_packages_sets, TypedSet(Package, [self.package, self.package2]))
 
     def tearDown(self):
         database.unload()

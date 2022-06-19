@@ -31,7 +31,7 @@ class TypedSet(set):
 
     def __init__(self, cls, *args):
         self.cls = cls 
-        if (not args) or all(self.cls == obj.__class__ for obj in args[0]):
+        if (not args) or all(isinstance(obj, self.cls) for obj in args[0]):
             super().__init__(*args)
         else:
             raise TypeError(f"Expected type: {self.cls_name}")
@@ -75,6 +75,10 @@ class TypedSet(set):
         else:
             raise TypeError(f"Expected type: {self.cls_name}")
 
+    def union(self, other):
+        if not (issubclass(self.cls, other.cls) or issubclass(other.cls, self.cls)):
+            raise TypeError(f"Both TypedSet must be of the same class ({self.cls_name} different from {other.cls_name})")
+        return TypedSet(self.cls, super().union(self, other))
 
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
@@ -94,6 +98,11 @@ class Package():
             self.id = id
         self.container_id = container_id
         self.dropoff_id = dropoff_id
+
+    @property
+    def area(self):
+        """Computes the area on the ground of a package in cm^2"""
+        return self.dimensions.width * self.dimensions.length
 
     def __deepcopy__(self, memo=None):
         new_dict = deepcopy(self.__dict__, memo)
@@ -281,11 +290,12 @@ class Container:
     
     empty_container_weight = 3800
 
-    def __init__(self, set_of_packages: TypedSet = None, groupage_id: int = None) -> None:
+    def __init__(self, set_of_packages: TypedSet = None, dimensions: Dimensions = None, groupage_id: int = None) -> None:
         self.id: str = f"C{next(containers_ids)}"
         if not(set_of_packages is None):
             for package in set_of_packages:
                 package.container_id = self.id
+        self.dimensions = dimensions
         self.groupage_id = groupage_id
     
     @property
@@ -309,11 +319,28 @@ class Container:
     def weight(self) -> float:
         return sum(package.weight for package in self.set_of_packages) + Container.empty_container_weight
 
+    @property
+    def area(self):
+        """Computes the area on the ground of a container in cm^2"""
+        return self.dimensions.width * self.dimensions.length
+
     def __hash__(self):
         return hash(self.id)
 
     def __eq__(self, other):
         return self.id == other.id
+
+class ContainerPaletWide(Container):
+
+    def __init__(self, set_of_packages: TypedSet = None, groupage_id: int = None) -> None:
+        super().__init__(set_of_packages, dimensions=Dimensions(241, 589, 239), groupage_id=groupage_id)
+    
+
+
+class ContainerStandard(Container):
+
+    def __init__(self, set_of_packages: TypedSet = None, groupage_id: int = None) -> None:
+        super().__init__(set_of_packages, dimensions=Dimensions(235, 589, 239), groupage_id=groupage_id)
 
 class Trip:
     
