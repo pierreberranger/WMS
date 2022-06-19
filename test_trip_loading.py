@@ -1,7 +1,6 @@
-from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
+from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container, Trip
 
-from container_optimisation.container_loading import container_loading, plot_container_load_output, validate_container_loading_proposal
-from service_layer_display import set_of_packages
+from container_optimisation.container_loading import trip_loading
 import pickle_data as database
 
 
@@ -62,16 +61,13 @@ database.set_of_containers = TypedSet(Container, [container1, container2, contai
 
 database.set_of_shipments = TypedSet(Shipment, [shipment1, shipment2])
 
-groupage = Groupage("transporter", TypedSet(Shipment, [shipment1, shipment2]))
-database.set_of_groupages = TypedSet(Groupage, [groupage])
+groupage = Groupage("transporter", TypedSet(Shipment, [shipment1]))
+groupage2 = Groupage("transporter", TypedSet(Shipment, [shipment2]))
 
-containers_id, package_placements = container_loading(groupage, available_containers_id)
+database.set_of_groupages = TypedSet(Groupage, [groupage, groupage2])
 
-validate_container_loading_proposal(package_placements)
+trip = Trip("Southern Liner", TypedSet(Groupage, [groupage, groupage2]))
 
+database.set_of_trips.add(trip)
 
-for container in database.set_of_containers:
-    print(f"\n{container.id=}:")
-    set_of_packages(container.set_of_packages)
-
-plot_container_load_output(containers_id, package_placements)
+trip_loading(trip, available_containers_id)

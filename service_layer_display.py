@@ -10,8 +10,8 @@ def set_of_packages(set_of_packages: TypedSet(Package) = None) -> None:
     print(header)
     print('='*len(header))
     for package in set_of_packages:
-        print(base.format(package.id, package.description,
-              package.status, str(package.shipment_id)))
+        print(base.format(str(package.id), str(package.description),
+              str(package.status), str(package.shipment_id)))
 
 
 def set_of_shipments(set_of_shipments: TypedSet(Shipment) = None) -> None:

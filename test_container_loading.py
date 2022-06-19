@@ -38,6 +38,6 @@ database.set_of_shipments = TypedSet(Shipment, [shipment, shipment2])
 groupage = Groupage("transporter", TypedSet(Shipment, [shipment, shipment2]))
 database.set_of_groupages = TypedSet(Groupage, [groupage])
 
-nb_containers, containers_id, package_placements = container_loading(groupage, available_containers_id)
+containers_id, package_placements = container_loading(groupage, available_containers_id)
 
-plot_container_load_output(nb_containers, containers_id, package_placements)
+plot_container_load_output(containers_id, package_placements)
