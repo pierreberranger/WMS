@@ -1,5 +1,5 @@
 from datetime import datetime
-from confirm import package
+from confirm import groupage_to_add, package
 from models import Package, Dimensions, Shipment, DropOff, Groupage, Trip, TypedSet
 import pickle_data as database
 from service_layer_display import trip_packages
@@ -135,3 +135,24 @@ def weight_trip(trip_id: str) -> float:
                 total_weight += container.weight
     return total_weight
 
+def add_groupage_to_trip(trip_id: str, groupage_id: str) -> None:
+    groupage_to_add = database.set_of_groupages[groupage_id]
+    groupage_to_add.trip_id = trip_id
+
+def del_groupage_from_trip(groupage_id: str) -> None:
+    groupage_to_del = database.set_of_groupages[groupage_id]
+    groupage_to_del.trip_id = None
+
+def add_container_to_database(type_container: str) -> str:
+    if type_container == "standard" :
+        new_container = ContainerStandard()
+        database.set_of_containers.add(new_container)
+        return 
+    elif type_container == "palet_wide":
+        new_container = ContainerPaletWide()
+        database.set_of_containers.add(new_container)
+    return new_container.id
+
+def del_container_from_database(container_id: str) -> None:
+    container_to_del = database.set_of_containers[container_id]
+    database.set_of_containers.remove(container_to_del.id)

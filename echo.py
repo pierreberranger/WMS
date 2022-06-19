@@ -20,3 +20,6 @@ def id_groupage(groupage_id) -> None :
 
 def id_trip(id) -> None :
     click.echo(f'Your Trip id is {id}')
+
+def id_container(id) -> None :
+    click.echo(f'Your Container id is {id}')

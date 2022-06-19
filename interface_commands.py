@@ -427,3 +427,65 @@ def load_trip() -> None:
     print("Packages status changed")
     
     print("\n")
+
+def plan_loading() -> None:
+    """
+    Proposes a plan of loading of a particular trip 
+    Generates the pdf associated
+    """
+    
+    trip_id = prompt.trip_id()
+    click.echo("We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to yoour trip in the outuput file before validate")
+    #groupage_placements = container_loading.trip_loading(trip_id, available containers)
+    if confirm.plan_loading() :
+        # deuxxième fonction virgile
+        #f fonction pdf jg
+        pass
+    else :
+        print("You can update the trip to have a new proposal for the load. '\n'")
+
+@home
+def add_groupage_to_a_trip():
+    trip_id = prompt.trip_id()
+    for _ in range(prompt.number_groupages()):
+        keep_looping = True
+        while keep_looping:
+            groupage_id = prompt.groupage_id()
+            if confirm.add_objects():
+                service_layer.add_groupage_to_trip(trip_id, groupage_id)
+                keep_looping = False
+        print("\n")
+@home
+def del_groupage_from_a_trip():
+    trip_id = prompt.trip_id()
+    for _ in range(prompt.number_groupages()):
+        keep_looping = True
+        while keep_looping:
+            groupage_id = prompt.groupage_id()
+            if confirm.del_objects():
+                service_layer.del_groupage_from_trip(groupage_id)
+                keep_looping = False
+        print("\n")
+
+# Containers
+
+@home
+def add_containers():
+    for _ in range(prompt.number_containers()):
+        type_container = click.prompt("Type of container ", 
+        default="standard", type=click.Choice(("palet_wide","standard"), case_sensitive=False))
+        container_id = service_layer.add_container_to_database(type_container)
+        echo.id_container(container_id)
+        print("\n")
+
+@home
+def del_container():
+    for _ in range(prompt.number_containers()):
+        keep_looping = True
+        while keep_looping:
+            container_id = prompt.container_id()
+            if confirm.del_objects():
+                service_layer.del_container_from_database(container_id)
+                keep_looping = False
+        print("\n")
+    

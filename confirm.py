@@ -68,3 +68,13 @@ def shipment_to_add(identity) -> bool:
 def groupage_to_add(id) -> bool:
     return click.confirm(
             f"Are you sure to add the groupage with id:{id} ?", default=True)
+
+def plan_loading() -> bool :
+    return click.confirm(
+        f"Do you confirm you want to use this plan for the load of your trip ?"
+    )
+
+def add_objects() -> bool :
+    return click.confirm(
+        f"Do you confirm you want to add this groupage to your trip ?"
+    )

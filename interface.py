@@ -2,6 +2,7 @@ import click
 
 import prompt, interface_commands
 import service_layer_display
+import pdf
 
 interface_commands.load()
 
@@ -13,7 +14,7 @@ def interactive():
 
     while (in_out):
         objects_focused_user_choices = click.Choice(("package", "shipment", "dropoff",
-                                "groupage", "trip", "view", "quit"), case_sensitive=False)
+                                "groupage", "trip", "containers", "view", "quit"), case_sensitive=False)
         object_focused = click.prompt("Element you want to focus on", default="shipment", type=objects_focused_user_choices)
 
         if object_focused == "package":
@@ -99,13 +100,12 @@ def interactive():
                     print("\n")
             if action == "pdf":
                 documents = click.Choice(
-                ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
+                ("Incoming", "Outputs"), case_sensitive=False)
                 document_generated = click.prompt("Document you want to generate ", default="Incoming")
 
-                if document_generated == "CargoManifest":
-                    pass
-                elif document_generated == "Incoming":
+                if document_generated == "Incoming":
                     service_layer_display.planning_incoming()
+                    pdf.planning_incoming()
 
                 elif document_generated == "Outputs":
                     pass
@@ -196,16 +196,43 @@ def interactive():
 
         elif object_focused == "trip" :
             answer = click.prompt("Actions ",
-            default="declare", type=click.Choice(("declare", "del", "load", "quit"), case_sensitive=False))
+            default="declare", type=click.Choice(("declare", "plan loading", "update","del", "load", "quit"), case_sensitive=False))
 
             if answer == "declare" :
                 interface_commands.declare_trip()
+            
+            elif answer == "plan loading":
+                interface_commands.plan_loading()
+
+            elif answer == "update":
+                action = click.prompt("Actions ",
+            default="add_groupage", type=click.Choice(("add_groupage", "del_groupage"), case_sensitive=False))
+
+                if action == "add_groupage" :
+                    interface_commands.add_groupage_to_a_trip()
+                
+                elif action == "del_groupage":
+                    interface_commands.del_groupage_from_a_trip()
             
             elif answer == "del" :
                 interface_commands.del_trip()
             
             elif answer == "load":
                 interface_commands.load_trip()
+
+            elif answer == "quit" :
+                interface_commands.save_and_quit()
+                in_out = False
+
+        elif object_focused == "containers" :
+            answer = click.prompt("Actions ",
+            default="add", type=click.Choice(("add", "del", "quit"), case_sensitive=False))
+
+            if answer == "add" :
+                interface_commands.add_containers()
+            
+            elif answer == "del":
+                interface_commands.del_containers()
 
             elif answer == "quit" :
                 interface_commands.save_and_quit()

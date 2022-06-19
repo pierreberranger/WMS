@@ -123,3 +123,6 @@ def number_groupages() -> int:
 
 def number_trips() -> int:
     return click.prompt("Number of trips ", type=int)
+
+def number_containers() -> int:
+    return click.prompt("Number of containers ", type=int)

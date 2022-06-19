@@ -166,6 +166,7 @@ def incoming_dates_list() -> list:
     return incoming_dates
 
 def planning_incoming() -> None:
+    print("\n")
     base = "{:<30}|{:<10}|{:<10}|{:<20}"
     header = base.format('Date', 'Dropoff id', 'Sender', "Description")
     print(header)
@@ -177,4 +178,5 @@ def planning_incoming() -> None:
             if dropoff.arrival_date == date :
                 print(base.format(date, dropoff.id, dropoff.sender,
                     dropoff.description))
+    print("\n")
     
