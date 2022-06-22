@@ -100,12 +100,16 @@ def interactive():
                     print("\n")
             if action == "pdf":
                 documents = click.Choice(
-                ("Incoming", "Outputs"), case_sensitive=False)
+                ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
                 document_generated = click.prompt("Document you want to generate ", default="Incoming")
 
                 if document_generated == "Incoming":
                     service_layer_display.planning_incoming()
                     pdf.planning_incoming()
+                
+                elif document_generated == "Cargomanifest":
+                    trip_id = prompt.trip_id()
+                    pdf.cargomanifest(trip_id)
 
                 elif document_generated == "Outputs":
                     pass

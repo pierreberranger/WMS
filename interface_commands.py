@@ -1,6 +1,7 @@
 import click
 
 import confirm, prompt, service_layer, echo
+from from_graphics_to_loading_plan import *
 
 def home (prompt_function):
 
@@ -435,11 +436,11 @@ def plan_loading() -> None:
     """
     
     trip_id = prompt.trip_id()
-    click.echo("We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to yoour trip in the outuput file before validate")
+    click.echo("We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
     #groupage_placements = container_loading.trip_loading(trip_id, available containers)
     if confirm.plan_loading() :
-        # deuxxième fonction virgile
-        #f fonction pdf jg
+        # deuxième fonction virgile pour créer les objets
+        # generate_validated_pdf_loading_plan(trip_id)
         pass
     else :
         print("You can update the trip to have a new proposal for the load. '\n'")

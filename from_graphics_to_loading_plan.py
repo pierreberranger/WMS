@@ -35,7 +35,7 @@ def pdf_loading_plan(id_trip, file_name_pdf):
     y.output(file_name_pdf + f'_{id_trip}.pdf', 'F')
 
 def generate_proposition_pdf_loading_plan(id_trip):
-    return pdf_loading_plan(id_trip,"Proposition_plan_chargement")
+    return pdf_loading_plan(id_trip,"output/Proposition_plan_chargement")
 
 def generate_validated_pdf_loading_plan(id_trip):
-    return pdf_loading_plan(id_trip,"Plan_chargement_valide")
+    return pdf_loading_plan(id_trip,"output/Plan_chargement_valide")

@@ -30,3 +30,6 @@ def planning_incoming() :
 
     # save the pdf
     pdf.output("output/planning.pdf")
+
+def cargomanifest(trip_id) :
+    pass
