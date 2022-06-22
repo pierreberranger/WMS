@@ -75,6 +75,11 @@ class TypedSet(set):
         else:
             raise TypeError(f"Expected type: {self.cls_name}")
 
+    def union(self, other):
+        if not (issubclass(self.cls, other.cls) or issubclass(other.cls, self.cls)):
+            raise TypeError(f"Both TypedSet must be of the same class ({self.cls_name} different from {other.cls_name})")
+        return TypedSet(self.cls, super().union(self, other))
+
 
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
@@ -348,6 +353,13 @@ class Trip:
             return TypedSet(Container)
         else:
             return TypedSet(Container).union(*(groupage.set_of_containers for groupage in self.set_of_groupages))
+
+    @property
+    def set_of_packages(self) -> TypedSet:
+        if database.set_of_packages is None:
+            return TypedSet(Package)
+        else:
+            return TypedSet(Package).union(*(container.set_of_packages for container in self.set_of_containers))
 
     @property
     def weight(self) -> float:
