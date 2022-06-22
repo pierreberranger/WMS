@@ -1,7 +1,7 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
 
-from container_optimisation.container_loading import container_loading, plot_container_load_output, validate_container_loading_proposal
-from service_layer_display import set_of_packages
+from container_optimisation.container_loading import container_loading, validate_container_loading_proposal
+from service_layer_display import set_of_packages, show_fig
 import pickle_data as database
 
 
@@ -75,4 +75,4 @@ for container in database.set_of_containers:
     set_of_packages(container.set_of_packages) 
 """
 
-plot_container_load_output(containers_id, package_placements)
+show_fig(containers_id, package_placements)
