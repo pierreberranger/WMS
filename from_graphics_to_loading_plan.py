@@ -4,7 +4,7 @@ import os
 
 
 
-def pdf_loading_plan(id_trip, file_name_pdf):
+def generate_validated_pdf_loading_plan(id_trip):
 
     _DATE_FORMATS = click.DateTime(["%d%m%y","%d%m%Y", "%d/%m/%Y","%d/%m/%y"])
 
@@ -31,11 +31,4 @@ def pdf_loading_plan(id_trip, file_name_pdf):
         if filename.endswith(".png"):
             y.image(filename)
 
-
-    y.output(file_name_pdf + f'_{id_trip}.pdf', 'F')
-
-def generate_proposition_pdf_loading_plan(id_trip):
-    return pdf_loading_plan(id_trip,"output/Proposition_plan_chargement")
-
-def generate_validated_pdf_loading_plan(id_trip):
-    return pdf_loading_plan(id_trip,"output/Plan_chargement_valide")
+    y.output("output/Plan_chargement" + f'_{id_trip}.pdf', 'F')
