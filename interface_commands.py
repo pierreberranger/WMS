@@ -1,7 +1,6 @@
 import click
 
 import confirm, prompt, service_layer, echo
-from from_graphics_to_loading_plan import *
 
 import display
 

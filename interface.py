@@ -2,7 +2,6 @@ import click
 
 import prompt, interface_commands
 import display
-import pdf
 
 interface_commands.load()
 
