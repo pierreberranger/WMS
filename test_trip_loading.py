@@ -1,7 +1,8 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container, Trip
 
-from container_optimisation.container_loading import trip_loading
+from container_optimisation.container_loading import trip_loading, validate_trip_loading_proposal
 import pickle_data as database
+from service_layer_display import set_of_containers, set_of_groupages
 
 
 TEST_DATA_FILE = 'testdata_loading'
@@ -70,4 +71,11 @@ trip = Trip("Southern Liner", TypedSet(Groupage, [groupage, groupage2]))
 
 database.set_of_trips.add(trip)
 
-trip_loading(trip, available_containers_id)
+groupage_placements = trip_loading(trip.id, available_containers_id)
+
+validate_trip_loading_proposal(groupage_placements)
+
+set_of_groupages(database.set_of_groupages)
+
+for g in database.set_of_groupages:
+    set_of_containers(g.set_of_containers)

@@ -1,8 +1,8 @@
 from datetime import datetime
-from confirm import package
-from models import Package, Dimensions, Shipment, DropOff, Groupage, Trip
+from models import Package, Shipment, DropOff, Groupage, Trip
 import pickle_data as database
 
+from copy import deepcopy
 
 
 def load():
@@ -43,7 +43,7 @@ def register_package_in_a_shipment_by_id(package_id: str, shipment_id: str) -> N
     package_to_add.shipment_id = shipment_id
 
 def add_one_package_by_id(id: str) -> str: 
-    new_package: Package = database.set_of_packages[id].__deepcopy__()
+    new_package: Package = deepcopy(database.set_of_packages[id])
     database.set_of_packages.add(new_package)
     return new_package.id
 

@@ -36,6 +36,18 @@ def set_of_dropoffs(set_of_dropoffs: TypedSet(DropOff) = None) -> None:
         print(base.format(dropoff.id, dropoff.description,
               dropoff.status, dropoff.arrival_date))
 
+def set_of_containers(set_of_containers: TypedSet(Container) = None) -> None:
+    if set_of_containers is None:
+        set_of_containers = database.set_of_containers
+    base = "{:<10}|{:<25}|{:<10}"
+    header = base.format('id', 'dimensions', 'groupage_id')
+    print(header)
+    print('='*len(header))
+    for container in set_of_containers:
+        print(base.format(str(container.id), str(container.dimensions),
+              str(container.groupage_id)))
+
+
 def set_of_trips(set_of_trips: TypedSet(Trip) = None) -> None:
     if set_of_trips is None:
         set_of_trips = database.set_of_trips
@@ -54,7 +66,7 @@ def set_of_groupages(set_of_groupages: TypedSet(Groupage) = None) -> None:
     print(header)
     print('='*len(header))
     for groupage in set_of_groupages:
-        print(base.format(groupage.id, groupage.freight_forwarder))
+        print(base.format(str(groupage.id), str(groupage.freight_forwarder)))
 
 def shipment(shipment_id: str) -> None:
     shipment = database.set_of_shipments[shipment_id]

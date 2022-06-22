@@ -69,9 +69,10 @@ containers_id, package_placements = container_loading(groupage, available_contai
 
 validate_container_loading_proposal(package_placements)
 
-
+""" 
 for container in database.set_of_containers:
     print(f"\n{container.id=}:")
-    set_of_packages(container.set_of_packages)
+    set_of_packages(container.set_of_packages) 
+"""
 
 plot_container_load_output(containers_id, package_placements)
