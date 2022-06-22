@@ -1,9 +1,11 @@
 from models import DropOff, TypedSet, Shipment, Package, Trip, Groupage, Container
-import datetime, time
+import time
 from service_layer import database
+
 from fpdf import FPDF
-from pdfrw import PageMerge, PdfWriter, PdfReader
 import os
+from matplotlib import pyplot as plt
+import click
 
 
 def set_of_packages(set_of_packages: TypedSet(Package) = None) -> None:
@@ -162,6 +164,62 @@ def trip_containers(trip_id: str) -> None:
     print("\n")
     set_of_containers(trip_containers)
 
+
+# Plot and save trip and container loading proposal
+
+def create_fig_container_load_output(container_ids: set[str], package_placements: list, groupage_id: str = None) -> None:
+    nb_containers = len(container_ids)
+    fig = plt.figure(figsize=(5*nb_containers, 7))
+    plt.rc('font', **{'size': 5})
+
+    for container_idx, container_id in enumerate(container_ids): 
+        ax = fig.add_subplot(1, nb_containers, (container_idx+1))
+        container_dimensions = database.set_of_containers[container_id].dimensions[:2]
+
+        # Draw the container limits 
+        plt.plot([0, container_dimensions[0], container_dimensions[0], 0, 0], 
+                [0, 0, container_dimensions[1], container_dimensions[1], 0], '--r')
+
+        for package_placement in package_placements:
+            if package_placement[0] == container_id:
+                container_id, x, y, w, l, package_id = package_placement
+                x1, x2, x3, x4, x5 = x, x+w, x+w, x, x
+                y1, y2, y3, y4, y5 = y, y, y+l, y+l,y
+
+                plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], '--k')
+
+                package = database.set_of_packages[package_id]
+                plt.annotate(f"{package_id} ({package.shipment_id})", (x+w/3, y+l/2), color='b')
+
+        ax.set_aspect('equal')
+        ax.set_title(f"{container_id}", size=15, weight='bold')
+        plt.axis('off')
+
+    # espacement entre les subplots
+    fig.tight_layout(pad=10.0)
+    if not(groupage_id is None):
+        plt.suptitle(f"{groupage_id}", size=20)
+
+    return fig
+
+def show_fig(container_ids: set[str], package_placements: list, groupage_id: str = None) -> None:
+    _ = create_fig_container_load_output(container_ids, package_placements, groupage_id)
+    plt.show()
+
+def plot_trip_loading_proposal(groupage_placements: dict) -> None:
+    for groupage_id, groupage_placement in groupage_placements.items():
+        _ = create_fig_container_load_output(*groupage_placement, groupage_id)
+        plt.show()
+
+def save_trip_loading_proposal(groupage_placements: dict, trip_id: str) -> None:
+    os.mkdir(f"trips/{trip_id}")
+    for groupage_id, (containers_id, package_placements) in groupage_placements.items():
+        for container_id in containers_id:
+            _ = create_fig_container_load_output(set([container_id]), package_placements, groupage_id)
+            plt.savefig(f"trips/{trip_id}/{container_id}.png", dpi=300)
+
+
+
 def incoming_dates_list() -> list:
     incoming_dates = []
     for dropoff in database.set_of_dropoffs:
@@ -248,7 +306,6 @@ def cargomanifest(id_trip):
 def generate_validated_pdf_loading_plan(id_trip):
 
     _DATE_FORMATS = click.DateTime(["%d%m%y","%d%m%Y", "%d/%m/%Y","%d/%m/%y"])
-
 
     y = FPDF()
     y.add_page()
