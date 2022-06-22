@@ -7,4 +7,9 @@ from models import Package, Shipment, Container, Groupage, Trip, TypedSet, DropO
 # 'database.txt'
 
 with open('database.txt', 'wb') as f:
-    dump((TypedSet(Package), TypedSet(DropOff), TypedSet(Shipment), TypedSet(Container),TypedSet(Groupage), TypedSet(Trip)), f)
+    dump((TypedSet(Package), 
+    TypedSet(DropOff), 
+    TypedSet(Shipment), 
+    TypedSet(Container),
+    TypedSet(Groupage), 
+    TypedSet(Trip)), f)

@@ -2,13 +2,13 @@ import click
 
 # check before actions
 
-def enter_one_by_one() -> bool :
+def enter_one_by_one() -> bool:
     return click.confirm(
         "Do you want to add the package one by one ? (else you will register them by grouping them under a number of references")
 
 def enter_packages_by_id() -> bool:
     return click.confirm(
-        "Do you want to add the packages to your inshipment by their ids ? (else you will have enter the all informations about the packages.")
+        "Do you want to add the packages to your shipment by their ids ? (else you will have enter the all informations about the packages.")
 
 def package(package_informations: dict) -> bool:
     click.echo(
@@ -51,6 +51,10 @@ def update_dropoff(id_dropoff, arrival_date) -> bool:
     return click.confirm(
             f"The DropOff {id_dropoff} arrived on the: {arrival_date}", default=True)
 
+def remove_package_from_dropoff(package_id, dropoff_id) -> bool:
+    return click.confirm(
+        f"Do you want to remove the package {package_id} from the dropoff {dropoff_id}",  default=False)
+
 def exit_shipment(id_shipment) -> bool:
     return click.confirm(f"The Shipment {id_shipment} has left the warehouse.", default = True)
 
@@ -64,3 +68,13 @@ def shipment_to_add(identity) -> bool:
 def groupage_to_add(id) -> bool:
     return click.confirm(
             f"Are you sure to add the groupage with id:{id} ?", default=True)
+
+def plan_loading() -> bool :
+    return click.confirm(
+        f"Do you confirm you want to use this plan for the load of your trip ?"
+    )
+
+def add_objects() -> bool :
+    return click.confirm(
+        f"Do you confirm you want to add this groupage to your trip ?"
+    )

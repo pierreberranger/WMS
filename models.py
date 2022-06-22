@@ -377,6 +377,13 @@ class Trip:
             return TypedSet(Container).union(*(groupage.set_of_containers for groupage in self.set_of_groupages))
 
     @property
+    def set_of_packages(self) -> TypedSet:
+        if database.set_of_packages is None:
+            return TypedSet(Package)
+        else:
+            return TypedSet(Package).union(*(container.set_of_packages for container in self.set_of_containers))
+
+    @property
     def weight(self) -> float:
         """The weight is in kg"""
         return sum(groupage.weight for groupage in self.set_of_groupages)
