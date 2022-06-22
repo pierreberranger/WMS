@@ -6,7 +6,10 @@ MAX_ID*
 database.txt
 test/testdata
 test/filename_text.txt
+testdata_loading
 .DS_Store
+output/*
+trips/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
