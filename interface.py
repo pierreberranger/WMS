@@ -1,7 +1,7 @@
 import click
 
 import prompt, interface_commands
-import service_layer_display
+import display
 import pdf
 
 interface_commands.load()
@@ -46,19 +46,19 @@ def interactive():
                     "What do you want to view : ", default="packages", type=view_type_choices)
 
                 if answer == "packages":
-                    service_layer_display.set_of_packages()
+                    display.set_of_packages()
                     print("\n")
                 elif answer =="dropoffs" :
-                    service_layer_display.set_of_dropoffs()
+                    display.set_of_dropoffs()
                     print("\n")
                 elif answer == "shipments":
-                    service_layer_display.set_of_shipments()
+                    display.set_of_shipments()
                     print("\n")
                 elif answer == "trips":
-                    service_layer_display.set_of_trips()
+                    display.set_of_trips()
                     print("\n")
                 elif answer == "groupages":
-                    service_layer_display.set_of_groupages()
+                    display.set_of_groupages()
                     print("\n")
             
             if action == "details":
@@ -69,15 +69,15 @@ def interactive():
 
                 if answer == "shipment":
                     shipment_id = prompt.shipment_id()
-                    service_layer_display.shipment(shipment_id)
+                    display.shipment(shipment_id)
                     print("\n")
                 elif answer == "groupage":
                     groupage_id = prompt.groupage_id ()
-                    service_layer_display.groupage(groupage_id)
+                    display.groupage(groupage_id)
                     print("\n")
                 elif answer == "dropoff":
                     dropoff_id = prompt.dropoff_id ()
-                    service_layer_display.dropoff(dropoff_id)
+                    display.dropoff(dropoff_id)
                     print("\n")
                 elif answer == "trip" :
                     choice = click.prompt(
@@ -87,16 +87,16 @@ def interactive():
                     trip_id = prompt.trip_id()
 
                     if choice == "packages" :
-                        service_layer_display.trip_packages(trip_id)
+                        display.trip_packages(trip_id)
                     elif choice == "shipments" :
-                        service_layer_display.trip_shipments(trip_id)
+                        display.trip_shipments(trip_id)
                     elif choice == "groupages" :
-                        service_layer_display.trip_groupages(trip_id)
+                        display.trip_groupages(trip_id)
                     elif choice == "containers":
-                        service_layer_display.trip_containers(trip_id)
+                        display.trip_containers(trip_id)
                 elif answer == "container":
                     container_id = prompt.container_id ()
-                    service_layer_display.container(container_id)
+                    display.container(container_id)
                     print("\n")
             if action == "pdf":
                 documents = click.Choice(
@@ -104,12 +104,12 @@ def interactive():
                 document_generated = click.prompt("Document you want to generate ", default="Incoming")
 
                 if document_generated == "Incoming":
-                    service_layer_display.planning_incoming()
-                    pdf.planning_incoming()
+                    display.planning_incoming()
+                    display.planning_incoming()
                 
                 elif document_generated == "Cargomanifest":
                     trip_id = prompt.trip_id()
-                    pdf.cargomanifest(trip_id)
+                    display.cargomanifest(trip_id)
 
                 elif document_generated == "Outputs":
                     pass

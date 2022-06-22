@@ -1,6 +1,10 @@
 from models import DropOff, TypedSet, Shipment, Package, Trip, Groupage, Container
 import datetime, time
 from service_layer import database
+from fpdf import FPDF
+from pdfrw import PageMerge, PdfWriter, PdfReader
+import os
+
 
 def set_of_packages(set_of_packages: TypedSet(Package) = None) -> None:
     if set_of_packages is None:
@@ -179,4 +183,123 @@ def planning_incoming() -> None:
                 print(base.format(date, dropoff.id, dropoff.sender,
                     dropoff.description))
     print("\n")
+
+def cargomanifest(id_trip):
+
+    # recovery of the packages, containers
+    trip = database.set_of_trips[id_trip]
+    containers_trip = trip.set_of_containers
+
+    trip_weight = trip.weight
+
+    data = ( ("Référence des conteneurs", "Description des conteneurs") )
     
+    for container in containers_trip:
+        container_description = ""
+        container_packages = container.set_of_packages
+        for package in container_packages:
+            container_description += " " + package.description
+        data += (container.id, container_description)
+    
+    # Writing
+    pdf = FPDF()
+    pdf.add_page()
+
+    pdf.set_font('Arial','B',16)
+    pdf.cell(200, 20, txt = 'Cargo Manifest', ln = 2, align = 'C')
+
+    pdf.set_font('Arial','B',12)
+    pdf.cell(200, 20, txt = f'La référence du voyage est : {trip.id}', ln = 2)
+
+    pdf.set_font('Arial','B',12)
+    pdf.cell(200, 20, txt = f'Poids total du voyage : {trip_weight}', ln = 2)
+
+
+    line_height = pdf.font_size * 2.5
+    col_width = pdf.epw / 4.5
+
+    lh_list = [] #list with proper line_height for each row
+    use_default_height = 0 #flag
+
+    #create lh_list of line_heights which size is equal to num rows of data
+    for row in data:
+        for datum in row:
+            word_list = datum.split()
+            number_of_words = len(word_list) #how many words
+            if number_of_words>2: #names and cities formed by 2 words like Los Angeles are ok)
+                use_default_height = 1
+                new_line_height = pdf.font_size * (number_of_words/2) #new height change according to data 
+        if not use_default_height:
+            lh_list.append(line_height)
+        else:
+            lh_list.append(new_line_height)
+            use_default_height = 0
+
+    #create your fpdf table ..passing also max_line_height!
+    for j,row in enumerate(data):
+        for datum in row:
+            line_height = lh_list[j] #choose right height for current row
+            pdf.multi_cell(col_width, line_height, datum, border=1,align='L',ln=3, 
+            max_line_height=pdf.font_size)
+        pdf.ln(line_height)
+
+    pdf.output(f'cargo_manifest{id_trip}.pdf')
+
+def generate_validated_pdf_loading_plan(id_trip):
+
+    _DATE_FORMATS = click.DateTime(["%d%m%y","%d%m%Y", "%d/%m/%Y","%d/%m/%y"])
+
+
+    y = FPDF()
+    y.add_page()
+
+    y.set_font('Arial','B',16)
+    y.cell(200, 20, txt = 'Plan de chargement', ln = 2, align = 'C')
+
+    y.set_font('Arial','B',16)
+    y.cell(200, 20, txt = '', ln = 2)
+
+    y.set_font('Arial','B',12)
+    y.cell(200, 20, txt = f'Trip : {id_trip} ', ln = 2)
+
+    #y.set_font('Arial','B',12)
+    #y.cell(200, 20, txt = f'Date de chargement des contanaires : {date_loading} ', ln = 2)
+
+    y.set_font('Arial','B',18)
+    y.cell(200, 20, txt = 'Description du plan de chargement ', ln = 2, align = 'C')
+
+    for filename in os.listdir(id_trip):
+        if filename.endswith(".png"):
+            y.image(filename)
+
+    y.output("output/Plan_chargement" + f'_{id_trip}.pdf', 'F')
+
+def planning_incoming() :
+    """ 
+    Make a pdf describing the dates of the arrival of dropoffs 
+    by chronological order
+    """
+
+    pdf = FPDF()
+    
+    # Adding a page
+    pdf.add_page()
+    pdf.set_margins(10, 10, 10)
+
+    # Title
+    pdf.set_font("Arial", size = 15)
+    pdf.cell(100, 10, txt = "Planning of the arrivals of droppoffs", ln = 1, align ='C', border=1)
+
+    # Subtitle
+    pdf.set_font("Arial", size = 13, style="B")
+    pdf.cell(200, 20, txt = "Date : id, sender, description", ln = 2)
+    incoming_dates = incoming_dates_list()
+    for date in incoming_dates :
+        for dropoff in database.set_of_dropoffs :
+            
+            if dropoff.arrival_date == date :
+                pdf.set_font("Arial", size = 9) 
+                pdf.cell(200, 10, txt = f"{date} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln = 2)
+
+    # save the pdf
+    pdf.output("output/planning.pdf")

@@ -3,6 +3,8 @@ import click
 import confirm, prompt, service_layer, echo
 from from_graphics_to_loading_plan import *
 
+import display
+
 def home (prompt_function):
 
     def decorated_function(* args, ** kwargs):
@@ -440,7 +442,7 @@ def plan_loading() -> None:
     #groupage_placements = container_loading.trip_loading(trip_id, available containers)
     if confirm.plan_loading() :
         # deuxième fonction virgile pour créer les objets
-        # generate_validated_pdf_loading_plan(trip_id)
+        display.generate_validated_pdf_loading_plan(trip_id)
         pass
     else :
         print("You can update the trip to have a new proposal for the load. '\n'")
