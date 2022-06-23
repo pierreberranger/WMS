@@ -2,7 +2,7 @@ import click
 import pickle_data as database
 from datetime import datetime
 
-from models import Dimensions
+from models import Dimensions, Container
 from available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
 
 # informations given by the user
@@ -126,3 +126,8 @@ def number_trips() -> int:
 
 def number_containers() -> int:
     return click.prompt("Number of containers ", type=int)
+
+def available_container() -> set[str]:
+    return click.prompt(" available container id ", 
+    type=click.Choice(list((str(c.id) for c in database.set_of_containers if c.groupage_id is None))), 
+    show_choices=False)

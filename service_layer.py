@@ -145,8 +145,7 @@ def del_groupage_from_trip(groupage_id: str) -> None:
 def add_container_to_database(type_container: str) -> str:
     if type_container == "standard" :
         new_container = ContainerStandard()
-        database.set_of_containers.add(new_container)
-        return 
+        database.set_of_containers.add(new_container) 
     elif type_container == "palet_wide":
         new_container = ContainerPaletWide()
         database.set_of_containers.add(new_container)
