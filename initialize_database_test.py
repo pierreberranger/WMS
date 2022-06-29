@@ -1,23 +1,16 @@
-from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
+from pickle import dump
+from models import Package, Shipment, ContainerStandard, ContainerPaletWide, Container, Groupage, Trip, TypedSet, DropOff, database, Dimensions
 
-from container_optimisation.container_loading import container_loading, validate_container_loading_proposal
-<<<<<<< HEAD
-from display import show_fig
-=======
-from display import set_of_packages, show_fig
->>>>>>> f85c72c1aa34c8d173818d084cf7286ea560c9b8
-import pickle_data as database
+# 'test/testdata'
+# 'test/filename_test.txt'
+# 'testdata_loading'
+# 'database.txt'
 
-
-TEST_DATA_FILE = 'testdata_loading'
-database.load(TEST_DATA_FILE)
-
-
-dimensions_euro_palet = Dimensions(120, 80, 10)
+dimensions_euro_palet = Dimensions(120, 100, 10)
 
 set_of_packages1 = TypedSet(Package)
 
-for _ in range(10):
+for _ in range(20):
     set_of_packages1.add(Package(dimensions_euro_palet, None, None, None))
 
 shipment1 = Shipment(None, set_of_packages1)
@@ -52,13 +45,13 @@ database.set_of_packages = set_of_packages1.union(set_of_packages2)
 
 shipment2 = Shipment(None, set_of_packages2)
 
-container1 = ContainerPaletWide()
-container2 = ContainerPaletWide()
-container3 = ContainerPaletWide()
-container4 = ContainerPaletWide()
-container5 = ContainerPaletWide()
-container6 = ContainerPaletWide()
-container7 = ContainerPaletWide()
+container1 = ContainerStandard()
+container2 = ContainerStandard()
+container3 = ContainerStandard()
+container4 = ContainerStandard()
+container5 = ContainerStandard()
+container6 = ContainerStandard()
+container7 = ContainerStandard()
 
 available_containers_id = set([container1.id, container2.id, container3.id, container4.id, container5.id, container6.id, container7.id])
 
@@ -66,17 +59,13 @@ database.set_of_containers = TypedSet(Container, [container1, container2, contai
 
 database.set_of_shipments = TypedSet(Shipment, [shipment1, shipment2])
 
-groupage = Groupage("transporter", TypedSet(Shipment, [shipment1, shipment2]))
-database.set_of_groupages = TypedSet(Groupage, [groupage])
+groupage = Groupage("transporter", TypedSet(Shipment, [shipment1]))
+groupage2 = Groupage("transporter", TypedSet(Shipment, [shipment2]))
 
-containers_id, package_placements = container_loading(groupage, available_containers_id)
+database.set_of_groupages = TypedSet(Groupage, [groupage, groupage2])
 
-validate_container_loading_proposal(package_placements)
+trip = Trip("Southern Liner", TypedSet(Groupage, [groupage, groupage2]))
 
-""" 
-for container in database.set_of_containers:
-    print(f"\n{container.id=}:")
-    set_of_packages(container.set_of_packages) 
-"""
+database.set_of_trips.add(trip)
 
-show_fig(containers_id, package_placements)
+database.save()

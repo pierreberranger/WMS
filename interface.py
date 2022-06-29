@@ -87,6 +87,7 @@ def interactive():
                         dropoff_id = prompt.dropoff_id ()
                         display.dropoff(dropoff_id)
                         print("\n")
+                         
                     elif answer == "trip" :
                         choice = click.prompt(
                         "What do you want to view ", default="shipments", type=
