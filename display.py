@@ -212,6 +212,8 @@ def plot_trip_loading_proposal(groupage_placements: dict) -> None:
         plt.show()
 
 def save_trip_loading_proposal(groupage_placements: dict, trip_id: str) -> None:
+    if os.path.isdir(f"trips/{trip_id}"):
+        raise KeyError("This trip has already been loaded, please delete the corresponding directory if you want to load it again")
     os.mkdir(f"trips/{trip_id}")
     for groupage_id, (containers_id, package_placements) in groupage_placements.items():
         for container_id in containers_id:
@@ -250,15 +252,15 @@ def cargomanifest(id_trip):
 
     trip_weight = trip.weight
 
-    data = ( ("Référence des conteneurs", "Description des conteneurs") )
+    data = [["Référence des conteneurs", "Description des conteneurs"]]
     
     for container in containers_trip:
         container_description = ""
         container_packages = container.set_of_packages
         for package in container_packages:
             container_description += " " + package.description
-        data += (container.id, container_description)
-    
+        data.append( [container.id, container_description])
+    print(data)
     # Writing
     pdf = FPDF()
     pdf.add_page()
@@ -308,7 +310,7 @@ def cargomanifest(id_trip):
                 max_line_height=pdf.font_size)
             pdf.ln(line_height)
 
-    pdf.output(f'cargo_manifest{id_trip}.pdf')
+    pdf.output(f'output/cargo_manifest{id_trip}.pdf')
 
 def generate_validated_pdf_loading_plan(id_trip):
 
@@ -332,9 +334,9 @@ def generate_validated_pdf_loading_plan(id_trip):
     y.set_font('Arial','B',18)
     y.cell(200, 20, txt = 'Description du plan de chargement ', ln = 2, align = 'C')
 
-    for filename in os.listdir(id_trip):
+    for filename in os.listdir(f"trips/{id_trip}"):
         if filename.endswith(".png"):
-            y.image(filename)
+            y.image(f"trips/{id_trip}/{filename}")
 
     y.output("output/Plan_chargement" + f'_{id_trip}.pdf', 'F')
 

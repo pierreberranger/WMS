@@ -453,7 +453,6 @@ def plan_loading() -> None:
     click.echo(f"We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
     available_containers = select_available_containers()
     groupage_placements = container_loading.trip_loading(trip_id, available_containers)
-    display.show_fig(groupage_placements)
     if confirm.plan_loading() :
         display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
