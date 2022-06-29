@@ -1,3 +1,4 @@
+from email.policy import default
 import click
 
 # check before actions
@@ -76,5 +77,5 @@ def plan_loading() -> bool :
 
 def add_objects() -> bool :
     return click.confirm(
-        f"Do you confirm you want to add this groupage to your trip ?"
+        f"Do you confirm you want to add this object ?", default=True
     )
