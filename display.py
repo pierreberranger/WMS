@@ -167,7 +167,7 @@ def trip_containers(trip_id: str) -> None:
 
 # Plot and save trip and container loading proposal
 
-def create_fig_container_load_output(container_ids: set[str], package_placements: list, groupage_id: str = None) -> None:
+def create_fig_container_load_output(container_ids: set, package_placements: list, groupage_id: str = None) -> None:
     nb_containers = len(container_ids)
     fig = plt.figure(figsize=(5*nb_containers, 7))
     plt.rc('font', **{'size': 5})
@@ -202,7 +202,7 @@ def create_fig_container_load_output(container_ids: set[str], package_placements
 
     return fig
 
-def show_fig(container_ids: set[str], package_placements: list, groupage_id: str = None) -> None:
+def show_fig(container_ids: set, package_placements: list, groupage_id: str = None) -> None:
     _ = create_fig_container_load_output(container_ids, package_placements, groupage_id)
     plt.show()
 
@@ -280,8 +280,8 @@ def cargomanifest(id_trip):
     use_default_height = 0 #flag
 
     #create lh_list of line_heights which size is equal to num rows of data
-    for row in data:
-        for datum in row:
+    for i in range(len(data)-1):
+        for datum in data[i+1]:
             word_list = datum.split()
             number_of_words = len(word_list) #how many words
             if number_of_words>2: #names and cities formed by 2 words like Los Angeles are ok)
@@ -295,11 +295,18 @@ def cargomanifest(id_trip):
 
     #create your fpdf table ..passing also max_line_height!
     for j,row in enumerate(data):
-        for datum in row:
-            line_height = lh_list[j] #choose right height for current row
-            pdf.multi_cell(col_width, line_height, datum, border=1,align='L',ln=3, 
-            max_line_height=pdf.font_size)
-        pdf.ln(line_height)
+        if j==0:
+            for datum in data[0]:
+                line_height = pdf.font_size * 2.5
+                pdf.multi_cell(col_width, line_height, datum, border=1,align='L',ln=3, 
+                max_line_height=pdf.font_size)
+            pdf.ln(line_height)
+        else:
+            for datum in row:
+                line_height = lh_list[j-1] #choose right height for current row
+                pdf.multi_cell(col_width, line_height, datum, border=1,align='L',ln=3, 
+                max_line_height=pdf.font_size)
+            pdf.ln(line_height)
 
     pdf.output(f'cargo_manifest{id_trip}.pdf')
 
