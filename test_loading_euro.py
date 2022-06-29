@@ -1,7 +1,7 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
 
 from container_optimisation.container_loading import container_loading, validate_container_loading_proposal
-from service_layer_display import set_of_packages, show_fig
+from display import set_of_packages, show_fig
 import pickle_data as database
 
 
@@ -9,11 +9,11 @@ TEST_DATA_FILE = 'testdata_loading'
 database.load(TEST_DATA_FILE)
 
 
-dimensions_euro_palet = Dimensions(120, 100, 10)
+dimensions_euro_palet = Dimensions(120, 80, 10)
 
 set_of_packages1 = TypedSet(Package)
 
-for _ in range(20):
+for _ in range(10):
     set_of_packages1.add(Package(dimensions_euro_palet, None, None, None))
 
 shipment1 = Shipment(None, set_of_packages1)
@@ -48,13 +48,13 @@ database.set_of_packages = set_of_packages1.union(set_of_packages2)
 
 shipment2 = Shipment(None, set_of_packages2)
 
-container1 = ContainerStandard()
-container2 = ContainerStandard()
-container3 = ContainerStandard()
-container4 = ContainerStandard()
-container5 = ContainerStandard()
-container6 = ContainerStandard()
-container7 = ContainerStandard()
+container1 = ContainerPaletWide()
+container2 = ContainerPaletWide()
+container3 = ContainerPaletWide()
+container4 = ContainerPaletWide()
+container5 = ContainerPaletWide()
+container6 = ContainerPaletWide()
+container7 = ContainerPaletWide()
 
 available_containers_id = set([container1.id, container2.id, container3.id, container4.id, container5.id, container6.id, container7.id])
 
