@@ -5,6 +5,7 @@ from models import Package, Shipment, ContainerStandard, ContainerPaletWide, Con
 # 'test/filename_test.txt'
 # 'testdata_loading'
 # 'database.txt'
+database.load("database.txt")
 
 dimensions_euro_palet = Dimensions(120, 100, 10)
 
