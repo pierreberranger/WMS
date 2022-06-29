@@ -456,6 +456,7 @@ def plan_loading() -> None:
     if confirm.plan_loading() :
         display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
+        container_loading.validate_trip_loading_proposal(groupage_placements)
     else :
         print("You can update the trip to have a new proposal for the load. '\n'")
 
