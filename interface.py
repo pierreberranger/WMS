@@ -1,3 +1,4 @@
+from pydoc import doc
 import click
 
 import prompt, interface_commands
@@ -105,10 +106,11 @@ def interactive():
                         container_id = prompt.container_id ()
                         display.container(container_id)
                         print("\n")
+
                 if action == "pdf":
                     documents = click.Choice(
                     ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
-                    document_generated = click.prompt("Document you want to generate ", default="Incoming")
+                    document_generated = click.prompt("Document you want to generate ", default="Incoming", type=documents)
 
                     if document_generated == "Incoming":
                         display.planning_incoming()
