@@ -1,8 +1,11 @@
 import click
 
 import confirm, prompt, service_layer, echo
+from models import Container
 
 import display
+
+import container_optimisation.container_loading as container_loading
 
 def home (prompt_function):
 
@@ -430,6 +433,16 @@ def load_trip() -> None:
     
     print("\n")
 
+@home
+def select_available_containers():
+    available_containers = set()
+    for _ in range(prompt.number_containers()):
+        container_id = prompt.available_container()
+        if confirm.add_objects():
+            available_containers.add(container_id)
+        print("\n")
+    return available_containers
+
 def plan_loading() -> None:
     """
     Proposes a plan of loading of a particular trip 
@@ -437,12 +450,13 @@ def plan_loading() -> None:
     """
     
     trip_id = prompt.trip_id()
-    click.echo("We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
-    #groupage_placements = container_loading.trip_loading(trip_id, available containers)
+    click.echo(f"We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
+    available_containers = select_available_containers()
+    groupage_placements = container_loading.trip_loading(trip_id, available_containers)
+    display.show_fig(groupage_placements)
     if confirm.plan_loading() :
-        # deuxième fonction virgile pour créer les objets
+        display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
-        pass
     else :
         print("You can update the trip to have a new proposal for the load. '\n'")
 
@@ -481,7 +495,7 @@ def add_containers():
         print("\n")
 
 @home
-def del_container():
+def del_containers():
     for _ in range(prompt.number_containers()):
         keep_looping = True
         while keep_looping:
@@ -491,3 +505,5 @@ def del_container():
                 keep_looping = False
         print("\n")
     
+
+        
