@@ -2,7 +2,7 @@ from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerP
 
 from container_optimisation.container_loading import trip_loading, validate_trip_loading_proposal
 import pickle_data as database
-from service_layer_display import plot_trip_loading_proposal, save_trip_loading_proposal, set_of_containers, set_of_groupages
+from display import plot_trip_loading_proposal, save_trip_loading_proposal, set_of_containers, set_of_groupages
 
 
 TEST_DATA_FILE = 'testdata_loading'
