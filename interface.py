@@ -87,6 +87,7 @@ def interactive():
                         dropoff_id = prompt.dropoff_id ()
                         display.dropoff(dropoff_id)
                         print("\n")
+                         
                     elif answer == "trip" :
                         choice = click.prompt(
                         "What do you want to view ", default="shipment", type=
@@ -109,14 +110,14 @@ def interactive():
 
                 if action == "pdf":
                     documents = click.Choice(
-                    ("CargoManifest", "Incoming", "Outputs"), case_sensitive=False)
+                    ("cargomanifest", "Incoming", "Outputs"), case_sensitive=False)
                     document_generated = click.prompt("Document you want to generate ", default="Incoming", type=documents)
 
                     if document_generated == "Incoming":
                         display.planning_incoming()
                         display.planning_incoming()
                     
-                    elif document_generated == "Cargomanifest":
+                    elif document_generated == "cargomanifest":
                         trip_id = prompt.trip_id()
                         display.cargomanifest(trip_id)
 
