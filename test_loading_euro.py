@@ -1,7 +1,7 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
 
 from container_optimisation.container_loading import container_loading, validate_container_loading_proposal
-from service_layer_display import set_of_packages, show_fig
+from display import show_fig
 import pickle_data as database
 
 

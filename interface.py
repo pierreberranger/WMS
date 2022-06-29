@@ -89,7 +89,7 @@ def interactive():
                         print("\n")
                     elif answer == "trip" :
                         choice = click.prompt(
-                        "What do you want to view ", default="shipment", type=
+                        "What do you want to view ", default="shipments", type=
                         click.Choice(
                         ("packages", "shipments", "groupages", "containers"), case_sensitive=False))
                         trip_id = prompt.trip_id()
