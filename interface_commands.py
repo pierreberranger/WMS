@@ -7,8 +7,7 @@ import display
 
 import container_optimisation.container_loading as container_loading
 
-def home (prompt_function):
-
+def home(prompt_function):
     def decorated_function(* args, ** kwargs):
         try :
             return prompt_function(* args, ** kwargs)
@@ -16,7 +15,6 @@ def home (prompt_function):
             click.echo("\nBack to the menu")
             print("\n")
             return
-
     return decorated_function
         
 
@@ -443,6 +441,7 @@ def select_available_containers():
         print("\n")
     return available_containers
 
+@home
 def plan_loading() -> None:
     """
     Proposes a plan of loading of a particular trip 
@@ -452,13 +451,13 @@ def plan_loading() -> None:
     trip_id = prompt.trip_id()
     available_containers = select_available_containers()
     groupage_placements = container_loading.trip_loading(trip_id, available_containers)
-    display.show_fig(groupage_placements)
+    display.plot_trip_loading_proposal(groupage_placements)
     click.echo(f"We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
-    if confirm.plan_loading() :
+    if confirm.plan_loading():
         display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
     else :
-        print("You can update the trip to have a new proposal for the load. '\n'")
+        print("You can update the trip to have a new loading proposal. '\n'")
 
 @home
 def add_groupage_to_a_trip():

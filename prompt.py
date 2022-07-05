@@ -104,7 +104,7 @@ def freight_forwarder() -> str:
 
 def ship_name() -> str:
     return click.prompt(
-        "Ship Name ", default="Nostos Marine Ship", type=str)
+        "Ship Name ", default="Southern Liner", type=str)
 
 def number_packages() -> int:
     return click.prompt("Number of packages ", type=int)
