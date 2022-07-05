@@ -75,13 +75,11 @@ class TypedSet(set):
         else:
             raise TypeError(f"Expected type: {self.cls_name}")
 
-    def union(self, other=None):
+    def union(self, *other):
         if other is None:
             return self
-        if not (issubclass(self.cls, other.cls) or issubclass(other.cls, self.cls)):
-            raise TypeError(f"Both TypedSet must be of the same class ({self.cls_name} different from {other.cls_name})")
-        return TypedSet(self.cls, set().union(self, other))
-        
+        return TypedSet(self.cls, set().union(self, *other))
+
 
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')

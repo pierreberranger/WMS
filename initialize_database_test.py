@@ -70,4 +70,13 @@ database.set_of_containers = TypedSet(Container, [container1, container2, contai
 
 database.set_of_shipments = TypedSet(Shipment, [shipment1, shipment2, shipment3])
 
+groupage = Groupage("transporter", TypedSet(Shipment, [shipment1]))
+groupage2 = Groupage("transporter", TypedSet(Shipment, [shipment2]))
+
+database.set_of_groupages = TypedSet(Groupage, [groupage, groupage2])
+
+trip = Trip("Southern Liner", TypedSet(Groupage, [groupage, groupage2]))
+
+database.set_of_trips.add(trip)
+
 database.save()
