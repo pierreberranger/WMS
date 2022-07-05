@@ -435,7 +435,7 @@ def load_trip() -> None:
 def select_available_containers():
     nb_container_available = prompt.number_containers_available()
     nb_container_wide = prompt.number_containers_wide()
-    nb_container_standard = nb_container_available-nb_container_wide
+    nb_container_standard = nb_container_available - nb_container_wide
     return service_layer.available_containers(nb_container_wide, nb_container_standard)
 
 @home
@@ -447,6 +447,7 @@ def plan_loading() -> None:
     
     trip_id = prompt.trip_id()
     available_containers = select_available_containers()
+    print(f"{available_containers=}")
     groupage_placements = container_loading.trip_loading(trip_id, available_containers)
     display.plot_trip_loading_proposal(groupage_placements)
     click.echo(f"We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")

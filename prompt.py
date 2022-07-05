@@ -130,7 +130,7 @@ def number_containers() -> int:
 def number_containers_available() -> int:
     nb_available_containers = len(list((str(c.id) for c in database.set_of_containers if c.groupage_id is None)))
     nb_available_containers_standard = len(list((str(c.id) for c in database.set_of_containers if (c.groupage_id is None) and (c.dimensions == (235, 589, 239) ))))
-    nb_available_containers_wide = nb_available_containers-nb_available_containers_standard
+    nb_available_containers_wide = nb_available_containers - nb_available_containers_standard
     print(f"There are {nb_available_containers} available with {nb_available_containers_standard} standard containers and {nb_available_containers_wide} wide containers")
     return int(click.prompt("Number of containers ", type=click.Choice([str(i) for i in range(nb_available_containers+1)])))
 

@@ -59,11 +59,12 @@ class TestTypedSet(unittest.TestCase):
         set_of_shipments = TypedSet(Shipment, [self.shipment])
         with self.assertRaises(TypeError) as err1:
             set_of_packages.union(set_of_shipments)
-        self.assertEqual(err1.exception.args[0], "Both TypedSet must be of the same class (Package different from Shipment)")
+        self.assertEqual(err1.exception.args[0], "Expected type: Package")
         set_of_packages2 = TypedSet(Package, [self.package2])
         unioned_packages_sets = set_of_packages.union(set_of_packages2)
         self.assertEqual(unioned_packages_sets, TypedSet(Package, [self.package, self.package2]))
         self.assertEqual(TypedSet(Package).union(), TypedSet(Package))
+        
 
     def tearDown(self):
         database.unload()

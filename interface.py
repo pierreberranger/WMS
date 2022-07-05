@@ -1,4 +1,3 @@
-from pydoc import doc
 import click
 
 import prompt, interface_commands
