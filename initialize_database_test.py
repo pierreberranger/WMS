@@ -75,7 +75,7 @@ groupage2 = Groupage("transporter", TypedSet(Shipment, [shipment2]))
 
 database.set_of_groupages = TypedSet(Groupage, [groupage, groupage2])
 
-trip = Trip("Southern Liner", TypedSet(Groupage, [groupage, groupage2]))
+trip = Trip("Southern Liner", datetime(2022, 7, 8, 10), set_of_groupages=TypedSet(Groupage, [groupage, groupage2]))
 
 database.set_of_trips.add(trip)
 

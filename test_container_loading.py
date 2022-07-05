@@ -1,6 +1,7 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
 
-from container_optimisation.container_loading import container_loading, plot_container_load_output
+from container_optimisation.container_loading import container_loading
+from display import show_fig
 import pickle_data as database
 
 
@@ -40,4 +41,4 @@ database.set_of_groupages = TypedSet(Groupage, [groupage])
 
 containers_id, package_placements = container_loading(groupage, available_containers_id)
 
-plot_container_load_output(containers_id, package_placements)
+show_fig(containers_id, package_placements)

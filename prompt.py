@@ -71,10 +71,10 @@ def package_information(object) -> dict:
     weight = click.prompt("Weight", type=float)
     if object == "package":
         status = click.prompt(
-            "status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
+            "Status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
     elif object == "shipment":
         status = click.prompt(
-            "status", default=statuses_shipment_namedtuple.inbound, type=statuses_shipment_choices)
+            "Status", default=statuses_shipment_namedtuple.inbound, type=statuses_shipment_choices)
     package_type = click.prompt(
         "Package Type", default=package_types_namedtuple.EPAL, type=package_types_choices)
     return {"dimensions": dimensions, "weight": weight, "status": status, "package_type": package_type, "description": description}
@@ -105,6 +105,9 @@ def freight_forwarder() -> str:
 def ship_name() -> str:
     return click.prompt(
         "Ship Name ", default="Southern Liner", type=str)
+
+def departure_date() -> datetime:
+    return date("Departure date")
 
 def number_packages() -> int:
     return click.prompt("Number of packages ", type=int)
