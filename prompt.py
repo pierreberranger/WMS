@@ -2,7 +2,7 @@ import click
 import pickle_data as database
 from datetime import datetime
 
-from models import Dimensions, Container
+from models import Dimensions
 from available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
 
 # informations given by the user
@@ -127,7 +127,19 @@ def number_trips() -> int:
 def number_containers() -> int:
     return click.prompt("Number of containers ", type=int)
 
+def number_containers_available() -> int:
+    nb_available_containers = len(list((str(c.id) for c in database.set_of_containers if c.groupage_id is None)))
+    nb_available_containers_standard = len(list((str(c.id) for c in database.set_of_containers if (c.groupage_id is None) and (c.dimensions == (235, 589, 239) ))))
+    nb_available_containers_wide = nb_available_containers-nb_available_containers_standard
+    print(f"There are {nb_available_containers} available with {nb_available_containers_standard} standard containers and {nb_available_containers_wide} wide containers")
+    return int(click.prompt("Number of containers ", type=click.Choice([str(i) for i in range(nb_available_containers+1)])))
+
 def available_container() -> set[str]:
     return click.prompt(" available container id ", 
     type=click.Choice(list((str(c.id) for c in database.set_of_containers if c.groupage_id is None))), 
     show_choices=False)
+
+def number_containers_wide() -> int:
+    nb_available_containers_wide = len(list((str(c.id) for c in database.set_of_containers if (c.groupage_id is None) and (c.dimensions == (241, 589, 239) ))))
+    return int(click.prompt("Number of wide containers ", type=click.Choice(list(str(i) for i in range(nb_available_containers_wide+1)))))
+

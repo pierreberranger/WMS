@@ -338,7 +338,9 @@ def generate_validated_pdf_loading_plan(id_trip):
         if filename.endswith(".png"):
             y.image(f"trips/{id_trip}/{filename}", w=200)
 
-    y.output(f"output/Plan_chargement_{id_trip}.pdf", 'F')
+    if os.path.isfile("output/Plan_chargement" + f'_{id_trip}.pdf'):
+        os.remove("output/Plan_chargement" + f'_{id_trip}.pdf')
+    y.output("output/Plan_chargement" + f'_{id_trip}.pdf', 'F')
 
 def planning_incoming() :
     """ 

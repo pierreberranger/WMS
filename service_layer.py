@@ -154,3 +154,22 @@ def add_container_to_database(type_container: str) -> str:
 def del_container_from_database(container_id: str) -> None:
     container_to_del = database.set_of_containers[container_id]
     database.set_of_containers.remove(container_to_del.id)
+
+def available_containers(nb_container_wide, nb_container_standard) -> set[str]: 
+    nb_container_wide_choosen = 0
+    nb_container_standard_choosen = 0
+    available_containers = set()
+    for container_id, class_name in ((str(c.id), c.__class__.__name__) for c in database.set_of_containers if (c.groupage_id is None)):
+        
+        if (nb_container_standard_choosen == nb_container_standard) and (nb_container_wide_choosen == nb_container_wide) :
+            return available_containers
+
+        if  class_name == "ContainerPaletWide" and nb_container_wide_choosen < nb_container_wide:
+            nb_container_wide_choosen += 1
+            available_containers.add(container_id)
+
+        elif class_name == "ContainerStandard" and nb_container_standard_choosen < nb_container_standard:
+            nb_container_standard_choosen += 1
+            available_containers.add(container_id)
+        
+    

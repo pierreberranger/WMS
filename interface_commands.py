@@ -433,13 +433,10 @@ def load_trip() -> None:
 
 @home
 def select_available_containers():
-    available_containers = set()
-    for _ in range(prompt.number_containers()):
-        container_id = prompt.available_container()
-        if confirm.add_objects():
-            available_containers.add(container_id)
-        print("\n")
-    return available_containers
+    nb_container_available = prompt.number_containers_available()
+    nb_container_wide = prompt.number_containers_wide()
+    nb_container_standard = nb_container_available-nb_container_wide
+    return service_layer.available_containers(nb_container_wide, nb_container_standard)
 
 @home
 def plan_loading() -> None:
@@ -456,6 +453,7 @@ def plan_loading() -> None:
     if confirm.plan_loading():
         display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
+        container_loading.validate_trip_loading_proposal(groupage_placements)
     else :
         print("You can update the trip to have a new loading proposal. '\n'")
 
