@@ -98,6 +98,11 @@ def new_package_status() -> str:
     return click.prompt(
         "New status", default=statuses_package_namedtuple.shipbound, type=statuses_package_choices)
 
+def new_shipment_status() -> str :
+    return click.prompt(
+        "New status", default=statuses_shipment_namedtuple.warehouse, type=statuses_shipment_choices)
+
+
 def freight_forwarder() -> str:
     return click.prompt(
         "Freight_forwarder ", type=str)

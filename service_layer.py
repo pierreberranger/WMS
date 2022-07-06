@@ -89,6 +89,10 @@ def declare_shipment_actual_delivery(actual_delivery_date: datetime, shipment_id
     for package in shipment_packages:
         package.status = Package.statuses[5]
 
+def change_shipment_status(shipment_id : str, new_status: str) -> None :
+    shipment_to_change = database.set_of_shipments[shipment_id]
+    shipment_to_change.status = new_status
+
 def declare_groupage(freight_forwarder: str) -> str:
     new_groupage = Groupage(freight_forwarder)
     database.set_of_groupages.add(new_groupage)

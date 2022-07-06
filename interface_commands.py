@@ -292,6 +292,19 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
             print("\n")
 
 @home
+
+def update_status_shipment() -> None:
+    """ Change the status of a given shipment"""
+    keep_looping = True
+    while keep_looping:
+        shipment_id = prompt.shipment_id()
+        new_status = prompt.new_shipment_status()
+        if confirm.change_status(shipment_id, new_status):
+            service_layer.change_shipment_status(shipment_id, new_status)
+            keep_looping = False
+        print("\n")
+    
+@home
 def add_packages_to_a_shipment() -> None:
     """ Add packages to a shipment """
     shipment_id = prompt.shipment_id()

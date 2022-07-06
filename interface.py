@@ -165,13 +165,16 @@ def interactive():
                     interface_commands.declare_shipment()
                 
                 if action == "update":
-                    exit_delivered = click.Choice(("actual_exit", "add_packages", "del_packages", "delivered"), case_sensitive=False)
+                    exit_delivered = click.Choice(("actual_exit", "status","add_packages", "del_packages", "delivered"), case_sensitive=False)
                     answer = click.prompt("Update ", default="actual_exit", type=exit_delivered)
                     
                     if answer == "actual_exit" :
                         print("Your shipment has left the warehouse")
                         interface_commands.declare_shipment_actual_departure_from_warehouse()
                     
+                    elif answer == "status" :
+                        interface_commands.update_status_shipment()
+                        
                     elif answer == "add_packages":
                         interface_commands.add_packages_to_a_shipment()
 
