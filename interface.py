@@ -158,15 +158,12 @@ def interactive():
 
             
             elif object_focused == "shipment" :
-                declare_update = click.Choice(("declare", "update", "del", "quit", "home"), case_sensitive=False)
+                declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
                 action = click.prompt("Actions ", default="declare", type=declare_update)
                 
                 if action == "declare" :
                     interface_commands.declare_shipment()
                 
-                if action == "home" :
-                    print("\n")
-
                 if action == "update":
                     exit_delivered = click.Choice(("actual_exit", "add_packages", "del_packages", "delivered"), case_sensitive=False)
                     answer = click.prompt("Update ", default="actual_exit", type=exit_delivered)

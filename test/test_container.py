@@ -40,7 +40,7 @@ class TestContainer(unittest.TestCase):
         self.assertEqual(self.container2.set_of_packages, TypedSet(Package, [self.package1, self.package3]))
 
     def test_property_weight(self):
-        self.assertAlmostEqual(self.container1.weight, Container.empty_container_weight + self.package1.weight + self.package2.weight + self.package3.weight + self.package5.weight)
+        self.assertAlmostEqual(self.container1.weight, self.container1.tare_weight + self.package1.weight + self.package2.weight + self.package3.weight + self.package5.weight)
 
     def tearDown(self):
         database.unload()

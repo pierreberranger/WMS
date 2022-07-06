@@ -167,7 +167,7 @@ def trip_containers(trip_id: str) -> None:
 
 # Plot and save trip and container loading proposal
 
-def create_fig_container_load_output(container_ids: set, package_placements: list, groupage_id: str = None) -> None:
+def create_fig_container_load_output(container_ids: set, package_placements: list, groupage_id: str = None):
     nb_containers = len(container_ids)
     fig = plt.figure(figsize=(5*nb_containers, 7))
     plt.rc('font', **{'size': 5})
@@ -245,34 +245,70 @@ def planning_incoming() -> None:
     print("\n")
 
 def cargomanifest(id_trip):
+    trip: Trip = database.set_of_trips[id_trip]
+    containers: TypedSet(Container) = trip.set_of_containers
+
+    pdf = FPDF()
+    pdf.add_page()
+
+    pdf.set_font('courier','B', 20)
+    pdf.cell(190, 30, txt = 'Cargo Manifest', ln=2, align = 'C')
+
+    pdf.set_font('courier','B', 13)
+    pdf.cell(100, 10, txt = f'Référence du voyage : {trip.id}', ln=0)
+    pdf.cell(90, 10, txt = f'Date de départ : {str(trip.departure_date)}', align='R', ln=1)
+
+    pdf.cell(90, 10, txt = f'Port de départ : {trip.departure_port}', align='L', ln=0)
+    pdf.cell(90, 10, txt = f"Port d'arrivée : {trip.arrival_port}", align='R', ln=1)
+
+    pdf.cell(190, 10, txt = f'Poids total du voyage : {trip.weight} kg', align='L', ln=2)
+
+    pdf.cell(190, 5 , txt = f'', align='L', border='B', ln=2)
+
+
+    pdf.set_font('courier','B', 16)
+    pdf.cell(190, 20, txt = f'Contenu du voyage :', border='B', ln=1)
+
+    for container in containers:
+        pdf.set_font('courier','B', 13)
+        pdf.cell(190, 10, txt = f'  Conteneur {container.id} ({container.weight} kg)', ln=1)
+
+        pdf.set_font('courier', '', 12)
+        for package in container.set_of_packages:
+            pdf.cell(190, 5, txt = f'      - {package.description} ({package.weight} kg)', ln=1)
+        pdf.cell(5, 5, txt = f' ', ln=0)
+        pdf.cell(185, 5, txt = f' ', border='B', ln=1)
+
+    pdf.cell(190, 5, txt = f' ', border='T', ln=1)
+
+    pdf.output(f'cargo_manifest{id_trip}.pdf')
+
+def cargomanifest1(id_trip):
 
     # recovery of the packages, containers
     trip = database.set_of_trips[id_trip]
-    containers_trip = trip.set_of_containers
+    containers = trip.set_of_containers
 
-    trip_weight = trip.weight
-
-    data = ( ("Référence des conteneurs", "Description des conteneurs") )
+    data = [(["Référence des conteneurs"], ["Description des conteneurs"])]
     
-    for container in containers_trip:
-        container_description = ""
-        container_packages = container.set_of_packages
-        for package in container_packages:
-            container_description += " " + package.description
-        data += (container.id, container_description)
+    for container in containers:
+        packages_descriptions = []
+        for package in container.set_of_packages:
+            packages_descriptions.append(package.description)
+        data += ([container.id], packages_descriptions)
     
     # Writing
     pdf = FPDF()
     pdf.add_page()
 
     pdf.set_font('courier','B',16)
-    pdf.cell(200, 20, txt = 'Cargo Manifest', ln = 2, align = 'C')
+    pdf.cell(200, 20, txt = 'Cargo Manifest', ln=2, align = 'C')
 
     pdf.set_font('courier','B',12)
-    pdf.cell(200, 20, txt = f'La référence du voyage est : {trip.id}', ln = 2)
+    pdf.cell(200, 20, txt = f'La référence du voyage est : {trip.id}', ln=2)
 
     pdf.set_font('courier','B',12)
-    pdf.cell(200, 20, txt = f'Poids total du voyage : {trip_weight}', ln = 2)
+    pdf.cell(200, 20, txt = f'Poids total du voyage : {trip.weight}', ln=2)
 
 
     line_height = pdf.font_size * 2.5
@@ -283,9 +319,10 @@ def cargomanifest(id_trip):
 
     #create lh_list of line_heights which size is equal to num rows of data
     for row in data:
+        print(row)
         for datum in row:
-            word_list = datum.split()
-            number_of_words = len(word_list) #how many words
+            print(datum)
+            number_of_words = len(datum) #how many words
             if number_of_words>2: #names and cities formed by 2 words like Los Angeles are ok)
                 use_default_height = 1
                 new_line_height = pdf.font_size * (number_of_words/2) #new height change according to data 
@@ -299,7 +336,7 @@ def cargomanifest(id_trip):
     for j,row in enumerate(data):
         for datum in row:
             line_height = lh_list[j] #choose right height for current row
-            pdf.multi_cell(col_width, line_height, datum, border=1,align='L',ln=3, 
+            pdf.multi_cell(col_width, line_height, " ".join(datum), border=1,align='L',ln=3, 
             max_line_height=pdf.font_size)
         pdf.ln(line_height)
 
@@ -314,25 +351,25 @@ def generate_validated_pdf_loading_plan(id_trip):
     y.add_page()
 
     y.set_font('courier','B', 16)
-    y.cell(200, 20, txt = '', ln = 2)
+    y.cell(200, 20, txt = '', ln=2)
 
     y.set_font('courier','B', 20)
-    y.cell(200, 20, txt = f'Trip : {id_trip} ', ln = 2, align='C')
+    y.cell(200, 20, txt = f'Trip : {id_trip} ', ln=2, align='C')
 
     #y.set_font('courier','B',12)
-    #y.cell(200, 20, txt = f'Date de chargement des contanaires : {date_loading} ', ln = 2)
+    #y.cell(200, 20, txt = f'Date de chargement des contanaires : {date_loading} ', ln=2)
 
     y.set_font('courier','B', 16)
-    y.cell(200, 20, txt = '', ln = 2)
+    y.cell(200, 20, txt = '', ln=2)
 
     y.set_font('courier','B', 16)
-    y.cell(200, 20, txt = '', ln = 2)
+    y.cell(200, 20, txt = '', ln=2)
 
     y.set_font('courier','B', 16)
-    y.cell(200, 20, txt = '', ln = 2)
+    y.cell(200, 20, txt = '', ln=2)
 
     y.set_font('courier','B', 20)
-    y.cell(200, 20, txt = 'Détail du plan de chargement', ln = 2, align = 'C')
+    y.cell(200, 20, txt = 'Détail du plan de chargement', ln=2, align = 'C')
 
     for filename in os.listdir(f"trips/{id_trip}"):
         if filename.endswith(".png"):
@@ -360,14 +397,14 @@ def planning_incoming() :
 
     # Subtitle
     pdf.set_font("courier", size = 13, style="B")
-    pdf.cell(200, 20, txt = "Date : id, sender, description", ln = 2)
+    pdf.cell(200, 20, txt = "Date : id, sender, description", ln=2)
     incoming_dates = incoming_dates_list()
     for date in incoming_dates :
         for dropoff in database.set_of_dropoffs :
             
             if dropoff.arrival_date == date :
                 pdf.set_font("courier", size = 9) 
-                pdf.cell(200, 10, txt = f"{date} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln = 2)
+                pdf.cell(200, 10, txt = f"{date} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln=2)
 
     # save the pdf
     pdf.output("output/planning.pdf")
