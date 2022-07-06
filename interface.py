@@ -109,7 +109,7 @@ def interactive():
 
                 if action == "pdf":
                     documents = click.Choice(
-                    ("cargomanifest", "Incoming", "Outputs"), case_sensitive=False)
+                    ("cargomanifest", "Incoming"), case_sensitive=False)
                     document_generated = click.prompt("Document you want to generate ", default="Incoming", type=documents)
 
                     if document_generated == "Incoming":
@@ -119,9 +119,6 @@ def interactive():
                     elif document_generated == "cargomanifest":
                         trip_id = prompt.trip_id()
                         display.cargomanifest(trip_id)
-
-                    elif document_generated == "Outputs":
-                        pass
 
             elif object_focused == "dropoff" :
                 declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
@@ -174,7 +171,7 @@ def interactive():
                     
                     elif answer == "status" :
                         interface_commands.update_status_shipment()
-                        
+
                     elif answer == "add_packages":
                         interface_commands.add_packages_to_a_shipment()
 

@@ -440,7 +440,7 @@ def load_trip() -> None:
 
     trip_id = prompt.trip_id()
     service_layer.load_packages_in_trip(trip_id)
-    print("Packages status changed")
+    print("Packages and Shipments status changed")
     
     print("\n")
 

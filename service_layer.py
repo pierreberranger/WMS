@@ -119,13 +119,14 @@ def del_trip(trip_id: str) -> None:
 
 def load_packages_in_trip(trip_id: str) -> None:
     trip_packages = TypedSet(Package)
+    trip_shipments = TypedSet(Shipment)
     trip = database.set_of_trips[trip_id]
     for groupage in trip.set_of_groupages:
         for shipment in groupage.set_of_shipments:
+            shipment.status = Shipment.statuses[2]
             for package in shipment.set_of_packages:
-                trip_packages.add(package)
-    for package in trip_packages :
-        package.status = Package.statuses[3]
+                package.status = Package.statuses[3]
+        
 
 def weight_trip(trip_id: str) -> float:
     trip = database.set_of_trips[trip_id]
