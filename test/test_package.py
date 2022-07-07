@@ -1,7 +1,7 @@
 import unittest
 
 from models import Package, Dimensions, packages_ids
-import pickle_data as data
+import data.pickle_data as data
 
 class TestPackages(unittest.TestCase):
 

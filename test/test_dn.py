@@ -1,6 +1,6 @@
 import unittest
 import datetime
-import dn
+import container_optimisation.dn as dn
 
 class TestHarbourDuesCalculationMethods(unittest.TestCase):
 	def test_ratio_reduction(self):

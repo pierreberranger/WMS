@@ -5,7 +5,7 @@ from interface.display import show_fig
 import data.pickle_data as database
 
 
-TEST_DATA_FILE = 'testdata_loading'
+TEST_DATA_FILE = 'test/testdata_loading'
 database.load(TEST_DATA_FILE)
 
 

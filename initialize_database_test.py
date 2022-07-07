@@ -6,7 +6,13 @@ from models import Package, Shipment, ContainerStandard, ContainerPaletWide, Con
 # 'test/filename_test.txt'
 # 'testdata_loading'
 # 'database.txt'
-database.load("database.txt")
+database.load("data/database.txt")
+
+files = ["MAX_ID_Containers.txt", "MAX_ID_Packages.txt", "MAX_ID_Groupages.txt", "MAX_ID_Shipments.txt", "MAX_ID_Trips.txt", "MAX_ID_DropOffs.txt"]
+
+for file in files:
+    with open(f"data/{file}", "w") as f:
+        f.write("0")
 
 dimensions_euro_palet = Dimensions(120, 80, 10)
 

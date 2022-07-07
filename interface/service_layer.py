@@ -6,7 +6,7 @@ from copy import deepcopy
 
 
 def load():
-    filename = "database.txt"
+    filename = "data/database.txt"
     database.load(filename)
 
 def save_and_quit():
