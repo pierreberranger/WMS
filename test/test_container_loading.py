@@ -1,8 +1,8 @@
 from models import Dimensions, Groupage, Package, Shipment, TypedSet, ContainerPaletWide, ContainerStandard, Container
 
 from container_optimisation.container_loading import container_loading
-from display import show_fig
-import pickle_data as database
+from interface.display import show_fig
+import data.pickle_data as database
 
 
 TEST_DATA_FILE = 'testdata_loading'
