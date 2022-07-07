@@ -8,7 +8,7 @@ def interactive():
     in_out = True
     print("Welcome ! \n")
     print("This plateform allows you to manage your packages within many actions")
-    print("If you want to quit, input [quit] \n")
+    print()
 
     while (in_out):
 
