@@ -66,7 +66,7 @@ def set_of_containers(set_of_containers: TypedSet(Container) = None) -> None:
     if set_of_containers is None:
         set_of_containers = database.set_of_containers
     base = "{:<10}|{:<25}"
-    header = base.format('id', 'groupage_id')
+    header = base.format('id', 'container_id')
     print(header)
     print('='*len(header))
     for container in set_of_containers:
