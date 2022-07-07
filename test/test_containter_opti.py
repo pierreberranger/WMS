@@ -1,8 +1,8 @@
 import unittest
 
-import pickle_data as database
+import data.pickle_data as database
 from models import Dimensions, Package
-from container_opti import define_positions, package_extrema 
+from container_optimisation.container_opti import define_positions, package_extrema 
 
 
 class TestOptimisation(unittest.TestCase):

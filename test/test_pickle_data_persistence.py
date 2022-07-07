@@ -1,6 +1,6 @@
 import unittest
 
-import pickle_data as database
+import data.pickle_data as database
 from pickle import dump
 
 from models import Package, Shipment, TypedSet, Container, Groupage, Trip, DropOff

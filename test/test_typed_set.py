@@ -1,7 +1,7 @@
 import unittest
 
 from models import TypedSet, Shipment, Package
-import pickle_data as database
+import data.pickle_data as database
 
 class TestTypedSet(unittest.TestCase):
 

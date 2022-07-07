@@ -2,14 +2,13 @@
 wms/
 env_nostos/
 
-
-database.txt
+*MAX_ID*
+data/database.txt
 test/testdata
 test/filename_text.txt
-testdata_loading
+test/testdata_loading
 .DS_Store
 output/*
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
