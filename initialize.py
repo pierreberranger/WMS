@@ -1,8 +1,7 @@
 from pickle import dump
-import os
-print(os.path.abspath('.'))
+import os, shutil
 from models import Package, Shipment, Container, Groupage, Trip, TypedSet, DropOff
-
+path = "output/trips"
 files = ["MAX_ID_Containers.txt", "MAX_ID_Packages.txt", "MAX_ID_Groupages.txt", "MAX_ID_Shipments.txt", "MAX_ID_Trips.txt", "MAX_ID_DropOffs.txt"]
 
 
@@ -23,3 +22,6 @@ for file in datafiles:
         TypedSet(Container),
         TypedSet(Groupage), 
         TypedSet(Trip)), f)
+
+for folder in os.listdir(path):
+    shutil.rmtree(f"{path}/{folder}")
