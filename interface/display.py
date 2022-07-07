@@ -396,16 +396,23 @@ def planning_incoming() :
     pdf.set_font('courier','B',16)
     pdf.cell(200, 20, txt = 'Planning of the arrivals of droppoffs', ln=2, align = 'C')
 
-    # Subtitle
-    pdf.set_font("courier", size = 13, style="B")
-    pdf.cell(200, 20, txt = "Date : id, sender, description", ln=2)
     incoming_dates = incoming_dates_list()
-    for date in incoming_dates :
+    pdf.cell(190, 5, txt = f' ', border='T', ln=1)
+
+    for date in list(set(incoming_dates)) :
         for dropoff in database.set_of_dropoffs :
             
             if dropoff.arrival_date == date :
-                pdf.set_font("courier", size = 9) 
-                pdf.cell(200, 10, txt = f"{date.strftime('%Y-%m-%d %H:%M')} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln=2)
+                
+                pdf.set_font('courier','B', 13)
+                pdf.cell(190, 10, txt = f"  {date.strftime('%Y-%m-%d %H:%M')} | Dropoff {dropoff.id} (from {dropoff.sender}, {dropoff.description})", ln=1)
+
+                pdf.set_font('courier', '', 12)
+                for package in dropoff.set_of_packages:
+                    pdf.cell(190, 5, txt = f'      - {package.description} ({package.shipment_id})', ln=1)
+                pdf.cell(5, 5, txt = f' ', ln=0)
+                pdf.cell(185, 5, txt = f' ', border='B', ln=1)
+
 
     # save the pdf
     pdf.output("output/planning.pdf")
