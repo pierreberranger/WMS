@@ -1,6 +1,6 @@
 from typing import Tuple
 from models import Groupage, Container, Package, Shipment, Dimensions, Trip
-import pickle_data as database
+import data.pickle_data as database
 from matplotlib import pyplot as plt
 
 from rectpack import newPacker, SkylineMwfl, GuillotineBssfSas, MaxRectsBaf, SkylineBlWm

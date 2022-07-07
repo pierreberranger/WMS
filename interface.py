@@ -1,7 +1,6 @@
 import click
 
-import prompt, interface_commands
-import display
+from interface import prompt, interface_commands, display
 
 interface_commands.load()
 

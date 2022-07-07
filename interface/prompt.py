@@ -1,9 +1,9 @@
 import click
-import pickle_data as database
+import data.pickle_data as database
 from datetime import datetime
 
 from models import Dimensions
-from available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
+from interface.available_choices import statuses_package_choices, statuses_shipment_choices, statuses_dropoff_choices, package_types_choices, statuses_package_namedtuple, statuses_shipment_namedtuple, statuses_dropoff_namedtuple, package_types_namedtuple
 
 # informations given by the user
 
