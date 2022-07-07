@@ -71,10 +71,10 @@ def package_information(object) -> dict:
     weight = click.prompt("Weight", type=float)
     if object == "package":
         status = click.prompt(
-            "status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
+            "Status", default=statuses_package_namedtuple.warehouse, type=statuses_package_choices)
     elif object == "shipment":
         status = click.prompt(
-            "status", default=statuses_shipment_namedtuple.inbound, type=statuses_shipment_choices)
+            "Status", default=statuses_shipment_namedtuple.inbound, type=statuses_shipment_choices)
     package_type = click.prompt(
         "Package Type", default=package_types_namedtuple.EPAL, type=package_types_choices)
     return {"dimensions": dimensions, "weight": weight, "status": status, "package_type": package_type, "description": description}
@@ -98,13 +98,21 @@ def new_package_status() -> str:
     return click.prompt(
         "New status", default=statuses_package_namedtuple.shipbound, type=statuses_package_choices)
 
+def new_shipment_status() -> str :
+    return click.prompt(
+        "New status", default=statuses_shipment_namedtuple.warehouse, type=statuses_shipment_choices)
+
+
 def freight_forwarder() -> str:
     return click.prompt(
         "Freight_forwarder ", type=str)
 
 def ship_name() -> str:
     return click.prompt(
-        "Ship Name ", default="Nostos Marine Ship", type=str)
+        "Ship Name ", default="Southern Liner", type=str)
+
+def departure_date() -> datetime:
+    return date("Departure date")
 
 def number_packages() -> int:
     return click.prompt("Number of packages ", type=int)
@@ -130,7 +138,7 @@ def number_containers() -> int:
 def number_containers_available() -> int:
     nb_available_containers = len(list((str(c.id) for c in database.set_of_containers if c.groupage_id is None)))
     nb_available_containers_standard = len(list((str(c.id) for c in database.set_of_containers if (c.groupage_id is None) and (c.dimensions == (235, 589, 239) ))))
-    nb_available_containers_wide = nb_available_containers-nb_available_containers_standard
+    nb_available_containers_wide = nb_available_containers - nb_available_containers_standard
     print(f"There are {nb_available_containers} available with {nb_available_containers_standard} standard containers and {nb_available_containers_wide} wide containers")
     return int(click.prompt("Number of containers ", type=click.Choice([str(i) for i in range(nb_available_containers+1)])))
 

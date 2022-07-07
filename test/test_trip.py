@@ -20,7 +20,7 @@ class TestTrip(unittest.TestCase):
         self.groupage = Groupage("transporter", TypedSet(Shipment, [self.shipment]), TypedSet(Container, [self.container1, self.container2]), trip_id=None)
         self.groupage1 = Groupage(None, TypedSet(Shipment), TypedSet(Container))
         database.set_of_groupages = TypedSet(Groupage, [self.groupage, self.groupage1])
-        self.trip1 = Trip(None, TypedSet(Groupage, [self.groupage]))
+        self.trip1 = Trip(None, None, set_of_groupages=TypedSet(Groupage, [self.groupage]))
         self.trip2 = Trip(None, None)
         database.set_of_trips = TypedSet(Trip, [self.trip1, self.trip2])
 
@@ -28,7 +28,7 @@ class TestTrip(unittest.TestCase):
         self.assertEqual(self.groupage.trip_id, self.trip1.id)
 
     def test_eq(self):
-        other_trip = Trip(None, TypedSet(Groupage, [self.groupage]))
+        other_trip = Trip(None, None, set_of_groupages=TypedSet(Groupage, [self.groupage]))
         self.assertFalse(other_trip == self.trip1)
         other_trip.id = self.trip1.id
         self.assertTrue(other_trip == self.trip1)

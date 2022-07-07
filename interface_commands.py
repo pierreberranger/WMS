@@ -1,14 +1,12 @@
 import click
 
 import confirm, prompt, service_layer, echo
-from models import Container
 
 import display
 
 import container_optimisation.container_loading as container_loading
 
-def home (prompt_function):
-
+def home(prompt_function):
     def decorated_function(* args, ** kwargs):
         try :
             return prompt_function(* args, ** kwargs)
@@ -16,7 +14,6 @@ def home (prompt_function):
             click.echo("\nBack to the menu")
             print("\n")
             return
-
     return decorated_function
         
 
@@ -79,7 +76,7 @@ def add_packages_to_database() -> None:
                         packages_id_of_this_reference.add(new_package_id)
 
                     echo.ids(packages_id_of_this_reference)   
-
+                    print()
 @home
 def del_packages_from_database() -> None:
     """Deletes N packages from the database by asking their id to the user.
@@ -295,6 +292,19 @@ def register_packages_in_an_shipment(shipment_id: str) -> None: # fonction desti
             print("\n")
 
 @home
+
+def update_status_shipment() -> None:
+    """ Change the status of a given shipment"""
+    keep_looping = True
+    while keep_looping:
+        shipment_id = prompt.shipment_id()
+        new_status = prompt.new_shipment_status()
+        if confirm.change_status(shipment_id, new_status):
+            service_layer.change_shipment_status(shipment_id, new_status)
+            keep_looping = False
+        print("\n")
+    
+@home
 def add_packages_to_a_shipment() -> None:
     """ Add packages to a shipment """
     shipment_id = prompt.shipment_id()
@@ -396,7 +406,8 @@ def del_groupages() :
 @home
 def declare_trip(): 
     ship_name = prompt.ship_name()
-    trip_id = service_layer.declare_trip(ship_name)
+    departure_date = prompt.departure_date()
+    trip_id = service_layer.declare_trip(ship_name, departure_date)
     for _ in range(prompt.number_groupages()):
         keep_looping = True
         while keep_looping:
@@ -429,7 +440,7 @@ def load_trip() -> None:
 
     trip_id = prompt.trip_id()
     service_layer.load_packages_in_trip(trip_id)
-    print("Packages status changed")
+    print("Packages and Shipments status changed")
     
     print("\n")
 
@@ -437,25 +448,27 @@ def load_trip() -> None:
 def select_available_containers():
     nb_container_available = prompt.number_containers_available()
     nb_container_wide = prompt.number_containers_wide()
-    nb_container_standard = nb_container_available-nb_container_wide
+    nb_container_standard = nb_container_available - nb_container_wide
     return service_layer.available_containers(nb_container_wide, nb_container_standard)
 
+@home
 def plan_loading() -> None:
     """
-    Proposes a plan of loading of a particular trip 
-    Generates the pdf associated
+    Proposes a plan to load a particular trip 
+    Generates the associated pdf
     """
     
     trip_id = prompt.trip_id()
     available_containers = select_available_containers()
     groupage_placements = container_loading.trip_loading(trip_id, available_containers)
-    click.echo(f"We propose you the plannification for the load of the trip n°{trip_id} '\n' look at the pdf associated to your trip in the outuput file before validate")
-    if confirm.plan_loading() :
+    display.plot_trip_loading_proposal(groupage_placements)
+    click.echo(f"We propose the following plannification to load the trip n°{trip_id}")
+    if confirm.plan_loading():
         display.save_trip_loading_proposal(groupage_placements, trip_id)
         display.generate_validated_pdf_loading_plan(trip_id)
         container_loading.validate_trip_loading_proposal(groupage_placements)
     else :
-        print("You can update the trip to have a new proposal for the load. '\n'")
+        print("You can update the trip to have a new loading proposal. '\n'")
 
 @home
 def add_groupage_to_a_trip():
@@ -476,7 +489,7 @@ def del_groupage_from_a_trip():
         while keep_looping:
             groupage_id = prompt.groupage_id()
             if confirm.del_objects():
-                service_layer.del_groupage_from_trip(groupage_id)
+                service_layer.del_groupage_from_trip(trip_id, groupage_id)
                 keep_looping = False
         print("\n")
 

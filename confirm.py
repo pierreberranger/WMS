@@ -30,7 +30,8 @@ def package_reference_by_id_and_amount(package_id: str, number_of_packages: int)
 
 def change_status(identity, newstatus) -> bool:
     return click.confirm(
-        f"You want to change the status of package {identity} to {newstatus}")
+        f"You want to change the status of {identity} to {newstatus}",
+        default=True)
 
 def del_objects() -> bool:
     return click.confirm(

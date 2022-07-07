@@ -89,6 +89,10 @@ def declare_shipment_actual_delivery(actual_delivery_date: datetime, shipment_id
     for package in shipment_packages:
         package.status = Package.statuses[5]
 
+def change_shipment_status(shipment_id : str, new_status: str) -> None :
+    shipment_to_change = database.set_of_shipments[shipment_id]
+    shipment_to_change.status = new_status
+
 def declare_groupage(freight_forwarder: str) -> str:
     new_groupage = Groupage(freight_forwarder)
     database.set_of_groupages.add(new_groupage)
@@ -98,8 +102,8 @@ def add_shipment_to_a_groupage(groupage_id: str, shipment_id: str) -> None:
     shipment_to_add = database.set_of_shipments[shipment_id]
     shipment_to_add.groupage_id = groupage_id
 
-def declare_trip(ship_name: str) -> str:
-    new_trip = Trip(ship_name)
+def declare_trip(ship_name: str, departure_date: datetime) -> str:
+    new_trip = Trip(ship_name, departure_date)
     database.set_of_trips.add(new_trip)
     return new_trip.id
     
@@ -115,13 +119,14 @@ def del_trip(trip_id: str) -> None:
 
 def load_packages_in_trip(trip_id: str) -> None:
     trip_packages = TypedSet(Package)
+    trip_shipments = TypedSet(Shipment)
     trip = database.set_of_trips[trip_id]
     for groupage in trip.set_of_groupages:
         for shipment in groupage.set_of_shipments:
+            shipment.status = Shipment.statuses[2]
             for package in shipment.set_of_packages:
-                trip_packages.add(package)
-    for package in trip_packages :
-        package.status = Package.statuses[3]
+                package.status = Package.statuses[3]
+        
 
 def weight_trip(trip_id: str) -> float:
     trip = database.set_of_trips[trip_id]
@@ -138,9 +143,11 @@ def add_groupage_to_trip(trip_id: str, groupage_id: str) -> None:
     groupage_to_add = database.set_of_groupages[groupage_id]
     groupage_to_add.trip_id = trip_id
 
-def del_groupage_from_trip(groupage_id: str) -> None:
+def del_groupage_from_trip(trip_id: str, groupage_id: str) -> None:
+    """Deletes a groupage from a trip if it belonged to the given trip"""
     groupage_to_del = database.set_of_groupages[groupage_id]
-    groupage_to_del.trip_id = None
+    if trip_id == groupage_to_del.trip_id:
+        groupage_to_del.trip_id = None
 
 def add_container_to_database(type_container: str) -> str:
     if type_container == "standard" :
@@ -155,15 +162,11 @@ def del_container_from_database(container_id: str) -> None:
     container_to_del = database.set_of_containers[container_id]
     database.set_of_containers.remove(container_to_del.id)
 
-def available_containers(nb_container_wide, nb_container_standard) -> set[str]: 
+def available_containers(nb_container_wide, nb_container_standard) -> set[str]:
     nb_container_wide_choosen = 0
     nb_container_standard_choosen = 0
     available_containers = set()
     for container_id, class_name in ((str(c.id), c.__class__.__name__) for c in database.set_of_containers if (c.groupage_id is None)):
-        
-        if (nb_container_standard_choosen == nb_container_standard) and (nb_container_wide_choosen == nb_container_wide) :
-            return available_containers
-
         if  class_name == "ContainerPaletWide" and nb_container_wide_choosen < nb_container_wide:
             nb_container_wide_choosen += 1
             available_containers.add(container_id)
@@ -171,5 +174,6 @@ def available_containers(nb_container_wide, nb_container_standard) -> set[str]:
         elif class_name == "ContainerStandard" and nb_container_standard_choosen < nb_container_standard:
             nb_container_standard_choosen += 1
             available_containers.add(container_id)
-        
-    
+
+        if (nb_container_standard_choosen == nb_container_standard) and (nb_container_wide_choosen == nb_container_wide):
+            return available_containers

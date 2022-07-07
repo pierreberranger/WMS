@@ -1,4 +1,3 @@
-from pydoc import doc
 import click
 
 import prompt, interface_commands
@@ -110,7 +109,7 @@ def interactive():
 
                 if action == "pdf":
                     documents = click.Choice(
-                    ("cargomanifest", "Incoming", "Outputs"), case_sensitive=False)
+                    ("cargomanifest", "Incoming"), case_sensitive=False)
                     document_generated = click.prompt("Document you want to generate ", default="Incoming", type=documents)
 
                     if document_generated == "Incoming":
@@ -120,9 +119,6 @@ def interactive():
                     elif document_generated == "cargomanifest":
                         trip_id = prompt.trip_id()
                         display.cargomanifest(trip_id)
-
-                    elif document_generated == "Outputs":
-                        pass
 
             elif object_focused == "dropoff" :
                 declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
@@ -159,23 +155,23 @@ def interactive():
 
             
             elif object_focused == "shipment" :
-                declare_update = click.Choice(("declare", "update", "del", "quit", "home"), case_sensitive=False)
+                declare_update = click.Choice(("declare", "update", "del", "quit"), case_sensitive=False)
                 action = click.prompt("Actions ", default="declare", type=declare_update)
                 
                 if action == "declare" :
                     interface_commands.declare_shipment()
                 
-                if action == "home" :
-                    print("\n")
-
                 if action == "update":
-                    exit_delivered = click.Choice(("actual_exit", "add_packages", "del_packages", "delivered"), case_sensitive=False)
+                    exit_delivered = click.Choice(("actual_exit", "status","add_packages", "del_packages", "delivered"), case_sensitive=False)
                     answer = click.prompt("Update ", default="actual_exit", type=exit_delivered)
                     
                     if answer == "actual_exit" :
                         print("Your shipment has left the warehouse")
                         interface_commands.declare_shipment_actual_departure_from_warehouse()
                     
+                    elif answer == "status" :
+                        interface_commands.update_status_shipment()
+
                     elif answer == "add_packages":
                         interface_commands.add_packages_to_a_shipment()
 

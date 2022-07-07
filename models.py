@@ -75,13 +75,11 @@ class TypedSet(set):
         else:
             raise TypeError(f"Expected type: {self.cls_name}")
 
-    def union(self, other=None):
+    def union(self, *other):
         if other is None:
             return self
-        if not (issubclass(self.cls, other.cls) or issubclass(other.cls, self.cls)):
-            raise TypeError(f"Both TypedSet must be of the same class ({self.cls_name} different from {other.cls_name})")
-        return TypedSet(self.cls, set().union(self, other))
-        
+        return TypedSet(self.cls, set().union(self, *other))
+
 
 class Package():
     statuses = ('inbound', 'warehouse', 'shipbound', 'shipped', 'transporter', 'delivered')
@@ -290,16 +288,15 @@ class Groupage:
         return self.id == other.id
 
 class Container:
-    
-    empty_container_weight = 3800
 
-    def __init__(self, set_of_packages: TypedSet = None, dimensions: Dimensions = None, groupage_id: int = None) -> None:
+    def __init__(self, set_of_packages: TypedSet = None, dimensions: Dimensions = None, tare_weight: float=2300, groupage_id: int = None) -> None:
         self.id: str = f"C{next(containers_ids)}"
         if not(set_of_packages is None):
             for package in set_of_packages:
                 package.container_id = self.id
         self.dimensions = dimensions
         self.groupage_id = groupage_id
+        self.tare_weight = tare_weight
     
     @property
     def set_of_packages(self) -> TypedSet:
@@ -320,7 +317,7 @@ class Container:
 
     @property
     def weight(self) -> float:
-        return sum(package.weight for package in self.set_of_packages) + Container.empty_container_weight
+        return sum(package.weight for package in self.set_of_packages) + self.tare_weight
 
     @property
     def area(self):
@@ -336,23 +333,28 @@ class Container:
 class ContainerPaletWide(Container):
 
     def __init__(self, set_of_packages: TypedSet = None, groupage_id: int = None) -> None:
-        super().__init__(set_of_packages, dimensions=Dimensions(241, 589, 239), groupage_id=groupage_id)
+        super().__init__(set_of_packages, dimensions=Dimensions(241, 589, 239), tare_weight= 2400, groupage_id=groupage_id)
     
-
-
 class ContainerStandard(Container):
 
     def __init__(self, set_of_packages: TypedSet = None, groupage_id: int = None) -> None:
-        super().__init__(set_of_packages, dimensions=Dimensions(235, 589, 239), groupage_id=groupage_id)
+        super().__init__(set_of_packages, dimensions=Dimensions(235, 589, 239), tare_weight= 2300, groupage_id=groupage_id)
+
 
 class Trip:
     
-    def __init__(self, ship_name: str, set_of_groupages: TypedSet = None) -> None:
+    def __init__(self, ship_name: str, departure_date: datetime, 
+                departure_port: str="Saint-Malo", arrival_port: str="Jersey", 
+                set_of_groupages: TypedSet=None) -> None:
         self.id: str = f"T{next(trips_ids)}"
         if not(set_of_groupages is None):
             for groupage in set_of_groupages:
                 groupage.trip_id = self.id
         self.ship_name = ship_name
+        self.departure_date = departure_date
+        self.departure_port = departure_port
+        self.arrival_port = arrival_port
+
     
     @property
     def set_of_groupages(self) -> TypedSet:
