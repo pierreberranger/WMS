@@ -8,7 +8,7 @@ Aller dans le terminal et le fichier wms
 
 Installer tous les outils nécessaires : `Pip3 install –r requirements.txt`
 
-Initialiser la database : `Python3 initialize_database.py` (crée une database vide) 
+Initialiser la database : `Python3 initialize.py` (crée une database vide) 
 
 Lancer l’interface : `Python3 interface.py`
 
