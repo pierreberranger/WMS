@@ -52,7 +52,7 @@ def date(name_date: str) -> datetime:
         
         if len(date) == 0:
             print(today)
-            return today
+            return datetime.strptime(today, "%Y-%m-%d %H:%M")
         try:
             date = datetime.strptime(date, "%Y-%m-%d %H:%M")
         except:
