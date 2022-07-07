@@ -1,6 +1,6 @@
 from datetime import datetime
 from pickle import dump
-from models import Package, Shipment, ContainerStandard, ContainerPaletWide, Container, Groupage, Trip, TypedSet, DropOff, database, Dimensions
+from .. models import Package, Shipment, ContainerStandard, ContainerPaletWide, Container, Groupage, Trip, TypedSet, DropOff, database, Dimensions
 
 # 'test/testdata'
 # 'test/filename_test.txt'
