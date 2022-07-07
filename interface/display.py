@@ -6,6 +6,7 @@ from fpdf import FPDF
 import os
 from matplotlib import pyplot as plt
 import click
+from datetime import datetime
 
 
 def set_of_packages(set_of_packages: TypedSet(Package) = None) -> None:
@@ -40,7 +41,7 @@ def set_of_dropoffs(set_of_dropoffs: TypedSet(DropOff) = None) -> None:
     print('='*len(header))
     for dropoff in set_of_dropoffs:
         print(base.format(dropoff.id, dropoff.description, dropoff.sender,
-              dropoff.status, dropoff.arrival_date))
+              dropoff.status, dropoff.arrival_date.strftime("%Y-%m-%d %H:%M")))
 
 def set_of_trips(set_of_trips: TypedSet(Trip) = None) -> None:
     if set_of_trips is None:
@@ -226,7 +227,7 @@ def incoming_dates_list() -> list:
     incoming_dates = []
     for dropoff in database.set_of_dropoffs:
         incoming_dates.append(dropoff.arrival_date)
-    incoming_dates.sort(key=lambda x: time.mktime(time.strptime(x,"%Y-%m-%d %H:%M")))
+    incoming_dates.sort()
     return incoming_dates
 
 def planning_incoming() -> None:
@@ -392,8 +393,8 @@ def planning_incoming() :
     pdf.set_margins(10, 10, 10)
 
     # Title
-    pdf.set_font("courier", size = 15)
-    pdf.cell(100, 10, txt = "Planning of the arrivals of droppoffs", ln = 1, align ='C', border=1)
+    pdf.set_font('courier','B',16)
+    pdf.cell(200, 20, txt = 'Planning of the arrivals of droppoffs', ln=2, align = 'C')
 
     # Subtitle
     pdf.set_font("courier", size = 13, style="B")
@@ -404,7 +405,7 @@ def planning_incoming() :
             
             if dropoff.arrival_date == date :
                 pdf.set_font("courier", size = 9) 
-                pdf.cell(200, 10, txt = f"{date} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln=2)
+                pdf.cell(200, 10, txt = f"{date.strftime('%Y-%m-%d %H:%M')} : {dropoff.id}, {dropoff.sender}, {dropoff.description}", ln=2)
 
     # save the pdf
     pdf.output("output/planning.pdf")
