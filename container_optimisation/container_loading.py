@@ -1,6 +1,6 @@
 from typing import Tuple
 from models import Groupage, Container, Package, Shipment, Dimensions, Trip
-import pickle_data as database
+import data.pickle_data as database
 from matplotlib import pyplot as plt
 
 from rectpack import newPacker, SkylineMwfl, GuillotineBssfSas, MaxRectsBaf, SkylineBlWm
@@ -60,5 +60,6 @@ def validate_container_loading_proposal(package_placements: list) -> None:
 def validate_trip_loading_proposal(groupage_placements: dict) -> None:
     for groupage_id, (containers_id, package_placements) in groupage_placements.items():
         for container_id in containers_id:
-            database.set_of_containers[container_id].groupage_id = groupage_id
+            container =  database.set_of_containers[container_id]
+            container.groupage_id = groupage_id
         validate_container_loading_proposal(package_placements)

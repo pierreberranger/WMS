@@ -1,6 +1,6 @@
 from models import DropOff, TypedSet, Shipment, Package, Trip, Groupage, Container
 import time
-from service_layer import database
+from interface.service_layer import database
 
 from fpdf import FPDF
 import os
@@ -66,7 +66,7 @@ def set_of_containers(set_of_containers: TypedSet(Container) = None) -> None:
     if set_of_containers is None:
         set_of_containers = database.set_of_containers
     base = "{:<10}|{:<25}"
-    header = base.format('id', 'groupage_id')
+    header = base.format('id', 'container_id')
     print(header)
     print('='*len(header))
     for container in set_of_containers:
@@ -212,13 +212,13 @@ def plot_trip_loading_proposal(groupage_placements: dict) -> None:
         plt.show()
 
 def save_trip_loading_proposal(groupage_placements: dict, trip_id: str) -> None:
-    if os.path.isdir(f"trips/{trip_id}"):
+    if os.path.isdir(f"output/trips/{trip_id}"):
         raise KeyError("This trip has already been loaded, please delete the corresponding directory if you want to load it again")
-    os.mkdir(f"trips/{trip_id}")
+    os.mkdir(f"output/trips/{trip_id}")
     for groupage_id, (containers_id, package_placements) in groupage_placements.items():
         for container_id in containers_id:
             _ = create_fig_container_load_output(set([container_id]), package_placements, groupage_id)
-            plt.savefig(f"trips/{trip_id}/{container_id}.png", dpi=300)
+            plt.savefig(f"output/trips/{trip_id}/{container_id}.png", dpi=300)
 
 
 
@@ -281,7 +281,7 @@ def cargomanifest(id_trip):
 
     pdf.cell(190, 5, txt = f' ', border='T', ln=1)
 
-    pdf.output(f'cargo_manifest{id_trip}.pdf')
+    pdf.output(f'output/trips/{id_trip}/cargo_manifest{id_trip}.pdf')
 
 def cargomanifest1(id_trip):
 
@@ -340,7 +340,7 @@ def cargomanifest1(id_trip):
             max_line_height=pdf.font_size)
         pdf.ln(line_height)
 
-    pdf.output(f'cargo_manifest{id_trip}.pdf')
+    pdf.output(f'output/trips/{id_trip}/cargo_manifest{id_trip}.pdf')
 
 def generate_validated_pdf_loading_plan(id_trip):
 
@@ -371,13 +371,13 @@ def generate_validated_pdf_loading_plan(id_trip):
     y.set_font('courier','B', 20)
     y.cell(200, 20, txt = 'Détail du plan de chargement', ln=2, align = 'C')
 
-    for filename in os.listdir(f"trips/{id_trip}"):
+    for filename in os.listdir(f"output/trips/{id_trip}"):
         if filename.endswith(".png"):
-            y.image(f"trips/{id_trip}/{filename}", w=200)
+            y.image(f"output/trips/{id_trip}/{filename}", w=200)
 
-    if os.path.isfile("output/Plan_chargement" + f'_{id_trip}.pdf'):
-        os.remove("output/Plan_chargement" + f'_{id_trip}.pdf')
-    y.output("output/Plan_chargement" + f'_{id_trip}.pdf', 'F')
+    if os.path.isfile(f"output/trips/{id_trip}/Plan_chargement_T{id_trip}.pdf"):
+        os.remove(f"output/trips/{id_trip}/Plan_chargement_T{id_trip}.pdf")
+    y.output(f"output/trips/{id_trip}/Plan_chargement_{id_trip}.pdf", 'F')
 
 def planning_incoming() :
     """ 

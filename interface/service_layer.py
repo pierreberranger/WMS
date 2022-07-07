@@ -1,6 +1,6 @@
 from datetime import datetime
 from models import Package, Shipment, DropOff, Groupage, Trip, TypedSet, ContainerPaletWide, ContainerStandard
-import pickle_data as database
+import data.pickle_data as database
 
 from copy import deepcopy
 

@@ -1,8 +1,7 @@
 import click
 
-import confirm, prompt, service_layer, echo
+from interface import confirm, prompt, service_layer, echo, display
 
-import display
 
 import container_optimisation.container_loading as container_loading
 

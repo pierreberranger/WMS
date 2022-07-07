@@ -3,8 +3,8 @@ from datetime import datetime
 from copy import deepcopy
 
 Dimensions = namedtuple("Dimensions", "width length height")
-from pickle_data import with_save
-import pickle_data as database
+from data.pickle_data import with_save
+import data.pickle_data as database
 
 class FileIDGenerator:
     def __init__(self, filename: str):
@@ -19,12 +19,12 @@ class FileIDGenerator:
         return next_id
 
 
-shipments_ids = FileIDGenerator("MAX_ID_Shipments.txt")
-packages_ids = FileIDGenerator("MAX_ID_Packages.txt")
-dropoff_ids = FileIDGenerator("MAX_ID_DropOffs.txt")
-groupages_ids = FileIDGenerator("MAX_ID_Groupages.txt")
-containers_ids = FileIDGenerator("MAX_ID_Containers.txt")
-trips_ids = FileIDGenerator("MAX_ID_Trips.txt")
+shipments_ids = FileIDGenerator("data/MAX_ID_Shipments.txt")
+packages_ids = FileIDGenerator("data/MAX_ID_Packages.txt")
+dropoff_ids = FileIDGenerator("data/MAX_ID_DropOffs.txt")
+groupages_ids = FileIDGenerator("data/MAX_ID_Groupages.txt")
+containers_ids = FileIDGenerator("data/MAX_ID_Containers.txt")
+trips_ids = FileIDGenerator("data/MAX_ID_Trips.txt")
 
 
 class TypedSet(set):
