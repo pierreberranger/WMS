@@ -12,6 +12,8 @@ Initialiser la database : `Python3 initialize.py` (crée une database vide)
 
 Lancer l’interface : `Python3 interface.py`
 
+Lancer les tests : `Python3 -m unittest -v`
+
 ## Modèle 
 
 - **Package** : paquets dont on peut suivre l’avancement (palettes, …) 

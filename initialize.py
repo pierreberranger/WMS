@@ -24,5 +24,5 @@ for file in datafiles:
         TypedSet(Trip)), f)
 
 for folder in os.listdir(path):
-    if folder[0] != "." :
+    if folder[0] != "." :  #folder not hidden
         shutil.rmtree(f"{path}/{folder}")
