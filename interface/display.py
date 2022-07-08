@@ -399,7 +399,7 @@ def planning_incoming() :
     incoming_dates = incoming_dates_list()
     pdf.cell(190, 5, txt = f' ', border='T', ln=1)
 
-    for date in list(set(incoming_dates)) :
+    for date in incoming_dates :
         for dropoff in database.set_of_dropoffs :
             
             if dropoff.arrival_date == date :
